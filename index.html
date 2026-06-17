@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบจองห้องประชุม และยานพาหนะ</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #d9e5e6;
+background-image:
+  radial-gradient(circle at 0% 0%, #dce8ff88 0%, transparent 45%),
+  radial-gradient(circle at 100% 100%, #e8d5ff66 0%, transparent 40%),
+  radial-gradient(circle at 60% 20%, #d0f0ff44 0%, transparent 35%);
+background-attachment: fixed;
+  --panel:      #FFFFFF;
+  --ink:        #0C1524;
+  --muted:      #6B7280;
+  --line:       #E5E7EB;
+  --room:       #5B5CF6;
+  --room-dark:  #4338CA;
+  --room-soft:  #EEEEFF;
+  --car:        #3bc2b0;
+  --car-dark:   #148875;
+  --car-soft:   #d3eee3;
+  --r0:       #5B5CF6; --r0-dark: #4338CA; --r0-soft: #EEEEFF;
+  --r1:       #F59E0B; --r1-dark: #B45309; --r1-soft: #FEF3E2;
+  --r2:       #10B981; --r2-dark: #047857; --r2-soft: #E6FAF1;
+  --r3:       #EC4899; --r3-dark: #BE185D; --r3-soft: #FCE7F3;
+  --r4:       #3B82F6; --r4-dark: #1D4ED8; --r4-soft: #E8F0FE;
+  --accent:       #5B5CF6;
+  --accent-dark:  #4338CA;
+  --accent-soft:  #EEEEFF;
+  --accent-r: 91; --accent-g: 92; --accent-b: 246;
+  --sh1: 0 1px 3px rgba(12,21,36,.05), 0 1px 2px rgba(12,21,36,.04);
+  --sh2: 0 4px 20px rgba(12,21,36,.07), 0 2px 6px rgba(12,21,36,.04);
+  --sh3: 0 24px 48px rgba(12,21,36,.15), 0 8px 16px rgba(12,21,36,.06);
+  --dur: .22s;
+  --ease: cubic-bezier(.4,0,.2,1);
+  --spring: cubic-bezier(.34,1.56,.64,1);
+}
+body.mode-car {
+  --accent:      #3bc2b0;
+  --accent-dark: #148875;
+  --accent-soft: #d3eee3;
+  --accent-r: 59; --accent-g: 194; --accent-b: 176;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans Thai', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 45% at 85% 8%, rgba(var(--accent-r),var(--accent-g),var(--accent-b),.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 5% 90%, rgba(16,185,129,.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── LAYOUT ─── */
+.wrap { position:relative;z-index:1; width:100%; padding:22px 32px 56px; }
+
+/* ─── HEADER ─── */
+.hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; gap:16px; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-ico {
+  width:42px;height:42px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  box-shadow:0 8px 22px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35);
+}
+.brand-ico i { width:19px;height:19px; }
+.brand-name { font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.03em;color:var(--ink);line-height:1; }
+.brand-sub  { font-size:.7rem;color:var(--muted);margin-top:3px;font-weight:500; }
+#date-label { font-size:.8rem;color:var(--muted);font-weight:600;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 16px;box-shadow:var(--sh1);white-space:nowrap; }
+
+/* ─── MAIN 3-COLUMN GRID ─── */
+.main-grid {
+  display:grid;
+  grid-template-columns:290px 1fr 270px;
+  gap:18px;
+  margin-bottom:20px;
+  align-items:start;
+}
+@media(max-width:1200px){ .main-grid{ grid-template-columns:250px 1fr 240px; } }
+@media(max-width:900px) { .main-grid{ grid-template-columns:1fr; } }
+
+/* ─── CALENDAR COLUMN ─── */
+.cal-col .cal-inner { padding:14px 14px 0; }
+.cal-col .cal-inner .cal-header { margin-bottom:10px; }
+.cal-col #cal-day-list { padding:10px 14px 14px; max-height:300px; overflow-y:auto; }
+.cal-col .cal-list-head { margin-bottom:8px; }
+.cal-col #cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+.cal-col .cal-cell { min-height:34px;border-radius:8px;padding:5px 3px 3px; }
+.cal-col .cal-cell .num { font-size:.66rem; }
+
+/* ─── PANEL ─── */
+.panel { background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh2);overflow:hidden; }
+
+/* ─── INLINE TABS (form) ─── */
+.form-tabs { display:flex; border-bottom:1px solid var(--line); }
+.form-tab {
+  flex:1; padding:14px 10px; text-align:center;
+  font-size:.84rem;font-weight:700;color:var(--muted);
+  cursor:pointer;border:none;background:transparent;
+  border-bottom:3px solid transparent;margin-bottom:-1px;
+  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.form-tab i { width:16px;height:16px; }
+.form-tab.active { color:var(--accent);border-bottom-color:var(--accent); }
+
+/* ─── INLINE FORM ─── */
+.inline-form { padding:20px 22px 22px; }
+.field { margin-bottom:13px; }
+.field label { display:block;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif; }
+.field input,.field select,.field textarea {
+  width:100%;border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;
+  font-family:'Noto Sans Thai',sans-serif;font-size:.88rem;outline:none;
+  background:#F8F9FB;color:var(--ink);
+  transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.field input:focus,.field select:focus,.field textarea:focus {
+  border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 3.5px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.12);
+}
+.field textarea { min-height:80px;resize:vertical; }
+.field-row { display:flex;gap:10px; }
+.field-row .field { flex:1; }
+input[type="time"]::-webkit-datetime-edit-ampm-field { display:none!important; }
+input[type="time"] { -webkit-appearance:none;appearance:none; }
+.time-input { font-variant-numeric: tabular-nums; letter-spacing:.05em; }
+.time-input::placeholder { color:#9CA3AF; }
+
+.btn-submit {
+  width:100%;padding:13px;background:var(--accent);color:#fff;
+  font-family:'Noto Sans Thai',sans-serif;font-size:.9rem;font-weight:700;
+  border:none;border-radius:12px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.36);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:6px;
+  transition:all var(--dur) var(--ease);
+}
+.btn-submit:hover{ transform:translateY(-2px);box-shadow:0 8px 20px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.42); }
+.btn-submit i { width:17px;height:17px; }
+
+/* ─── RIGHT PANEL: stats ─── */
+.stats-col { display:flex;flex-direction:column;gap:14px; }
+
+.stat-cards { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.stat-card {
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:16px 18px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:14px;
+}
+.stat-ico {
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.stat-ico.room-ico { background:var(--room-soft);color:var(--room); }
+.stat-ico.car-ico  { background:var(--car-soft);color:var(--car-dark); }
+.stat-ico i { width:20px;height:20px; }
+.stat-label { font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:3px; }
+.stat-num   { font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:-.04em;color:var(--ink);line-height:1; }
+
+/* ─── UPCOMING LIST (right side) ─── */
+.recent-panel { background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh2);flex:1; }
+.recent-head { padding:16px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between; }
+.recent-title { font-family:'Inter',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px; }
+.live-dot { width:8px;height:8px;border-radius:50%;background:#F59E0B;flex-shrink:0;animation:pulse 2s infinite; }
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
+.count-badge { font-size:.72rem;font-weight:700;background:#F3F4F6;color:var(--muted);padding:3px 10px;border-radius:999px; }
+.recent-list { padding:12px 14px;max-height:380px;overflow-y:auto; }
+.upcoming-day-label { font-size:.68rem;font-weight:700;color:var(--muted);letter-spacing:.06em;font-family:'Inter',sans-serif;margin:10px 0 5px;padding-left:2px; }
+.upcoming-day-label:first-child { margin-top:0; }
+.upcoming-today-pill { display:inline-block;background:var(--accent-soft);color:var(--accent);font-size:.65rem;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle; }
+.empty-msg { text-align:center;padding:28px 12px;font-size:.8rem;color:var(--muted);opacity:.8; }
+
+/* ─── CALENDAR SECTION ─── */
+.cal-col { overflow:visible; }
+.cal-inner { padding:22px 22px 0; }
+.cal-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
+.cal-month-label { font-family:'Inter',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-.02em; }
+
+.icon-btn {
+  width:36px;height:36px;border:1.5px solid var(--line);border-radius:10px;
+  background:#F8F9FB;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);cursor:pointer;transition:all var(--dur) var(--ease);
+}
+.icon-btn:hover { background:var(--accent-soft);color:var(--accent);border-color:transparent;transform:scale(1.05); }
+.icon-btn i { width:16px;height:16px; }
+
+.cal-dow { text-align:center;font-size:.68rem;font-weight:700;color:var(--muted);padding-bottom:8px;letter-spacing:.05em;font-family:'Inter',sans-serif; }
+#cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:5px; }
+
+.cal-cell {
+  min-height:52px;border-radius:11px;padding:7px 5px 5px;
+  background:#F5F6FA;border:1.5px solid transparent;
+  cursor:pointer;position:relative;
+  transition:transform .13s var(--ease),background .13s var(--ease),box-shadow .13s var(--ease);
+}
+.cal-cell.empty { background:transparent;cursor:default;border-color:transparent; }
+.cal-cell:not(.empty):hover { transform:scale(1.06);background:var(--accent-soft);box-shadow:var(--sh1); }
+.cal-cell.today { background:var(--accent);border-color:transparent;box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.3); }
+.cal-cell.today .num { color:#fff; }
+.cal-cell.selected { border-color:var(--accent);background:var(--accent-soft); }
+.cal-cell.has-room:not(.today) { background:rgba(91,92,246,.08); }
+.cal-cell.has-car:not(.today)  { background:rgba(59,194,176,.1); }
+.cal-cell.has-room.has-car:not(.today) { background:linear-gradient(135deg,rgba(91,92,246,.08) 50%,rgba(59,194,176,.1) 50%); }
+.cal-cell .num { font-size:.74rem;font-weight:800;color:var(--ink);font-family:'Inter',sans-serif;line-height:1; }
+.cal-dots { display:flex;gap:3px;margin-top:4px;flex-wrap:wrap; }
+.cal-dots span { display:block;width:5px;height:5px;border-radius:50%; }
+.cal-dots .r0 { background:var(--r0); }
+.cal-dots .r1 { background:var(--r1); }
+.cal-dots .r2 { background:var(--r2); }
+.cal-dots .r3 { background:var(--r3); }
+.cal-dots .r4 { background:var(--r4); }
+.cal-dots .c  { background:var(--car); }
+
+.cal-sep { height:1px;background:var(--line);margin:14px 22px 0; }
+
+/* ─── CAL DAY LIST ─── */
+#cal-day-list { padding:16px 22px 22px; }
+.cal-list-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+.cal-list-title { font-family:'Inter',sans-serif;font-size:.82rem;font-weight:800;letter-spacing:-.01em;color:var(--ink); }
+#cal-clear-date { font-size:.74rem;font-weight:700;color:var(--accent);background:var(--accent-soft);border:none;border-radius:8px;padding:5px 12px;cursor:pointer;transition:opacity var(--dur) var(--ease); }
+#cal-clear-date:hover { opacity:.8; }
+
+/* ─── BOOKING CARDS ─── */
+.day-card {
+  background:#FAFBFD;border:1.5px solid var(--line);border-left:4px solid var(--line);
+  border-radius:12px;padding:13px 16px;margin-bottom:8px;cursor:pointer;
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.day-card:last-child { margin-bottom:0; }
+.day-card[data-kind="room"] { border-left-color:var(--room); }
+.day-card[data-kind="car"]  { border-left-color:var(--car); }
+.day-card:hover { transform:translateX(5px);box-shadow:var(--sh2);background:#fff; }
+.day-card .row1 { display:flex;justify-content:space-between;align-items:flex-start;gap:10px;font-weight:700;font-size:.88rem;margin-bottom:6px; }
+.day-card .meta { font-size:.76rem;color:var(--muted);line-height:1.75; }
+.day-card .meta b { color:var(--ink);font-weight:600; }
+.day-card.rc0 { border-left-color:var(--r0); }
+.day-card.rc1 { border-left-color:var(--r1); }
+.day-card.rc2 { border-left-color:var(--r2); }
+.day-card.rc3 { border-left-color:var(--r3); }
+.day-card.rc4 { border-left-color:var(--r4); }
+
+.badge { font-size:.67rem;padding:3px 10px;border-radius:999px;font-weight:700;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif; }
+.badge.room  { background:var(--room-soft);color:var(--room); }
+.badge.car   { background:var(--car-soft);color:var(--car-dark); }
+.badge.r0 { background:var(--r0-soft);color:var(--r0-dark); }
+.badge.r1 { background:var(--r1-soft);color:var(--r1-dark); }
+.badge.r2 { background:var(--r2-soft);color:var(--r2-dark); }
+.badge.r3 { background:var(--r3-soft);color:var(--r3-dark); }
+.badge.r4 { background:var(--r4-soft);color:var(--r4-dark); }
+
+/* ─── ALL LIST SECTION ─── */
+.list-section { margin-bottom:18px; }
+.list-head { padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px; }
+.list-head-title { font-family:'Inter',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:-.02em; }
+.list-sub { font-size:.74rem;color:var(--muted); }
+#list-modal-content { max-height:480px;overflow-y:auto;padding:16px 18px; }
+
+/* ─── LIST TABS ─── */
+.list-tabs { display:flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;gap:3px;box-shadow:var(--sh1); }
+.list-tab-btn {
+  border:none;background:transparent;color:var(--muted);font-family:'Noto Sans Thai',sans-serif;
+  font-size:.8rem;font-weight:700;padding:7px 17px;border-radius:999px;cursor:pointer;
+  transition:color var(--dur) var(--ease),background var(--dur) var(--ease);white-space:nowrap;
+}
+.list-tab-btn.active { background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.32); }
+.list-tab-btn.active-room { background:#5B5CF6;color:#fff;box-shadow:0 4px 12px rgba(91,92,246,.32); }
+.list-tab-btn.active-car  { background:#3bc2b0;color:#fff;box-shadow:0 4px 12px rgba(59,194,176,.32); }
+
+/* ─── ROOM LEGEND ─── */
+.room-legend { display:flex;flex-wrap:wrap;gap:8px; }
+.room-legend-item { display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:var(--muted); }
+.room-legend-dot { width:10px;height:10px;border-radius:3px;flex-shrink:0; }
+
+/* ─── TOOLBAR BUTTONS ─── */
+.btn-add {
+  display:inline-flex;align-items:center;gap:7px;padding:9px 18px;background:var(--accent);color:white;
+  font-family:'Noto Sans Thai',sans-serif;font-size:.8rem;font-weight:700;border:none;border-radius:999px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.36);
+  transition:all var(--dur) var(--ease);white-space:nowrap;
+}
+.btn-add:hover { transform:translateY(-2px); }
+.btn-add i { width:15px;height:15px; }
+
+/* ─── COMPANION ─── */
+.companion-row { display:flex;gap:8px;margin-bottom:8px; }
+.companion-input {
+  flex:1;border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;
+  font-family:'Noto Sans Thai',sans-serif;font-size:.88rem;outline:none;
+  background:#F8F9FB;color:var(--ink);transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
+}
+.companion-input:focus { border-color:var(--accent);background:#fff;box-shadow:0 0 0 3.5px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.12); }
+#car-add-companion {
+  display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;color:var(--accent);
+  background:var(--accent-soft);border:none;border-radius:9px;padding:7px 12px;cursor:pointer;margin-top:2px;
+}
+#car-add-companion i { width:13px;height:13px; }
+
+/* ─── TOAST ─── */
+.toast { position:fixed;right:22px;bottom:22px;background:var(--ink);color:#fff;border-radius:13px;padding:12px 18px;font-size:.84rem;font-weight:600;box-shadow:var(--sh3);opacity:0;transform:translateY(18px);pointer-events:none;z-index:60;transition:.28s var(--spring); }
+.toast.show { opacity:1;transform:translateY(0); }
+
+/* ─── POPUP ─── */
+.popup-overlay { position:fixed;inset:0;background:rgba(12,21,36,.45);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .22s var(--ease); }
+.popup-overlay.show { opacity:1;pointer-events:all; }
+.popup-box { background:#fff;border-radius:20px;box-shadow:var(--sh3);padding:28px 32px;max-width:380px;width:90%;text-align:center;transform:scale(.92) translateY(14px);transition:transform .28s var(--spring); }
+.popup-overlay.show .popup-box { transform:none; }
+.popup-icon { width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem; }
+.popup-icon.success { background:#E6FAF1;color:#10B981; }
+.popup-icon.error   { background:#FEF2F2;color:#DC2626; }
+.popup-icon.info    { background:#EEF2FF;color:#5B5CF6; }
+.popup-icon.warning { background:#FEF9E7;color:#F59E0B; }
+.popup-title { font-family:'Inter',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:8px; }
+.popup-msg   { font-size:.84rem;color:var(--muted);line-height:1.6;margin-bottom:20px; }
+.popup-btn { display:inline-flex;align-items:center;justify-content:center;padding:10px 28px;border-radius:11px;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:white;box-shadow:0 4px 12px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.3);transition:all var(--dur) var(--ease); }
+.popup-btn:hover { transform:translateY(-1px); }
+.popup-btn.secondary { background:#F5F6FA;color:var(--muted);box-shadow:none;border:1.5px solid var(--line);margin-right:8px; }
+
+/* ─── MODAL ─── */
+.modal-backdrop { position:fixed;inset:0;background:rgba(12,21,36,.52);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50; }
+.modal-backdrop.show { display:flex; }
+.modal { width:min(480px,100%);background:#fff;border-radius:24px;box-shadow:var(--sh3);max-height:92vh;overflow-y:auto;animation:modalIn .28s var(--spring); }
+@keyframes modalIn { from{opacity:0;transform:translateY(22px) scale(.95)} to{opacity:1;transform:none} }
+.modal-head { display:flex;align-items:center;justify-content:space-between;padding:22px 22px 0;margin-bottom:20px; }
+.modal-head h2 { font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.025em; }
+.modal-body { padding:0 22px 22px; }
+.form-foot { display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid var(--line);margin-top:8px; }
+.btn { display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:11px;font-family:'Noto Sans Thai',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all var(--dur) var(--ease);border:none;white-space:nowrap; }
+.btn-ghost  { background:transparent;border:1.5px solid var(--line);color:var(--muted); }
+.btn-ghost:hover { background:#F5F6FA; }
+.btn-danger { background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA; }
+.btn-danger:hover { background:#FEE2E2; }
+.btn-save   { background:var(--accent);color:white;box-shadow:0 4px 12px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.3); }
+
+/* ─── GAS ─── */
+.gas-config-panel { background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:4px;box-shadow:var(--sh2);display:none; }
+.gas-config-panel.show { display:block; }
+.gas-config-panel input { width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;font-size:.84rem;font-family:monospace;color:var(--ink);background:#F8F9FB;outline:none;margin-bottom:10px; }
+.gas-config-panel input:focus { border-color:var(--accent);background:#fff; }
+.gas-config-label { font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block;font-family:'Inter',sans-serif; }
+.gas-status { font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:5px; }
+.gas-status.ok   { background:#E6FAF1;color:#047857; }
+.gas-status.none { background:#F3F4F6;color:var(--muted); }
+.gas-status.err  { background:#FEF2F2;color:#DC2626; }
+
+/* ─── FORM PANEL ─── */
+.form-main-panel { /* grid constrains width */ }
+
+/* ─── STAT CARD CLICKABLE ─── */
+.stat-card { cursor:pointer;transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease); }
+.stat-card:hover { transform:translateY(-3px);box-shadow:var(--sh2); }
+
+/* ─── UPCOMING CARD (larger) ─── */
+.upcoming-card-lg {
+  background:#FAFBFD;border:1.5px solid var(--line);border-left:4px solid var(--line);
+  border-radius:12px;padding:11px 13px;margin-bottom:8px;cursor:pointer;
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.upcoming-card-lg:hover { transform:translateX(3px);box-shadow:var(--sh2);background:#fff; }
+.upcoming-card-lg .uc-top { display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:4px; }
+.upcoming-card-lg .uc-name { font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.upcoming-card-lg .uc-time { font-size:.7rem;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0; }
+.upcoming-card-lg .uc-meta { font-size:.72rem;color:var(--muted);line-height:1.6; }
+
+/* ─── PREVIEW MODAL ─── */
+.preview-backdrop { position:fixed;inset:0;background:rgba(12,21,36,.52);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60; }
+.preview-backdrop.show { display:flex; }
+.preview-box { width:min(520px,100%);background:#fff;border-radius:24px;box-shadow:var(--sh3);max-height:92vh;overflow-y:auto;animation:modalIn .28s var(--spring); }
+.preview-head { padding:22px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px; }
+.preview-head-left { flex:1; }
+.preview-kind-badge { display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:8px; }
+.preview-kind-badge.room { background:var(--room-soft);color:var(--room); }
+.preview-kind-badge.car  { background:var(--car-soft);color:var(--car-dark); }
+.preview-title { font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.025em;color:var(--ink);line-height:1.3; }
+.preview-body { padding:0 22px 22px; }
+.preview-section { margin-bottom:16px;padding:14px 16px;background:#F8F9FB;border-radius:14px; }
+.preview-section:last-child { margin-bottom:0; }
+.preview-row { display:flex;gap:8px;margin-bottom:8px;align-items:flex-start; }
+.preview-row:last-child { margin-bottom:0; }
+.preview-label { font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-family:'Inter',sans-serif;min-width:100px;padding-top:1px; }
+.preview-val { font-size:.84rem;color:var(--ink);font-weight:500;flex:1;line-height:1.5; }
+.preview-time-block { display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:6px 12px;font-family:'Inter',sans-serif;font-weight:800;font-size:.9rem;margin-bottom:12px; }
+.preview-foot { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 22px;border-top:1px solid var(--line); }
+.btn-preview-edit { display:inline-flex;align-items:center;gap:7px;padding:10px 20px;background:var(--accent);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.36);transition:all var(--dur) var(--ease); }
+.btn-preview-edit:hover { transform:translateY(-2px); }
+.btn-preview-edit i { width:15px;height:15px; }
+.btn-preview-del { display:inline-flex;align-items:center;gap:7px;padding:10px 16px;background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border-radius:12px;cursor:pointer;transition:all var(--dur) var(--ease); }
+.btn-preview-del:hover { background:#FEE2E2; }
+.btn-preview-del i { width:15px;height:15px; }
+.btn-preview-close { display:inline-flex;align-items:center;gap:7px;padding:10px 16px;background:transparent;border:1.5px solid var(--line);color:var(--muted);font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border-radius:12px;cursor:pointer;transition:all var(--dur) var(--ease); }
+.btn-preview-close:hover { background:#F5F6FA; }
+
+/* ─── HIDDEN ─── */
+.hidden { display:none!important; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width:5px;height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#D1D5DB;border-radius:999px; }
+
+/* ─── FOOTER ─── */
+.foot { margin-top:22px;text-align:center;font-size:.7rem;color:var(--muted);opacity:.65; }
+
+@media(max-width:640px){
+  .wrap{ padding:14px 12px 40px; }
+  .stat-cards{ grid-template-columns:1fr 1fr; }
+  #cal-grid { gap:3px; }
+}
+</style>
+</head>
+<body class="mode-room">
+<div class="wrap">
+
+  <!-- ── HEADER ── -->
+  <header class="hd">
+    <div class="brand">
+      <img class="org-logo"
+     src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png"
+     style="width: 50px; height: auto;"
+     alt="...">
+    <div>
+        <div class="brand-name">DLFOffice</div>
+        <div class="brand-sub">ระบบบริหารการจองห้องประชุมและยานพาหนะส่วนกลาง</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <p id="date-label"></p>
+      <button id="gas-refresh-btn" class="btn-add" style="background:#6B7280;box-shadow:none;padding:7px 14px;" title="โหลดข้อมูลล่าสุดจาก Google Sheet">
+        <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
+      </button>
+      <button id="gas-sync-btn" class="btn-add" style="background:var(--car-dark);box-shadow:none;padding:7px 14px;">
+        <i data-lucide="cloud-upload"></i><span>ซิ้งค์ Sheet</span>
+      </button>
+      <button id="gas-cfg-btn" class="icon-btn" title="ตั้งค่า GAS URL"><i data-lucide="settings"></i></button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       MAIN 3-COLUMN GRID: Calendar | Form | Upcoming
+  ═══════════════════════════════════════════════ -->
+  <div class="main-grid">
+
+    <!-- ── LEFT: Calendar ── -->
+    <div class="panel cal-col">
+      <div class="cal-inner">
+        <div class="cal-header">
+          <button id="cal-prev" class="icon-btn" aria-label="เดือนก่อน"><i data-lucide="chevron-left"></i></button>
+          <div id="cal-month-label" class="cal-month-label"></div>
+          <button id="cal-next" class="icon-btn" aria-label="เดือนหน้า"><i data-lucide="chevron-right"></i></button>
+        </div>
+        <div id="cal-grid"></div>
+      </div>
+      <div class="cal-sep"></div>
+      <div id="cal-day-list"></div>
+    </div>
+
+    <!-- ── CENTER: Inline booking form ── -->
+    <div class="panel form-main-panel">
+      <div class="form-tabs">
+        <button id="form-tab-room" class="form-tab active">
+          <i data-lucide="building-2"></i> จองห้องประชุม
+        </button>
+        <button id="form-tab-car" class="form-tab">
+          <i data-lucide="car"></i> จองรถยนต์
+        </button>
+      </div>
+
+      <div class="inline-form">
+        <!-- ROOM INLINE FORM -->
+        <div id="inline-room-fields">
+          <div class="field">
+            <label>ห้องประชุมที่ต้องการ</label>
+            <select id="i-room-select"></select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>ผู้ขออนุญาต / ผู้จอง</label>
+              <input id="i-room-requester" type="text" placeholder="ชื่อ-นามสกุล">
+            </div>
+            <div class="field">
+              <label>กลุ่มงาน / ฝ่าย</label>
+              <select id="i-room-dept"></select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>จำนวนผู้เข้าร่วม (ท่าน)</label>
+              <input id="i-room-attendees" type="number" min="1" value="1" placeholder="ระบุจำนวนคน">
+            </div>
+          </div>
+          <div class="field">
+            <label>วัตถุประสงค์ / เพื่อใช้ในงาน</label>
+            <textarea id="i-room-purpose" placeholder="ระบุวัตถุประสงค์ของการใช้งาน"></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>วันที่ใช้งาน</label>
+              <input id="i-room-date" type="date">
+            </div>
+            <div class="field">
+              <label>ตั้งแต่เวลา</label>
+              <input id="i-room-time-start" type="text" class="time-input" value="09:00" placeholder="09:00" maxlength="5" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label>ถึงเวลา</label>
+              <input id="i-room-time-end" type="text" class="time-input" value="12:00" placeholder="12:00" maxlength="5" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field">
+            <label>หมายเหตุ</label>
+            <input id="i-room-note" type="text" placeholder="(ถ้ามี)">
+          </div>
+        </div>
+
+        <!-- CAR INLINE FORM -->
+        <div id="inline-car-fields" class="hidden">
+          <div class="field-row">
+            <div class="field">
+              <label>ผู้ขออนุญาตใช้รถ</label>
+              <input id="i-car-requester" type="text" placeholder="ชื่อ-นามสกุล">
+            </div>
+            <div class="field">
+              <label>กลุ่มงาน</label>
+              <select id="i-car-dept"></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>ขออนุญาตใช้รถเพื่อ</label>
+            <input id="i-car-purpose" type="text" placeholder="วัตถุประสงค์การใช้รถ">
+          </div>
+          <div class="field">
+            <label>ณ สถานที่</label>
+            <input id="i-car-destination" type="text" placeholder="ระบุสถานที่ปลายทาง">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>วันที่ใช้รถ</label>
+              <input id="i-car-date" type="date">
+            </div>
+            <div class="field">
+              <label>เวลาเริ่ม</label>
+              <input id="i-car-time-start" type="text" class="time-input" value="09:00" placeholder="09:00" maxlength="5" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label>ถึงเวลา</label>
+              <input id="i-car-time-end" type="text" class="time-input" value="12:00" placeholder="12:00" maxlength="5" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>ทะเบียนรถ</label>
+              <select id="i-car-plate"></select>
+            </div>
+            <div class="field">
+              <label>ผู้ขับ</label>
+              <select id="i-car-driver"></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>ผู้ร่วมเดินทาง</label>
+            <div id="i-car-companions"></div>
+            <button type="button" id="i-car-add-companion" style="display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;color:var(--accent);background:var(--accent-soft);border:none;border-radius:9px;padding:7px 12px;cursor:pointer;margin-top:2px;">
+              <i data-lucide="plus"></i> เพิ่มผู้ร่วมเดินทาง
+            </button>
+          </div>
+        </div>
+
+        <p id="inline-form-error" class="hidden" style="font-size:.74rem;color:#DC2626;margin-bottom:10px;">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+        <button id="inline-submit-btn" class="btn-submit">
+          <i data-lucide="check-circle"></i>
+          <span id="inline-submit-label">บันทึกและส่งข้อมูลการจอง</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Stats + Upcoming ── -->
+    <div class="stats-col">
+      <!-- Stat cards -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-ico room-ico"><i data-lucide="building-2"></i></div>
+          <div>
+            <div class="stat-label">จองห้องประชุมวันนี้</div>
+            <div class="stat-num" id="stat-room-today">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico car-ico"><i data-lucide="car"></i></div>
+          <div>
+            <div class="stat-label">จองรถยนต์วันนี้</div>
+            <div class="stat-num" id="stat-car-today">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent bookings -->
+      <div class="recent-panel">
+        <div class="recent-head">
+          <div class="recent-title">
+            <span class="live-dot"></span>
+            รายการจองที่ใกล้จะถึง
+          </div>
+          <span class="count-badge" id="recent-count">0 รายการ</span>
+        </div>
+        <div class="recent-list" id="recent-list-content">
+          <div class="empty-msg">ไม่มีรายการจองที่จะถึง</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       ALL BOOKINGS LIST
+  ═══════════════════════════════════════════════ -->
+  <div class="panel list-section">
+    <div class="list-head">
+      <div>
+        <div class="list-head-title" id="list-section-title">รายการจองห้องประชุมทั้งหมด</div>
+        <div class="list-sub">รายการจองทั้งหมดในระบบ เรียงตามวันที่ล่าสุด</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div id="room-legend-list-wrap" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+        <div class="list-tabs">
+          <button id="list-tab-room" class="list-tab-btn active-room">ห้องประชุม</button>
+          <button id="list-tab-car"  class="list-tab-btn">รถยนต์</button>
+        </div>
+      </div>
+    </div>
+    <div id="list-modal-content"></div>
+  </div>
+
+  <div class="foot">ข้อมูลการจองจัดเก็บแบบใช้งานร่วมกัน — ทุกคนที่เปิดหน้านี้จะเห็นข้อมูลเดียวกัน</div>
+</div>
+
+<!-- ── MODAL (edit existing) ── -->
+<div id="request-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalHeading">
+    <div class="modal-head">
+      <h2 id="modalHeading">จองห้องประชุม</h2>
+      <button id="close-modal" class="icon-btn" aria-label="ปิด"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="request-form">
+        <div id="room-fields">
+          <div class="field"><label>ห้องประชุม</label><select id="room-select"></select></div>
+          <div class="field"><label>วันประชุม</label><input id="room-date" type="date" required></div>
+          <div class="field-row">
+            <div class="field"><label>เวลาเริ่ม</label><input id="room-time-start" type="text" class="time-input" value="09:00" placeholder="09:00" maxlength="5" inputmode="numeric"></div>
+            <div class="field"><label>ถึงเวลา</label><input id="room-time-end" type="text" class="time-input" value="12:00" placeholder="12:00" maxlength="5" inputmode="numeric"></div>
+          </div>
+          <div class="field"><label>กลุ่มงานที่ขอใช้</label><select id="room-dept"></select></div>
+          <div class="field"><label>ผู้แจ้งขอใช้</label><input id="room-requester" type="text" placeholder="ชื่อ-นามสกุล" required></div>
+          <div class="field"><label>จำนวนผู้เข้าร่วมประชุม (คน)</label><input id="room-attendees" type="number" min="1" value="1"></div>
+          <div class="field"><label>วัตถุประสงค์ / ประชุมเรื่อง</label><textarea id="room-purpose" required></textarea></div>
+          <div class="field"><label>หมายเหตุ</label><input id="room-note" type="text"></div>
+        </div>
+        <div id="car-fields" class="hidden">
+          <div class="field"><label>ผู้ขออนุญาตใช้รถ</label><input id="car-requester" type="text" placeholder="ชื่อ-นามสกุล" required></div>
+          <div class="field"><label>กลุ่มงาน</label><select id="car-dept"></select></div>
+          <div class="field"><label>ขออนุญาตใช้รถเพื่อ</label><input id="car-purpose" type="text" required></div>
+          <div class="field"><label>ณ สถานที่</label><input id="car-destination" type="text"></div>
+          <div class="field"><label>วันที่ใช้รถ</label><input id="car-date" type="date" required></div>
+          <div class="field">
+            <label>ผู้ร่วมเดินทาง</label>
+            <div id="car-companions"></div>
+            <button type="button" id="car-add-companion"><i data-lucide="plus"></i> เพิ่มผู้ร่วมเดินทาง</button>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>เวลาเริ่ม</label><input id="car-time-start" type="text" class="time-input" value="09:00" placeholder="09:00" maxlength="5" inputmode="numeric"></div>
+            <div class="field"><label>ถึงเวลา</label><input id="car-time-end" type="text" class="time-input" value="12:00" placeholder="12:00" maxlength="5" inputmode="numeric"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>ทะเบียนรถ</label><select id="car-plate"></select></div>
+            <div class="field"><label>ผู้ขับ</label><select id="car-driver"></select></div>
+          </div>
+        </div>
+        <p id="form-error" class="hidden" style="font-size:.74rem;color:#DC2626;margin-bottom:10px;padding-top:6px;">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+        <div class="form-foot">
+          <button type="button" id="delete-entry-btn" class="btn btn-danger hidden">ลบรายการ</button>
+          <div style="display:flex;gap:8px;flex:1;justify-content:flex-end;">
+            <button type="button" id="cancel-modal" class="btn btn-ghost">ยกเลิก</button>
+            <button type="submit" class="btn btn-save">บันทึก</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="popup-overlay" class="popup-overlay" aria-live="polite">
+  <div class="popup-box">
+    <div id="popup-icon" class="popup-icon success">✓</div>
+    <div id="popup-title" class="popup-title"></div>
+    <div id="popup-msg" class="popup-msg"></div>
+    <div>
+      <button id="popup-cancel-btn" class="popup-btn secondary" style="display:none">ยกเลิก</button>
+      <button id="popup-ok-btn" class="popup-btn">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREVIEW MODAL ── -->
+<div id="preview-backdrop" class="preview-backdrop" aria-hidden="true">
+  <div class="preview-box" role="dialog" aria-modal="true">
+    <div class="preview-head">
+      <div class="preview-head-left">
+        <div id="preview-kind-badge" class="preview-kind-badge room"><i data-lucide="building-2" style="width:12px;height:12px;"></i> <span id="preview-kind-label">ห้องประชุม</span></div>
+        <div id="preview-title" class="preview-title">ชื่อห้อง</div>
+      </div>
+      <button id="preview-close-x" class="icon-btn" aria-label="ปิด"><i data-lucide="x"></i></button>
+    </div>
+    <div class="preview-body">
+      <div id="preview-time-block" class="preview-time-block">
+        <i data-lucide="clock" style="width:16px;height:16px;"></i>
+        <span id="preview-date-str">–</span>
+        &nbsp;·&nbsp;
+        <span id="preview-time-str">–</span>
+      </div>
+      <div class="preview-section" id="preview-section-main"></div>
+      <div class="preview-section" id="preview-section-extra" style="display:none;"></div>
+    </div>
+    <div class="preview-foot">
+      <button id="preview-del-btn" class="btn-preview-del"><i data-lucide="trash-2"></i> ลบรายการ</button>
+      <div style="display:flex;gap:8px;">
+        <button id="preview-close-btn" class="btn-preview-close">ปิด</button>
+        <button id="preview-edit-btn" class="btn-preview-edit"><i data-lucide="pencil"></i> แก้ไข</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="gas-config-panel" class="gas-config-panel" style="position:fixed;bottom:70px;right:22px;width:340px;z-index:100;">
+  <label class="gas-config-label">Google Apps Script Web App URL</label>
+  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbw2_cQhd5t60z1DoVV6Z12Bj4NEE3bp61k_SmvveocrF3vcu5Md64sbkSXqEm9LT6lw-A/exec">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+    <span id="gas-status-badge" class="gas-status none">● ยังไม่ได้ตั้งค่า</span>
+    <div style="display:flex;gap:6px;">
+      <button id="gas-url-save" class="popup-btn" style="padding:7px 16px;font-size:.76rem;">บันทึก</button>
+      <button id="gas-url-cancel" class="popup-btn secondary" style="padding:7px 14px;font-size:.76rem;margin:0;">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const ROOMS = ["ห้องประชุม อาคาร A ชั้น 1","ห้องประชุม อาคาร A1 ชั้น 2 (ห้องสตูดิโอ)","ห้องประชุม อาคาร B ชั้น 1","ห้องประชุม อาคาร B ชั้น 2","ห้องประชุมศูนย์การเรียนรู้อาคาร D"];
+const DEPTS = ["กลุ่มนโยบายและแผน","กลุ่มประชาสัมพันธ์และสื่อสารองค์กร","กลุ่มงานสนับสนุน","กลุ่มวิชาการ","กลุ่มการเงินและบัญชี","กลุ่มบริหารทั่วไป","กลุ่มสารสนเทศ"];
+const VEHICLES = [{"plate":"ฮอ 4133","driver":"นายอดิศร แสงไชย"},{"plate":"ฮอ 2983","driver":"นายพิษณุพจน์ สิทธิธนาสกุล"}];
+
+const SEED_ROOMS = [{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-13","timeStart":"09:30","timeEnd":"12:00","dept":"นโยบายและแผน","requester":"จินตนา วรรณยง","purpose":"ประชุมคณะอนุกรรมการด้านนโยบายและแผนงาน","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-08","timeStart":"09:30","timeEnd":"11:00","dept":"นโยบายและแผน","requester":"จินตนา วรรณยง","purpose":"ประชุมสร้างความรู้ความเข้าใจการบริหารจัดการความเสี่ยง","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-07","timeStart":"09:30","timeEnd":"16:00","dept":"วิชาการ","requester":"ทิพจุฑา ชุนเกษา","purpose":"ประชุมยกร่างเครื่องมือการประเมิน Best Practice ของมูลนิธิฯ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-07","timeStart":"13:30","timeEnd":"","dept":null,"requester":null,"purpose":"ประชุมอนุกลั่นกรองพิจารณาการจัดจ้างใบงาน 2/68","note":""},{"room":"ห้องประชุม อาคาร B ชั้น 1","date":"2025-08-06","timeStart":"13:30","timeEnd":"","dept":"สนับสนุน","requester":"ณัฏฐา ปัดแก้ว","purpose":"ประชุมพิจารณาจัดจ้างใบงาน 2/68","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-04","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมหารือเกี่ยวกับการปรับปรุงอุปกรณ์ระบบออกอากาศสถานีฯ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-30","timeStart":"13:30","timeEnd":"16:30","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมติดตามความคืบหน้าในการพัฒนาระบบ DLTV Learning Platform ครั้งที่ 9","note":""},{"room":"ห้องประชุม อาคาร B ชั้น 1","date":"2025-07-29","timeStart":"11:00","timeEnd":"","dept":"วิชาการ","requester":"ศิริรัตน์  มูลไชยศรี","purpose":"ประชุมเฉพาะผู้ใหญ่","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-26","timeStart":"08:30","timeEnd":"16:30","dept":"สื่อสารองค์กร","requester":"สุวิมล วัฒนะพาณิชมงคล","purpose":"ประชุมลงพื้นที่ชุมชนร่วมกับ มรภ.บ้านสมเด็จ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-23","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมคณะกรรมการตรวจรับ DLTV Learning Platform","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-06-30","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมติดตามความคืบหน้าในการพัฒนาระบบ DLTV Learning Platform ครั้งที่ 8","note":""}];
+
+const SEED_CARS = [{"requester":"นางสาวฐิติรัตนย์  มากใย","dept":"บริหารทั่วไป","purpose":"รับข้าวกลางวัน","destination":"ศาลเจ้าพ่อเสือ","numPeople":1,"date":"2024-12-13","timeStart":"10:20","timeEnd":"","plate":"ฮอ 2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"},{"requester":"นางวณิชญาย์ ทางธรรม","dept":"การเงินและบัญชี","purpose":"ธุรกรรมทางการเงิน","destination":"ธนาคารกรุงไทย","numPeople":1,"date":"2024-12-08","timeStart":"09:30","timeEnd":"","plate":"2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"},{"requester":"นางสาวช่อเพชร  งามลาภ","dept":"สารสนเทศ","purpose":"รับ - ส่ง แฟ้มเสนอลงนาม","destination":"กองกิจการในพระองค์ 904","numPeople":2,"date":"2024-02-01","timeStart":"13:30","timeEnd":"","plate":"ฮอ 2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"}];
+
+const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const DOW_TH=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const ROOM_COLORS=['r0','r1','r2','r3','r4'];
+const ROOM_COLOR_HEX=['#5B5CF6','#F59E0B','#10B981','#EC4899','#3B82F6'];
+
+function pad(n){return n.toString().padStart(2,'0');}
+function ymd(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function todayStr(){return ymd(new Date());}
+function fmtThaiDate(s){if(!s)return'-';const[y,m,d]=s.split('-').map(Number);if(!y||!m||!d)return'-';const adYear=y>2400?y-543:y;return `${pad(d)} ${MONTHS[m-1]} ${adYear+543}`;}
+function fmtTime(t){if(!t||t===''||t==='--:--')return '-';const[h,m]=t.split(':');const hi=parseInt(h,10),mi=parseInt(m||'0',10);if(isNaN(hi)||isNaN(mi))return '-';return `${pad(hi)}:${pad(mi)}`;}
+/* normDate: แปลง BE→AD ถ้า browser ส่งปีเกิน 2400 มา */
+function normDate(v){if(!v)return '';const p=v.split('-');if(p.length===3&&parseInt(p[0])>2400){p[0]=String(parseInt(p[0])-543);return p.join('-');}return v;}
+
+function escapeHtml(s){if(s===undefined||s===null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function roomColorClass(roomName){const i=ROOMS.indexOf(roomName);return i>=0?ROOM_COLORS[i%ROOM_COLORS.length]:'r0';}
+
+/* ── Storage ── */
+let ROOM_BOOKINGS=[], CAR_BOOKINGS=[];
+let GAS_URL='';
+try{GAS_URL=localStorage.getItem('gas_url')||'';}catch(e){}
+
+async function loadData(){
+  if(GAS_URL){
+    try{
+      const r=await fetch(GAS_URL+'?action=data&t='+Date.now(),{cache:'no-store'});
+      const j=await r.json();
+      if(j.ok&&(j.rooms||j.cars)){
+        ROOM_BOOKINGS=(j.rooms||[]).map(x=>({...x,id:x.id||uid(),kind:'room',date:normDate(x.date||'')}));
+        CAR_BOOKINGS=(j.cars||[]).map(x=>({...x,id:x.id||uid(),kind:'car',date:normDate(x.date||'')}));
+        try{localStorage.setItem('room_bookings',JSON.stringify(ROOM_BOOKINGS));localStorage.setItem('car_bookings',JSON.stringify(CAR_BOOKINGS));}catch(e){}
+        return;
+      }
+    }catch(err){console.warn('GAS load fail:',err);}
+  }
+  try{
+    const rs=localStorage.getItem('room_bookings');
+    const cs=localStorage.getItem('car_bookings');
+    ROOM_BOOKINGS=rs?JSON.parse(rs).map(x=>({...x,date:normDate(x.date||'')})):SEED_ROOMS.map(x=>({...x,id:uid(),kind:'room',attendees:x.attendees||1}));
+    CAR_BOOKINGS=cs?JSON.parse(cs).map(x=>({...x,date:normDate(x.date||'')})):SEED_CARS.map(x=>({...x,id:uid(),kind:'car'}));
+  }catch(e){
+    ROOM_BOOKINGS=SEED_ROOMS.map(x=>({...x,id:uid(),kind:'room',attendees:x.attendees||1}));
+    CAR_BOOKINGS=SEED_CARS.map(x=>({...x,id:uid(),kind:'car'}));
+  }
+}
+async function saveRooms(){try{localStorage.setItem('room_bookings',JSON.stringify(ROOM_BOOKINGS));}catch(e){}autoSyncGas();}
+async function saveCars(){try{localStorage.setItem('car_bookings',JSON.stringify(CAR_BOOKINGS));}catch(e){}autoSyncGas();}
+function autoSyncGas(){
+  if(!GAS_URL)return;
+  const body='payload='+encodeURIComponent(JSON.stringify({rooms:ROOM_BOOKINGS,cars:CAR_BOOKINGS}));
+  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body}).catch(()=>{});
+}
+
+/* ── Populate selects ── */
+function populateSelects(){
+  const roomOpts=ROOMS.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  const deptOpts=DEPTS.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  const uPlates=[...new Set(VEHICLES.map(v=>v.plate))];
+  const uDrivers=[...new Set(VEHICLES.map(v=>v.driver))];
+  const plateOpts=uPlates.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+  const driverOpts=uDrivers.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+
+  document.getElementById('i-room-select').innerHTML=roomOpts;
+  document.getElementById('i-room-dept').innerHTML=deptOpts;
+  document.getElementById('i-car-dept').innerHTML=deptOpts;
+  document.getElementById('i-car-plate').innerHTML=plateOpts;
+  document.getElementById('i-car-driver').innerHTML=driverOpts;
+
+  document.getElementById('room-select').innerHTML=roomOpts;
+  document.getElementById('room-dept').innerHTML=deptOpts;
+  document.getElementById('car-dept').innerHTML=deptOpts;
+  document.getElementById('car-plate').innerHTML=plateOpts;
+  document.getElementById('car-driver').innerHTML=driverOpts;
+}
+
+/* ── Stat cards ── */
+function renderStats(){
+  const t=todayStr();
+  document.getElementById('stat-room-today').textContent=ROOM_BOOKINGS.filter(r=>r.date===t).length;
+  document.getElementById('stat-car-today').textContent=CAR_BOOKINGS.filter(c=>c.date===t).length;
+}
+
+/* ── Upcoming (next 7 days, both room+car) ── */
+function renderRecent(){
+  const t=todayStr();
+  // next 7 days from today
+  const cutoff=ymd(new Date(Date.now()+7*24*60*60*1000));
+  const rooms=ROOM_BOOKINGS.filter(r=>r.date&&r.date>=t&&r.date<=cutoff);
+  const cars=CAR_BOOKINGS.filter(c=>c.date&&c.date>=t&&c.date<=cutoff);
+  const all=[...rooms.map(x=>({...x,_k:'room'})),...cars.map(x=>({...x,_k:'car'}))];
+  all.sort((a,b)=>a.date!==b.date?(a.date||'').localeCompare(b.date||''):(a.timeStart||'').localeCompare(b.timeStart||''));
+  document.getElementById('recent-count').textContent=all.length+' รายการ';
+  const el=document.getElementById('recent-list-content');
+  if(all.length===0){el.innerHTML='<div class="empty-msg">ไม่มีรายการจองที่จะถึงใน 7 วัน</div>';return;}
+  // group by date
+  const grouped={};
+  all.forEach(e=>{(grouped[e.date]=grouped[e.date]||[]).push(e);});
+  let html='';
+  Object.keys(grouped).sort().forEach(date=>{
+    const isToday=date===t;
+    html+=`<div class="upcoming-day-label">${fmtThaiDate(date)}${isToday?'<span class="upcoming-today-pill">วันนี้</span>':''}</div>`;
+    grouped[date].forEach(e=>{ html+=upcomingCardHtml(e,e._k); });
+  });
+  el.innerHTML=html;
+  attachCardClickHandlers(el);
+}
+
+/* ── Compact upcoming card (bigger) ── */
+function upcomingCardHtml(e,kind){
+  if(kind==='room'){
+    const rc=ROOMS.indexOf(e.room)%ROOM_COLORS.length;
+    const colorVar=`var(--r${rc})`;
+    const softVar=`var(--r${rc}-soft)`;
+    return `<div class="upcoming-card-lg rc${rc}" data-kind="room" data-id="${e.id}" style="border-left-color:${colorVar}">
+      <div class="uc-top">
+        <span class="uc-name">${escapeHtml(e.room)}</span>
+        <span class="uc-time" style="background:${softVar};color:${colorVar};">${fmtTime(e.timeStart)}–${fmtTime(e.timeEnd)}</span>
+      </div>
+      <div class="uc-meta">
+        <b style="color:var(--ink);">${escapeHtml(e.requester||'–')}</b>
+        ${e.dept?`· ${escapeHtml(e.dept)}`:''}
+        <br>${escapeHtml((e.purpose||'').slice(0,40))}${(e.purpose||'').length>40?'…':''}
+      </div>
+    </div>`;
+  } else {
+    return `<div class="upcoming-card-lg" data-kind="car" data-id="${e.id}" style="border-left-color:var(--car);">
+      <div class="uc-top">
+        <span class="uc-name">${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span>
+        <span class="uc-time" style="background:var(--car-soft);color:var(--car-dark);">${fmtTime(e.timeStart)}–${fmtTime(e.timeEnd)}</span>
+      </div>
+      <div class="uc-meta">
+        <b style="color:var(--ink);">${escapeHtml(e.requester||'–')}</b>
+        ${e.dept?`· ${escapeHtml(e.dept)}`:''}
+        <br>${escapeHtml((e.purpose||'').slice(0,40))}${(e.purpose||'').length>40?'…':''}
+        ${e.destination?`· ${escapeHtml(e.destination)}`:''}
+      </div>
+    </div>`;
+  }
+}
+
+/* ── Entry card ── */
+function entryCardHtml(e,kind){
+  if(kind==='room'){
+    const ri=ROOMS.indexOf(e.room);
+    const rc=ri>=0?ri%ROOM_COLORS.length:0;
+    return `<div class="day-card rc${rc}" data-kind="room" data-id="${e.id}">
+      <div class="row1"><span>${escapeHtml(e.room)}</span><span class="badge r${rc}">${fmtThaiDate(e.date)}</span></div>
+      <div class="meta">
+        <b>เวลา</b> ${fmtTime(e.timeStart)} – ${fmtTime(e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
+        <br><b>ผู้แจ้งขอใช้:</b> ${escapeHtml(e.requester||'')} &nbsp;·&nbsp; <b>ผู้เข้าร่วม:</b> ${e.attendees||1} คน<br>
+        ${escapeHtml(e.purpose||'')}${(e.note&&e.note!=='-')?`<br><b>หมายเหตุ:</b> ${escapeHtml(e.note)}`:''}
+      </div>
+    </div>`;
+  } else {
+    const companions=(e.companions&&e.companions.length)?`<br><b>ผู้ร่วมเดินทาง:</b> ${e.companions.map(escapeHtml).join(', ')}`:'';
+    return `<div class="day-card" data-kind="car" data-id="${e.id}">
+      <div class="row1"><span>${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span><span class="badge car">${fmtThaiDate(e.date)}</span></div>
+      <div class="meta">
+        <b>เวลา</b> ${fmtTime(e.timeStart)} – ${fmtTime(e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
+        <br><b>ผู้ขอ:</b> ${escapeHtml(e.requester||'')} (${e.numPeople||1} คน)<br>
+        ${escapeHtml(e.purpose||'')} · ${escapeHtml(e.destination||'')}${companions}
+      </div>
+    </div>`;
+  }
+}
+
+function attachCardClickHandlers(container){
+  container.querySelectorAll('.day-card, .upcoming-card-lg').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const id=card.dataset.id,kind=card.dataset.kind;
+      const entry=(kind==='room'?ROOM_BOOKINGS:CAR_BOOKINGS).find(x=>x.id===id);
+      if(entry) showPreview(kind,entry);
+    });
+  });
+}
+
+/* ── All list ── */
+let listTab='room';
+function renderListModal(){
+  document.getElementById('list-section-title').textContent=listTab==='room'?'รายการจองห้องประชุมทั้งหมด':'รายการขอใช้รถทั้งหมด';
+  const list=(listTab==='room'?ROOM_BOOKINGS:CAR_BOOKINGS).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const el=document.getElementById('list-modal-content');
+  if(list.length===0){el.innerHTML='<div class="empty-msg">ยังไม่มีรายการ</div>';return;}
+  el.innerHTML='<div style="padding:12px 18px">'+list.map(e=>entryCardHtml(e,listTab)).join('')+'</div>';
+  attachCardClickHandlers(el);
+  renderRoomLegend();
+}
+
+function renderRoomLegend(){
+  const wrap=document.getElementById('room-legend-list-wrap');
+  if(!wrap)return;
+  if(listTab!=='room'){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div class="room-legend">'+ROOMS.map((r,i)=>{
+    const ci=i%ROOM_COLOR_HEX.length;
+    return `<div class="room-legend-item"><div class="room-legend-dot" style="background:${ROOM_COLOR_HEX[ci]}"></div><span>${escapeHtml(r)}</span></div>`;
+  }).join('')+'</div>';
+}
+
+/* ── List tabs ── */
+const listTabRoomBtn=document.getElementById('list-tab-room');
+const listTabCarBtn=document.getElementById('list-tab-car');
+listTabRoomBtn.addEventListener('click',()=>{
+  listTab='room';
+  listTabRoomBtn.classList.add('active-room'); listTabRoomBtn.classList.remove('active-car','active');
+  listTabCarBtn.classList.remove('active-car','active-room','active');
+  calSelectedDate=null; renderCalendar(); renderListModal();
+});
+listTabCarBtn.addEventListener('click',()=>{
+  listTab='car';
+  listTabCarBtn.classList.add('active-car'); listTabCarBtn.classList.remove('active-room','active');
+  listTabRoomBtn.classList.remove('active-room','active-car','active');
+  calSelectedDate=null; renderCalendar(); renderListModal();
+});
+
+/* ── Calendar ── */
+let calCurrent=new Date();
+let calSelectedDate=null;
+const calGrid=document.getElementById('cal-grid');
+const calDayList=document.getElementById('cal-day-list');
+
+function renderCalendar(){
+  const year=calCurrent.getFullYear(),month=calCurrent.getMonth();
+  document.getElementById('cal-month-label').textContent=`${MONTHS[month]} ${year+543}`;
+  const first=new Date(year,month,1);
+  const startDow=first.getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=todayStr();
+  const allGrouped={};
+  ROOM_BOOKINGS.forEach(r=>{
+    if(!r.date)return;
+    allGrouped[r.date]=allGrouped[r.date]||{room:0,car:0,rooms:Array(ROOMS.length).fill(0)};
+    allGrouped[r.date].room++;
+    const ri=ROOMS.indexOf(r.room);if(ri>=0)allGrouped[r.date].rooms[ri]++;
+  });
+  CAR_BOOKINGS.forEach(c=>{
+    if(!c.date)return;
+    allGrouped[c.date]=allGrouped[c.date]||{room:0,car:0,rooms:Array(ROOMS.length).fill(0)};
+    allGrouped[c.date].car++;
+  });
+  let html='';
+  ['อา','จ','อ','พ','พฤ','ศ','ส'].forEach(d=>{html+=`<div class="cal-dow">${d}</div>`;});
+  for(let i=0;i<startDow;i++)html+='<div class="cal-cell empty"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${year}-${pad(month+1)}-${pad(d)}`;
+    const info=allGrouped[dateStr];
+    let cls='cal-cell';
+    if(dateStr===today)cls+=' today';
+    if(info&&info.room>0)cls+=' has-room';
+    if(info&&info.car>0)cls+=' has-car';
+    if(dateStr===calSelectedDate)cls+=' selected';
+    let dots='';
+    if(info){
+      if(info.rooms)info.rooms.forEach((count,ri)=>{for(let k=0;k<Math.min(count,2);k++)dots+=`<span class="r${ri}"></span>`;});
+      else for(let i=0;i<Math.min(info.room,3);i++)dots+='<span class="r0"></span>';
+      for(let i=0;i<Math.min(info.car,3);i++)dots+='<span class="c"></span>';
+    }
+    html+=`<div class="${cls}" data-date="${dateStr}"><div class="num">${d}</div>${dots?`<div class="cal-dots">${dots}</div>`:''}</div>`;
+  }
+  calGrid.innerHTML=html;
+  calGrid.onclick=function(e){
+    const cell=e.target.closest('.cal-cell:not(.empty)');
+    if(!cell)return;
+    const date=cell.dataset.date;
+    if(!date)return;
+    calSelectedDate=(calSelectedDate===date)?null:date;
+    renderCalendar();
+  };
+  renderCalDayList();
+}
+
+function renderCalDayList(){
+  const source=listTab==='room'?ROOM_BOOKINGS:CAR_BOOKINGS;
+  let list,heading;
+  if(calSelectedDate){
+    list=source.filter(e=>e.date===calSelectedDate);
+    heading=`รายการวันที่ ${fmtThaiDate(calSelectedDate)}`;
+  } else {
+    list=source.filter(e=>e.date>=todayStr());
+    heading=listTab==='room'?'รายการจองห้องประชุมที่จะถึง':'รายการขอใช้รถที่จะถึง';
+  }
+  list=list.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  let html=`<div class="cal-list-head">
+    <span class="cal-list-title">${heading}</span>
+    ${calSelectedDate?`<button id="cal-clear-date">ดูทั้งหมด</button>`:''}
+  </div>`;
+  if(list.length===0){html+='<div class="empty-msg">ยังไม่มีรายการ'+(calSelectedDate?' ในวันนี้':'')+'</div>';}
+  else{html+=`<div style="max-height:320px;overflow-y:auto;">${list.map(e=>entryCardHtml(e,listTab)).join('')}</div>`;}
+  calDayList.innerHTML=html;
+  attachCardClickHandlers(calDayList);
+  const clearBtn=document.getElementById('cal-clear-date');
+  if(clearBtn)clearBtn.addEventListener('click',()=>{calSelectedDate=null;renderCalendar();});
+}
+
+document.getElementById('cal-prev').addEventListener('click',()=>{calCurrent=new Date(calCurrent.getFullYear(),calCurrent.getMonth()-1,1);renderCalendar();});
+document.getElementById('cal-next').addEventListener('click',()=>{calCurrent=new Date(calCurrent.getFullYear(),calCurrent.getMonth()+1,1);renderCalendar();});
+
+function renderAll(){renderStats();renderRecent();renderCalendar();renderListModal();}
+
+/* ── Date label ── */
+function setDateLabel(){
+  const d=new Date();
+  const dow=DOW_TH[d.getDay()];
+  document.getElementById('date-label').textContent=`วัน${dow}ที่ ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()+543} | ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} น.`;
+}
+setInterval(()=>{setDateLabel();},1000);
+
+/* ── Inline form tabs ── */
+let inlineMode='room';
+document.getElementById('form-tab-room').addEventListener('click',()=>{
+  inlineMode='room';
+  document.getElementById('form-tab-room').classList.add('active');
+  document.getElementById('form-tab-car').classList.remove('active');
+  document.getElementById('inline-room-fields').classList.remove('hidden');
+  document.getElementById('inline-car-fields').classList.add('hidden');
+  document.getElementById('inline-submit-label').textContent='บันทึกและส่งข้อมูลการจอง';
+  document.body.classList.remove('mode-car'); document.body.classList.add('mode-room');
+});
+document.getElementById('form-tab-car').addEventListener('click',()=>{
+  inlineMode='car';
+  document.getElementById('form-tab-car').classList.add('active');
+  document.getElementById('form-tab-room').classList.remove('active');
+  document.getElementById('inline-car-fields').classList.remove('hidden');
+  document.getElementById('inline-room-fields').classList.add('hidden');
+  document.getElementById('inline-submit-label').textContent='บันทึกและส่งข้อมูลการจอง';
+  document.body.classList.remove('mode-room'); document.body.classList.add('mode-car');
+});
+
+/* ── Inline companions ── */
+const iCarCompanions=document.getElementById('i-car-companions');
+document.getElementById('i-car-add-companion').addEventListener('click',()=>{
+  const row=document.createElement('div');
+  row.className='companion-row';
+  row.innerHTML=`<input type="text" class="companion-input" placeholder="ชื่อ-นามสกุล"><button type="button" class="icon-btn" style="flex-shrink:0"><i data-lucide="x"></i></button>`;
+  row.querySelector('button').addEventListener('click',()=>row.remove());
+  iCarCompanions.appendChild(row);
+  lucide.createIcons();
+});
+function getInlineCompanions(){
+  return Array.from(iCarCompanions.querySelectorAll('.companion-input')).map(i=>i.value.trim()).filter(v=>v.length>0);
+}
+
+/* ── Inline submit ── */
+document.getElementById('inline-submit-btn').addEventListener('click',async()=>{
+  const errEl=document.getElementById('inline-form-error');
+  errEl.classList.add('hidden');
+  if(inlineMode==='room'){
+    const requester=document.getElementById('i-room-requester').value.trim();
+    const purpose=document.getElementById('i-room-purpose').value.trim();
+    const date=normDate(document.getElementById('i-room-date').value);
+    if(!requester||!purpose||!date){errEl.classList.remove('hidden');return;}
+    ROOM_BOOKINGS.push({
+      id:uid(),kind:'room',
+      room:document.getElementById('i-room-select').value,
+      date, timeStart:document.getElementById('i-room-time-start').value,
+      timeEnd:document.getElementById('i-room-time-end').value,
+      dept:document.getElementById('i-room-dept').value,
+      requester, attendees:parseInt(document.getElementById('i-room-attendees').value)||1,
+      purpose, note:document.getElementById('i-room-note').value.trim(),
+    });
+    await saveRooms();
+    document.getElementById('i-room-requester').value='';
+    document.getElementById('i-room-purpose').value='';
+    document.getElementById('i-room-note').value='';
+    document.getElementById('i-room-attendees').value=1;
+  } else {
+    const requester=document.getElementById('i-car-requester').value.trim();
+    const purpose=document.getElementById('i-car-purpose').value.trim();
+    const date=normDate(document.getElementById('i-car-date').value);
+    if(!requester||!purpose||!date){errEl.classList.remove('hidden');return;}
+    const companions=getInlineCompanions();
+    CAR_BOOKINGS.push({
+      id:uid(),kind:'car',requester,
+      dept:document.getElementById('i-car-dept').value,
+      purpose, destination:document.getElementById('i-car-destination').value.trim(),
+      numPeople:companions.length+1,companions,date,
+      timeStart:document.getElementById('i-car-time-start').value,
+      timeEnd:document.getElementById('i-car-time-end').value,
+      plate:document.getElementById('i-car-plate').value,
+      driver:document.getElementById('i-car-driver').value,
+    });
+    await saveCars();
+    document.getElementById('i-car-requester').value='';
+    document.getElementById('i-car-purpose').value='';
+    document.getElementById('i-car-destination').value='';
+    iCarCompanions.innerHTML='';
+  }
+  await showPopup({type:'success',title:'บันทึกการจองแล้ว',msg:'บันทึกข้อมูลการจองเรียบร้อยแล้ว'});
+  renderAll();
+});
+
+/* ── Preview ── */
+let _previewKind=null,_previewId=null;
+const previewBackdrop=document.getElementById('preview-backdrop');
+
+function showPreview(kind,entry){
+  _previewKind=kind; _previewId=entry.id;
+  // Kind badge — rebuild innerHTML so lucide can re-process the new <i>
+  const badge=document.getElementById('preview-kind-badge');
+  badge.className='preview-kind-badge '+(kind==='room'?'room':'car');
+  badge.innerHTML=`<i data-lucide="${kind==='room'?'building-2':'car'}" style="width:12px;height:12px;"></i> ${kind==='room'?'ห้องประชุม':'รถยนต์'}`;
+  // Title
+  document.getElementById('preview-title').textContent=kind==='room'?(entry.room||'–'):`${entry.plate||'–'} — ${entry.driver||'–'}`;
+  // Time block
+  document.getElementById('preview-date-str').textContent=fmtThaiDate(entry.date);
+  document.getElementById('preview-time-str').textContent=`${fmtTime(entry.timeStart)} – ${fmtTime(entry.timeEnd)} น.`;
+  // Main section
+  const main=document.getElementById('preview-section-main');
+  if(kind==='room'){
+    main.innerHTML=`
+      <div class="preview-row"><span class="preview-label">ห้องประชุม</span><span class="preview-val">${escapeHtml(entry.room||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">ผู้จอง</span><span class="preview-val">${escapeHtml(entry.requester||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">หน่วยงาน</span><span class="preview-val">${escapeHtml(entry.dept||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">จำนวนผู้เข้าร่วม</span><span class="preview-val">${entry.attendees||1} คน</span></div>
+      <div class="preview-row"><span class="preview-label">วัตถุประสงค์</span><span class="preview-val">${escapeHtml(entry.purpose||'–')}</span></div>
+      ${entry.note?`<div class="preview-row"><span class="preview-label">หมายเหตุ</span><span class="preview-val">${escapeHtml(entry.note)}</span></div>`:''}
+    `;
+  } else {
+    const companions=(entry.companions&&entry.companions.length)?entry.companions.map(escapeHtml).join(', '):'–';
+    main.innerHTML=`
+      <div class="preview-row"><span class="preview-label">ผู้ขอใช้รถ</span><span class="preview-val">${escapeHtml(entry.requester||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">หน่วยงาน</span><span class="preview-val">${escapeHtml(entry.dept||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">วัตถุประสงค์</span><span class="preview-val">${escapeHtml(entry.purpose||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">สถานที่</span><span class="preview-val">${escapeHtml(entry.destination||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">จำนวนผู้เดินทาง</span><span class="preview-val">${entry.numPeople||1} คน</span></div>
+      <div class="preview-row"><span class="preview-label">ผู้ร่วมเดินทาง</span><span class="preview-val">${companions}</span></div>
+      <div class="preview-row"><span class="preview-label">ทะเบียนรถ</span><span class="preview-val">${escapeHtml(entry.plate||'–')}</span></div>
+      <div class="preview-row"><span class="preview-label">พนักงานขับรถ</span><span class="preview-val">${escapeHtml(entry.driver||'–')}</span></div>
+    `;
+  }
+  document.getElementById('preview-section-extra').style.display='none';
+  lucide.createIcons();
+  previewBackdrop.classList.add('show'); previewBackdrop.setAttribute('aria-hidden','false');
+}
+
+function closePreview(){
+  previewBackdrop.classList.remove('show'); previewBackdrop.setAttribute('aria-hidden','true');
+  _previewKind=null; _previewId=null;
+}
+
+document.getElementById('preview-close-x').addEventListener('click',closePreview);
+document.getElementById('preview-close-btn').addEventListener('click',closePreview);
+previewBackdrop.addEventListener('mousedown',e=>{if(e.target===previewBackdrop)e._clickedBg=true;});
+previewBackdrop.addEventListener('click',e=>{if(e._clickedBg)closePreview();});
+
+document.getElementById('preview-edit-btn').addEventListener('click',()=>{
+  if(!_previewKind||!_previewId)return;
+  const entry=(_previewKind==='room'?ROOM_BOOKINGS:CAR_BOOKINGS).find(x=>x.id===_previewId);
+  closePreview();
+  if(entry) openModal(_previewKind,entry);
+});
+
+document.getElementById('preview-del-btn').addEventListener('click',async()=>{
+  if(!_previewKind||!_previewId)return;
+  const ok=await showPopup({type:'warning',title:'ยืนยันการลบ',msg:'คุณต้องการลบรายการนี้ใช่ไหม? ไม่สามารถกู้คืนได้',okLabel:'ลบ',cancelLabel:'ยกเลิก'});
+  if(!ok)return;
+  if(_previewKind==='room'){ROOM_BOOKINGS=ROOM_BOOKINGS.filter(r=>r.id!==_previewId);await saveRooms();}
+  else{CAR_BOOKINGS=CAR_BOOKINGS.filter(c=>c.id!==_previewId);await saveCars();}
+  closePreview();
+  await showPopup({type:'success',title:'ลบรายการแล้ว',msg:'ลบข้อมูลการจองออกจากระบบเรียบร้อย'});
+  renderAll();
+});
+
+/* ── Stat card click → scroll to upcoming ── */
+document.querySelectorAll('.stat-card').forEach((card,idx)=>{
+  card.addEventListener('click',()=>{
+    const kind=idx===0?'room':'car';
+    // Switch list tab
+    listTab=kind;
+    document.getElementById('list-tab-room').classList.toggle('active',kind==='room');
+    document.getElementById('list-tab-car').classList.toggle('active',kind==='car');
+    calSelectedDate=todayStr(); renderCalendar();
+    renderListModal();
+    // scroll to all-bookings list
+    document.querySelector('.list-section').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+/* ── Modal (edit) ── */
+const modal=document.getElementById('request-modal');
+const modalHeading=document.getElementById('modalHeading');
+const roomFields=document.getElementById('room-fields');
+const carFields=document.getElementById('car-fields');
+const formError=document.getElementById('form-error');
+const form=document.getElementById('request-form');
+const toast=document.getElementById('toast');
+let currentService='room',editingId=null,editingKind=null;
+const today2=todayStr();
+
+function setRequiredFields(container,isActive){
+  container.querySelectorAll('input,select,textarea').forEach(el=>{
+    if(el.dataset.required===undefined)el.dataset.required=el.required?'1':'0';
+    el.required=isActive&&el.dataset.required==='1';
+  });
+}
+function openModal(service,entry){
+  currentService=service||'room'; editingId=entry?entry.id:null; editingKind=entry?entry.kind:null;
+  roomFields.classList.add('hidden'); carFields.classList.add('hidden'); formError.classList.add('hidden');
+  setRequiredFields(roomFields,false); setRequiredFields(carFields,false);
+  const deleteBtn=document.getElementById('delete-entry-btn');
+  if(currentService==='room'){
+    modalHeading.textContent=entry?'แก้ไขการจองห้องประชุม':'จองห้องประชุม';
+    roomFields.classList.remove('hidden'); setRequiredFields(roomFields,true);
+    if(entry){
+      document.getElementById('room-select').value=entry.room||ROOMS[0];
+      document.getElementById('room-date').value=entry.date||today2;
+      document.getElementById('room-time-start').value=entry.timeStart||'09:00';
+      document.getElementById('room-time-end').value=entry.timeEnd||'12:00';
+      document.getElementById('room-dept').value=entry.dept||DEPTS[0];
+      document.getElementById('room-requester').value=entry.requester||'';
+      document.getElementById('room-attendees').value=entry.attendees||1;
+      document.getElementById('room-purpose').value=entry.purpose||'';
+      document.getElementById('room-note').value=entry.note||'';
+    } else { document.getElementById('room-attendees').value=1; document.getElementById('room-date').value=today2; }
+  } else {
+    modalHeading.textContent=entry?'แก้ไขการขอใช้รถยนต์':'ขอใช้รถยนต์';
+    carFields.classList.remove('hidden'); setRequiredFields(carFields,true);
+    if(entry){
+      document.getElementById('car-requester').value=entry.requester||'';
+      document.getElementById('car-dept').value=entry.dept||DEPTS[0];
+      document.getElementById('car-purpose').value=entry.purpose||'';
+      document.getElementById('car-destination').value=entry.destination||'';
+      document.getElementById('car-date').value=entry.date||today2;
+      document.getElementById('car-time-start').value=entry.timeStart||'09:00';
+      document.getElementById('car-time-end').value=entry.timeEnd||'12:00';
+      document.getElementById('car-plate').value=entry.plate||'';
+      document.getElementById('car-driver').value=entry.driver||'';
+      resetCompanions(entry.companions||[]);
+    } else { resetCompanions([]); document.getElementById('car-date').value=today2; }
+  }
+  if(deleteBtn)deleteBtn.classList.toggle('hidden',!entry);
+  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+}
+function closeModal(){
+  modal.classList.remove('show'); modal.setAttribute('aria-hidden','true');
+  form.reset(); resetCompanions([]); formError.classList.add('hidden');
+  editingId=null; editingKind=null;
+  document.getElementById('room-date').value=today2;
+  document.getElementById('car-date').value=today2;
+}
+
+/* Companions (modal) */
+const carCompanionsContainer=document.getElementById('car-companions');
+function companionRowHtml(v){return `<div class="companion-row"><input type="text" class="companion-input" placeholder="ชื่อ-นามสกุล" value="${escapeHtml(v||'')}"><button type="button" class="icon-btn companion-remove" aria-label="ลบ"><i data-lucide="x"></i></button></div>`;}
+function addCompanionRow(v){carCompanionsContainer.insertAdjacentHTML('beforeend',companionRowHtml(v));if(window.lucide)lucide.createIcons();const rows=carCompanionsContainer.querySelectorAll('.companion-row');const last=rows[rows.length-1];last.querySelector('.companion-remove').addEventListener('click',()=>last.remove());}
+function resetCompanions(vals){carCompanionsContainer.innerHTML='';(vals&&vals.length?vals:['']).forEach(v=>addCompanionRow(v));}
+function getCompanions(){return Array.from(carCompanionsContainer.querySelectorAll('.companion-input')).map(i=>i.value.trim()).filter(v=>v.length>0);}
+document.getElementById('car-add-companion').addEventListener('click',()=>addCompanionRow(''));
+
+document.getElementById('close-modal').addEventListener('click',closeModal);
+document.getElementById('cancel-modal').addEventListener('click',closeModal);
+modal.addEventListener('mousedown',e=>{if(e.target===modal)e._clickedBackdrop=true;});
+modal.addEventListener('click',e=>{if(e._clickedBackdrop)closeModal();});
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(currentService==='room'){
+    const requester=document.getElementById('room-requester').value.trim();
+    const purpose=document.getElementById('room-purpose').value.trim();
+    const date=normDate(document.getElementById('room-date').value);
+    if(!requester||!purpose||!date){formError.classList.remove('hidden');return;}
+    const data={kind:'room',room:document.getElementById('room-select').value,date,timeStart:document.getElementById('room-time-start').value,timeEnd:document.getElementById('room-time-end').value,dept:document.getElementById('room-dept').value,requester,purpose,attendees:parseInt(document.getElementById('room-attendees').value)||1,note:document.getElementById('room-note').value.trim()};
+    if(editingId&&editingKind==='room'){const idx=ROOM_BOOKINGS.findIndex(r=>r.id===editingId);if(idx>-1)ROOM_BOOKINGS[idx]={...ROOM_BOOKINGS[idx],...data};}
+    else ROOM_BOOKINGS.push({id:uid(),...data});
+    await saveRooms(); closeModal();
+    await showPopup({type:'success',title:editingId?'แก้ไขการจองแล้ว':'บันทึกการจองแล้ว',msg:editingId?'แก้ไขการจองห้องประชุมเรียบร้อยแล้ว':'บันทึกการจองห้องประชุมเรียบร้อยแล้ว'});
+  } else {
+    const requester=document.getElementById('car-requester').value.trim();
+    const purpose=document.getElementById('car-purpose').value.trim();
+    const date=normDate(document.getElementById('car-date').value);
+    if(!requester||!purpose||!date){formError.classList.remove('hidden');return;}
+    const companions=getCompanions();
+    const data={kind:'car',requester,dept:document.getElementById('car-dept').value,purpose,destination:document.getElementById('car-destination').value.trim(),numPeople:companions.length+1,companions,date,timeStart:document.getElementById('car-time-start').value,timeEnd:document.getElementById('car-time-end').value,plate:document.getElementById('car-plate').value,driver:document.getElementById('car-driver').value};
+    if(editingId&&editingKind==='car'){const idx=CAR_BOOKINGS.findIndex(c=>c.id===editingId);if(idx>-1)CAR_BOOKINGS[idx]={...CAR_BOOKINGS[idx],...data};}
+    else CAR_BOOKINGS.push({id:uid(),...data});
+    await saveCars(); closeModal();
+    await showPopup({type:'success',title:editingId?'แก้ไขการจองแล้ว':'บันทึกการจองแล้ว',msg:editingId?'แก้ไขการขอใช้รถยนต์เรียบร้อยแล้ว':'บันทึกการขอใช้รถยนต์เรียบร้อยแล้ว'});
+  }
+  renderAll();
+});
+
+document.getElementById('delete-entry-btn').addEventListener('click',async()=>{
+  if(!editingId)return;
+  const ok=await showPopup({type:'warning',title:'ยืนยันการลบ',msg:'คุณต้องการลบรายการนี้ใช่ไหม? ไม่สามารถกู้คืนได้',okLabel:'ลบ',cancelLabel:'ยกเลิก'});
+  if(!ok)return;
+  if(editingKind==='room'){ROOM_BOOKINGS=ROOM_BOOKINGS.filter(r=>r.id!==editingId);await saveRooms();}
+  else if(editingKind==='car'){CAR_BOOKINGS=CAR_BOOKINGS.filter(c=>c.id!==editingId);await saveCars();}
+  closeModal();
+  await showPopup({type:'success',title:'ลบรายการแล้ว',msg:'ลบข้อมูลการจองออกจากระบบเรียบร้อย'});
+  renderAll();
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('popup-overlay').classList.contains('show')){closePopup(false);return;}
+    if(previewBackdrop.classList.contains('show')){closePreview();return;}
+    if(modal.classList.contains('show'))closeModal();
+  }
+});
+
+/* ── Toast ── */
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2600);}
+
+/* ── Popup ── */
+let _popupResolve=null;
+function showPopup({type='info',title='',msg='',okLabel='ตกลง',cancelLabel=null}){
+  return new Promise(resolve=>{
+    _popupResolve=resolve;
+    const overlay=document.getElementById('popup-overlay');
+    const icons={success:'✓',error:'✕',info:'ℹ',warning:'⚠'};
+    document.getElementById('popup-icon').className=`popup-icon ${type}`;
+    document.getElementById('popup-icon').textContent=icons[type]||'ℹ';
+    document.getElementById('popup-title').textContent=title;
+    document.getElementById('popup-msg').textContent=msg;
+    document.getElementById('popup-ok-btn').textContent=okLabel;
+    const cancelBtn=document.getElementById('popup-cancel-btn');
+    if(cancelLabel){cancelBtn.textContent=cancelLabel;cancelBtn.style.display='';}
+    else cancelBtn.style.display='none';
+    overlay.classList.add('show');
+  });
+}
+function closePopup(result){document.getElementById('popup-overlay').classList.remove('show');if(_popupResolve){_popupResolve(result);_popupResolve=null;}}
+document.getElementById('popup-ok-btn').addEventListener('click',()=>closePopup(true));
+document.getElementById('popup-cancel-btn').addEventListener('click',()=>closePopup(false));
+document.getElementById('popup-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('popup-overlay'))closePopup(false);});
+
+/* ── GAS Sync ── */
+function updateGasStatusBadge(){
+  const badge=document.getElementById('gas-status-badge');
+  if(!badge)return;
+  if(GAS_URL){badge.className='gas-status ok';badge.textContent='● URL ตั้งค่าแล้ว';}
+  else{badge.className='gas-status none';badge.textContent='● ยังไม่ได้ตั้งค่า';}
+}
+function setupGasSync(){
+  const btn=document.getElementById('gas-sync-btn');
+  const refreshBtn=document.getElementById('gas-refresh-btn');
+  const cfgBtn=document.getElementById('gas-cfg-btn');
+  const cfgPanel=document.getElementById('gas-config-panel');
+  const urlInput=document.getElementById('gas-url-input');
+  const saveBtn=document.getElementById('gas-url-save');
+  const cancelBtn=document.getElementById('gas-url-cancel');
+  urlInput.value=GAS_URL; updateGasStatusBadge();
+  cfgBtn.addEventListener('click',()=>{urlInput.value=GAS_URL;cfgPanel.classList.toggle('show');});
+  cancelBtn.addEventListener('click',()=>cfgPanel.classList.remove('show'));
+  saveBtn.addEventListener('click',async()=>{
+    const url=urlInput.value.trim(); GAS_URL=url;
+    try{localStorage.setItem('gas_url',url);}catch(e){}
+    cfgPanel.classList.remove('show'); updateGasStatusBadge();
+    if(url){await loadData();renderAll();await showPopup({type:'success',title:'บันทึก URL แล้ว ✓',msg:'โหลดข้อมูลจาก Google Sheet เรียบร้อย\n🏢 ห้องประชุม: '+ROOM_BOOKINGS.length+' รายการ\n🚗 รถยนต์: '+CAR_BOOKINGS.length+' รายการ'});}
+    else await showPopup({type:'success',title:'บันทึกแล้ว',msg:'ล้าง GAS URL แล้ว ระบบจะใช้ข้อมูลใน localStorage แทน'});
+  });
+  if(refreshBtn){
+    refreshBtn.addEventListener('click',async()=>{
+      if(!GAS_URL){await showPopup({type:'warning',title:'ยังไม่ได้ตั้งค่า GAS URL',msg:'กรุณากด ⚙️ เพื่อวาง Google Apps Script Web App URL ก่อน'});return;}
+      refreshBtn.disabled=true;const sp=refreshBtn.querySelector('span');if(sp)sp.textContent='กำลังโหลด...';
+      try{await loadData();renderAll();if(sp)sp.textContent='โหลดใหม่';refreshBtn.disabled=false;showToast('โหลดข้อมูลสำเร็จ — ห้อง '+ROOM_BOOKINGS.length+' / รถ '+CAR_BOOKINGS.length+' รายการ');}
+      catch(err){if(sp)sp.textContent='โหลดใหม่';refreshBtn.disabled=false;await showPopup({type:'error',title:'โหลดล้มเหลว',msg:'ไม่สามารถโหลดข้อมูลจาก GAS: '+err.message});}
+    });
+  }
+  btn.addEventListener('click',async()=>{
+    if(!GAS_URL){await showPopup({type:'warning',title:'ยังไม่ได้ตั้งค่า GAS URL',msg:'กรุณากด ⚙️ เพื่อวาง Google Apps Script Web App URL ก่อนซิ้งค์'});return;}
+    btn.disabled=true;const sp=btn.querySelector('span');if(sp)sp.textContent='กำลังซิ้งค์...';
+    try{
+      const body='payload='+encodeURIComponent(JSON.stringify({rooms:ROOM_BOOKINGS,cars:CAR_BOOKINGS}));
+      await fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body});
+      if(sp)sp.textContent='ซิ้งค์ Sheet';btn.disabled=false;
+      await showPopup({type:'success',title:'ซิ้งค์สำเร็จ ✓',msg:'ส่งข้อมูลไปยัง Google Sheet แล้ว\n🏢 ห้องประชุม: '+ROOM_BOOKINGS.length+' รายการ\n🚗 รถยนต์: '+CAR_BOOKINGS.length+' รายการ'});
+    }catch(err){if(sp)sp.textContent='ซิ้งค์ Sheet';btn.disabled=false;await showPopup({type:'error',title:'ซิ้งค์ล้มเหลว',msg:'เกิดข้อผิดพลาด: '+err.message});}
+  });
+}
+
+/* ── Time input auto-format (HH:MM, 24-hr) ── */
+function setupTimeInputs(){
+  document.querySelectorAll('.time-input').forEach(inp=>{
+    inp.addEventListener('input',function(){
+      let v=this.value.replace(/[^0-9]/g,'');
+      if(v.length>2) v=v.slice(0,2)+':'+v.slice(2,4);
+      this.value=v;
+    });
+    inp.addEventListener('blur',function(){
+      const v=this.value.trim();
+      if(!v){return;}
+      const parts=v.split(':');
+      let h=parseInt(parts[0]||'0',10);
+      let m=parseInt(parts[1]||'0',10);
+      if(isNaN(h))h=0; if(isNaN(m))m=0;
+      h=Math.min(23,Math.max(0,h));
+      m=Math.min(59,Math.max(0,m));
+      this.value=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    });
+  });
+}
+
+/* ── Init ── */
+(async function init(){
+  lucide.createIcons();
+  populateSelects();
+  setupTimeInputs();
+  document.getElementById('i-room-date').value=todayStr();
+  document.getElementById('i-car-date').value=todayStr();
+  setDateLabel();
+  await loadData();
+  renderAll();
+  setupGasSync();
+})();
+</script>
+</body>
+</html>
