@@ -6,6 +6,7 @@
 <title>ระบบจองห้องประชุม และยานพาหนะ</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -57,13 +58,17 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse 55% 45% at 85% 8%, rgba(var(--accent-r),var(--accent-g),var(--accent-b),.06) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 5% 90%, rgba(16,185,129,.04) 0%, transparent 50%);
-  pointer-events: none; z-index: 0;
+body {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 30%, #fdf4ff 60%, #f0fdf4 100%);
+  background-size: 400% 400%;
+  animation: bgShift 12s ease infinite;
+  min-height: 100vh;
+  margin: 0;
+}
+@keyframes bgShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* ─── LAYOUT ─── */
@@ -415,11 +420,91 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 /* ─── FOOTER ─── */
 .foot { margin-top:22px;text-align:center;font-size:.7rem;color:var(--muted);opacity:.65; }
 
-@media(max-width:640px){
-  .wrap{ padding:14px 12px 40px; }
-  .stat-cards{ grid-template-columns:1fr 1fr; }
-  #cal-grid { gap:3px; }
+/* ─── DASHBOARD ─── */
+.dash-btn { display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border:2px solid var(--line);background:#fff;color:var(--ink);font-family:'Noto Sans Thai',sans-serif;font-size:.82rem;font-weight:700;border-radius:12px;cursor:pointer;transition:all var(--dur) var(--ease); }
+.dash-btn:hover { border-color:var(--accent);color:var(--accent); }
+.dash-btn.active { background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.3); }
+.dash-btn i { width:15px;height:15px; }
+
+.dashboard-panel { margin-bottom:28px;animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+
+/* KPI row */
+.dash-kpi-row { display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px; }
+.dash-kpi { background:#fff;border-radius:18px;padding:18px 20px;box-shadow:var(--sh2);display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden; }
+.dash-kpi::before { content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 18px 0 80px;opacity:.08; }
+.dash-kpi.kpi-room::before { background:var(--room); }
+.dash-kpi.kpi-car::before  { background:var(--car); }
+.dash-kpi.kpi-dept::before { background:#F59E0B; }
+.dash-kpi.kpi-month::before { background:#10B981; }
+.dash-kpi.kpi-top::before  { background:#EC4899; }
+.dash-kpi-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:4px; }
+.dash-kpi-icon i { width:18px;height:18px; }
+.dash-kpi.kpi-room .dash-kpi-icon  { background:var(--room-soft);color:var(--room); }
+.dash-kpi.kpi-car .dash-kpi-icon   { background:var(--car-soft);color:var(--car-dark); }
+.dash-kpi.kpi-dept .dash-kpi-icon  { background:#FEF3E2;color:#B45309; }
+.dash-kpi.kpi-month .dash-kpi-icon { background:#E6FAF1;color:#047857; }
+.dash-kpi.kpi-top .dash-kpi-icon   { background:#FCE7F3;color:#BE185D; }
+.dash-kpi-num { font-family:'Inter',sans-serif;font-size:1.9rem;font-weight:900;letter-spacing:-.04em;color:var(--ink);line-height:1; }
+.dash-kpi-label { font-size:.72rem;font-weight:600;color:var(--muted); }
+.dash-kpi-sub { font-size:.67rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+
+/* Charts row */
+.dash-charts-row { display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin-bottom:18px; }
+@media(max-width:900px){ .dash-charts-row{ grid-template-columns:1fr; } }
+.dash-chart-card { background:#fff;border-radius:18px;padding:18px 20px;box-shadow:var(--sh2); }
+.dash-chart-title { font-size:.78rem;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;letter-spacing:-.01em; }
+.dash-chart-title i { width:15px;height:15px;color:var(--accent); }
+.dash-chart-wrap { position:relative;width:100%; }
+
+/* Summary table */
+.dash-table-card { background:#fff;border-radius:18px;padding:18px 20px;box-shadow:var(--sh2); }
+.dash-table-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap; }
+.dash-table-title { font-size:.78rem;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif; }
+.dash-table-title i { width:15px;height:15px;color:var(--accent); }
+.dash-tbl { width:100%;border-collapse:collapse;font-size:.74rem; }
+.dash-tbl th { text-align:left;padding:6px 10px;font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;border-bottom:1.5px solid var(--line);font-family:'Inter',sans-serif; }
+.dash-tbl td { padding:8px 10px;border-bottom:1px solid #F3F4F6;color:var(--ink);vertical-align:middle; }
+.dash-tbl tr:last-child td { border-bottom:none; }
+.dash-tbl tr:hover td { background:#FAFAFA; }
+.kind-badge { display:inline-flex;align-items:center;gap:4px;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:999px; }
+.kind-badge.room { background:var(--room-soft);color:var(--room); }
+.kind-badge.car  { background:var(--car-soft);color:var(--car-dark); }
+
+/* Export PDF btn */
+.btn-export-pdf { display:inline-flex;align-items:center;gap:7px;padding:8px 18px;background:linear-gradient(135deg,#DC2626,#B91C1C);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:.79rem;font-weight:700;border:none;border-radius:11px;cursor:pointer;box-shadow:0 4px 12px rgba(220,38,38,.28);transition:all var(--dur) var(--ease); }
+.btn-export-pdf:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(220,38,38,.36); }
+.btn-export-pdf i { width:14px;height:14px; }
+
+/* ─── PRINT / PDF ─── */
+@media print {
+  @page { size:A4;margin:14mm 12mm; }
+  body { background:#fff!important; }
+  body::before { display:none!important; }
+  .wrap { padding:0!important; }
+  header.hd,
+  .main-grid,
+  .list-section,
+  .foot,
+  #request-modal,
+  #preview-backdrop,
+  #popup-overlay,
+  #gas-config-panel,
+  #toast,
+  .btn-export-pdf,
+  .dash-btn { display:none!important; }
+  .dashboard-panel { display:block!important;margin:0!important; }
+  .dash-kpi-row { grid-template-columns:repeat(5,1fr);gap:8px; }
+  .dash-kpi { padding:12px 14px;box-shadow:none;border:1px solid #E5E7EB; }
+  .dash-kpi-num { font-size:1.5rem; }
+  .dash-charts-row { grid-template-columns:2fr 1fr 1fr;gap:8px;page-break-inside:avoid; }
+  .dash-chart-card,.dash-table-card { box-shadow:none;border:1px solid #E5E7EB; }
+  .print-header { display:flex!important; }
 }
+.print-header { display:none;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #E5E7EB; }
+.print-header-title { font-family:'Inter',sans-serif;font-size:1rem;font-weight:900;color:#0C1524; }
+.print-header-sub { font-size:.72rem;color:#6B7280;margin-top:2px; }
+
 </style>
 </head>
 <body class="mode-room">
@@ -439,6 +524,9 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <p id="date-label"></p>
+      <button id="dash-toggle-btn" class="dash-btn" title="ดูสถิติ Dashboard">
+        <i data-lucide="bar-chart-2"></i><span>สถิติ</span>
+      </button>
       <button id="gas-refresh-btn" class="btn-add" style="background:#6B7280;box-shadow:none;padding:7px 14px;" title="โหลดข้อมูลล่าสุดจาก Google Sheet">
         <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
       </button>
@@ -450,7 +538,63 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   </header>
 
   <!-- ══════════════════════════════════════════
-       MAIN 3-COLUMN GRID: Calendar | Form | Upcoming
+       DASHBOARD PANEL
+  ═══════════════════════════════════════════════ -->
+  <div id="dashboard-panel" class="dashboard-panel hidden">
+
+    <!-- Print header (visible only on print) -->
+    <div class="print-header">
+      <div>
+        <div class="print-header-title">DLFOffice — รายงานสรุปการจองห้องประชุมและยานพาหนะ</div>
+        <div class="print-header-sub" id="print-date-range"></div>
+      </div>
+      <img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" style="height:40px;width:auto;" alt="logo">
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="dash-kpi-row" id="dash-kpi-row"></div>
+
+    <!-- Charts -->
+    <div class="dash-charts-row">
+      <div class="dash-chart-card">
+        <div class="dash-chart-title"><i data-lucide="trending-up"></i>แนวโน้มการจอง 6 เดือนล่าสุด</div>
+        <div class="dash-chart-wrap" style="height:220px;"><canvas id="chart-monthly"></canvas></div>
+      </div>
+      <div class="dash-chart-card">
+        <div class="dash-chart-title"><i data-lucide="building-2"></i>ห้องประชุมยอดนิยม</div>
+        <div class="dash-chart-wrap" style="height:220px;"><canvas id="chart-rooms"></canvas></div>
+      </div>
+      <div class="dash-chart-card">
+        <div class="dash-chart-title"><i data-lucide="users"></i>การจองแยกตามกลุ่มงาน</div>
+        <div class="dash-chart-wrap" style="height:220px;"><canvas id="chart-depts"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Summary table -->
+    <div class="dash-table-card">
+      <div class="dash-table-head">
+        <div class="dash-table-title"><i data-lucide="list"></i>รายการจองทั้งหมด (สรุป)</div>
+        <button class="btn-export-pdf" id="export-pdf-btn">
+          <i data-lucide="file-down"></i>Export PDF
+        </button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="dash-tbl" id="dash-summary-table">
+          <thead>
+            <tr>
+              <th>ประเภท</th><th>วันที่</th><th>เวลา</th>
+              <th>ห้อง / รถ</th><th>ผู้จอง</th><th>กลุ่มงาน</th><th>วัตถุประสงค์</th>
+            </tr>
+          </thead>
+          <tbody id="dash-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       MAIN 3-COLUMN GRID
   ═══════════════════════════════════════════════ -->
   <div class="main-grid">
 
@@ -748,7 +892,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 
 <div id="gas-config-panel" class="gas-config-panel" style="position:fixed;bottom:70px;right:22px;width:340px;z-index:100;">
   <label class="gas-config-label">Google Apps Script Web App URL</label>
-  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbw2_cQhd5t60z1DoVV6Z12Bj4NEE3bp61k_SmvveocrF3vcu5Md64sbkSXqEm9LT6lw-A/exec">
+  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbwKLQD2oomrk6Mhj0GHiEcXzEowcX8Ju9Bjt_-yStKsAALBDHzu3PHRa25GcnhQsyRoMw/exec">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
     <span id="gas-status-badge" class="gas-status none">● ยังไม่ได้ตั้งค่า</span>
     <div style="display:flex;gap:6px;">
@@ -763,11 +907,6 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 const ROOMS = ["ห้องประชุม อาคาร A ชั้น 1","ห้องประชุม อาคาร A1 ชั้น 2 (ห้องสตูดิโอ)","ห้องประชุม อาคาร B ชั้น 1","ห้องประชุม อาคาร B ชั้น 2","ห้องประชุมศูนย์การเรียนรู้อาคาร D"];
 const DEPTS = ["กลุ่มนโยบายและแผน","กลุ่มประชาสัมพันธ์และสื่อสารองค์กร","กลุ่มงานสนับสนุน","กลุ่มวิชาการ","กลุ่มการเงินและบัญชี","กลุ่มบริหารทั่วไป","กลุ่มสารสนเทศ"];
 const VEHICLES = [{"plate":"ฮอ 4133","driver":"นายอดิศร แสงไชย"},{"plate":"ฮอ 2983","driver":"นายพิษณุพจน์ สิทธิธนาสกุล"}];
-
-const SEED_ROOMS = [{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-13","timeStart":"09:30","timeEnd":"12:00","dept":"นโยบายและแผน","requester":"จินตนา วรรณยง","purpose":"ประชุมคณะอนุกรรมการด้านนโยบายและแผนงาน","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-08","timeStart":"09:30","timeEnd":"11:00","dept":"นโยบายและแผน","requester":"จินตนา วรรณยง","purpose":"ประชุมสร้างความรู้ความเข้าใจการบริหารจัดการความเสี่ยง","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-07","timeStart":"09:30","timeEnd":"16:00","dept":"วิชาการ","requester":"ทิพจุฑา ชุนเกษา","purpose":"ประชุมยกร่างเครื่องมือการประเมิน Best Practice ของมูลนิธิฯ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-07","timeStart":"13:30","timeEnd":"","dept":null,"requester":null,"purpose":"ประชุมอนุกลั่นกรองพิจารณาการจัดจ้างใบงาน 2/68","note":""},{"room":"ห้องประชุม อาคาร B ชั้น 1","date":"2025-08-06","timeStart":"13:30","timeEnd":"","dept":"สนับสนุน","requester":"ณัฏฐา ปัดแก้ว","purpose":"ประชุมพิจารณาจัดจ้างใบงาน 2/68","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-08-04","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมหารือเกี่ยวกับการปรับปรุงอุปกรณ์ระบบออกอากาศสถานีฯ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-30","timeStart":"13:30","timeEnd":"16:30","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมติดตามความคืบหน้าในการพัฒนาระบบ DLTV Learning Platform ครั้งที่ 9","note":""},{"room":"ห้องประชุม อาคาร B ชั้น 1","date":"2025-07-29","timeStart":"11:00","timeEnd":"","dept":"วิชาการ","requester":"ศิริรัตน์  มูลไชยศรี","purpose":"ประชุมเฉพาะผู้ใหญ่","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-26","timeStart":"08:30","timeEnd":"16:30","dept":"สื่อสารองค์กร","requester":"สุวิมล วัฒนะพาณิชมงคล","purpose":"ประชุมลงพื้นที่ชุมชนร่วมกับ มรภ.บ้านสมเด็จ","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-07-23","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมคณะกรรมการตรวจรับ DLTV Learning Platform","note":""},{"room":"ห้องประชุม อาคาร A1 ชั้น 1","date":"2025-06-30","timeStart":"09:30","timeEnd":"12:00","dept":"สารสนเทศ","requester":"ช่อเพชร งามลาภ","purpose":"ประชุมติดตามความคืบหน้าในการพัฒนาระบบ DLTV Learning Platform ครั้งที่ 8","note":""}];
-
-const SEED_CARS = [{"requester":"นางสาวฐิติรัตนย์  มากใย","dept":"บริหารทั่วไป","purpose":"รับข้าวกลางวัน","destination":"ศาลเจ้าพ่อเสือ","numPeople":1,"date":"2024-12-13","timeStart":"10:20","timeEnd":"","plate":"ฮอ 2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"},{"requester":"นางวณิชญาย์ ทางธรรม","dept":"การเงินและบัญชี","purpose":"ธุรกรรมทางการเงิน","destination":"ธนาคารกรุงไทย","numPeople":1,"date":"2024-12-08","timeStart":"09:30","timeEnd":"","plate":"2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"},{"requester":"นางสาวช่อเพชร  งามลาภ","dept":"สารสนเทศ","purpose":"รับ - ส่ง แฟ้มเสนอลงนาม","destination":"กองกิจการในพระองค์ 904","numPeople":2,"date":"2024-02-01","timeStart":"13:30","timeEnd":"","plate":"ฮอ 2983","driver":"นายพิษณุพจน์  สิทธิธนาสกุล"}];
-
 const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const DOW_TH=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const ROOM_COLORS=['r0','r1','r2','r3','r4'];
@@ -779,8 +918,32 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function todayStr(){return ymd(new Date());}
 function fmtThaiDate(s){if(!s)return'-';const[y,m,d]=s.split('-').map(Number);if(!y||!m||!d)return'-';const adYear=y>2400?y-543:y;return `${pad(d)} ${MONTHS[m-1]} ${adYear+543}`;}
 function fmtTime(t){if(!t||t===''||t==='--:--')return '-';const[h,m]=t.split(':');const hi=parseInt(h,10),mi=parseInt(m||'0',10);if(isNaN(hi)||isNaN(mi))return '-';return `${pad(hi)}:${pad(mi)}`;}
+/* แสดงช่วงเวลา — ถ้าไม่มีทั้งคู่แสดง "ไม่ระบุเวลา" */
+function fmtTimeRange(s,e){
+  const ts=fmtTime(s), te=fmtTime(e);
+  if(ts==='-'&&te==='-') return 'ไม่ระบุเวลา';
+  if(te==='-') return ts+' น.';
+  return ts+' – '+te+' น.';
+}
 /* normDate: แปลง BE→AD ถ้า browser ส่งปีเกิน 2400 มา */
 function normDate(v){if(!v)return '';const p=v.split('-');if(p.length===3&&parseInt(p[0])>2400){p[0]=String(parseInt(p[0])-543);return p.join('-');}return v;}
+
+/* normalizeTime: แปลงค่าเวลาที่อาจมาจาก GAS (Date/number/string) → "HH:MM"
+   GAS อ่านเวลาจาก Sheets อาจส่งมาเป็น Date string หรือ fraction number */
+function normalizeTime(t){
+  if(!t||t===''||t===0) return '';
+  const s=String(t).trim();
+  // "HH:MM" อยู่แล้ว
+  if(/^\d{1,2}:\d{2}$/.test(s)){const[h,m]=s.split(':');return pad(parseInt(h,10))+':'+m.padStart(2,'0');}
+  // fraction number เช่น "0.375" = 09:00
+  const n=parseFloat(s);
+  if(!isNaN(n)&&n>0&&n<1){const tot=Math.round(n*24*60);return pad(Math.floor(tot/60)%24)+':'+pad(tot%60);}
+  // Date string จาก GAS เช่น "Sat Dec 30 1899 09:00:00 GMT+0700"
+  const d=new Date(s);
+  if(!isNaN(d.getTime())&&(d.getHours()!==0||d.getMinutes()!==0)){return pad(d.getHours())+':'+pad(d.getMinutes());}
+  return '';
+}
+function normBooking(x){return {...x,date:normDate(x.date||''),timeStart:normalizeTime(x.timeStart),timeEnd:normalizeTime(x.timeEnd)};}
 
 function escapeHtml(s){if(s===undefined||s===null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function roomColorClass(roomName){const i=ROOMS.indexOf(roomName);return i>=0?ROOM_COLORS[i%ROOM_COLORS.length]:'r0';}
@@ -796,8 +959,8 @@ async function loadData(){
       const r=await fetch(GAS_URL+'?action=data&t='+Date.now(),{cache:'no-store'});
       const j=await r.json();
       if(j.ok&&(j.rooms||j.cars)){
-        ROOM_BOOKINGS=(j.rooms||[]).map(x=>({...x,id:x.id||uid(),kind:'room',date:normDate(x.date||'')}));
-        CAR_BOOKINGS=(j.cars||[]).map(x=>({...x,id:x.id||uid(),kind:'car',date:normDate(x.date||'')}));
+        ROOM_BOOKINGS=(j.rooms||[]).map(x=>normBooking({...x,id:x.id||uid(),kind:'room'}));
+        CAR_BOOKINGS=(j.cars||[]).map(x=>normBooking({...x,id:x.id||uid(),kind:'car'}));
         try{localStorage.setItem('room_bookings',JSON.stringify(ROOM_BOOKINGS));localStorage.setItem('car_bookings',JSON.stringify(CAR_BOOKINGS));}catch(e){}
         return;
       }
@@ -806,8 +969,8 @@ async function loadData(){
   try{
     const rs=localStorage.getItem('room_bookings');
     const cs=localStorage.getItem('car_bookings');
-    ROOM_BOOKINGS=rs?JSON.parse(rs).map(x=>({...x,date:normDate(x.date||'')})):SEED_ROOMS.map(x=>({...x,id:uid(),kind:'room',attendees:x.attendees||1}));
-    CAR_BOOKINGS=cs?JSON.parse(cs).map(x=>({...x,date:normDate(x.date||'')})):SEED_CARS.map(x=>({...x,id:uid(),kind:'car'}));
+    ROOM_BOOKINGS=rs?JSON.parse(rs).map(x=>normBooking(x)):SEED_ROOMS.map(x=>({...x,id:uid(),kind:'room',attendees:x.attendees||1}));
+    CAR_BOOKINGS=cs?JSON.parse(cs).map(x=>normBooking(x)):SEED_CARS.map(x=>({...x,id:uid(),kind:'car'}));
   }catch(e){
     ROOM_BOOKINGS=SEED_ROOMS.map(x=>({...x,id:uid(),kind:'room',attendees:x.attendees||1}));
     CAR_BOOKINGS=SEED_CARS.map(x=>({...x,id:uid(),kind:'car'}));
@@ -884,7 +1047,7 @@ function upcomingCardHtml(e,kind){
     return `<div class="upcoming-card-lg rc${rc}" data-kind="room" data-id="${e.id}" style="border-left-color:${colorVar}">
       <div class="uc-top">
         <span class="uc-name">${escapeHtml(e.room)}</span>
-        <span class="uc-time" style="background:${softVar};color:${colorVar};">${fmtTime(e.timeStart)}–${fmtTime(e.timeEnd)}</span>
+        <span class="uc-time" style="background:${softVar};color:${colorVar};">${fmtTimeRange(e.timeStart,e.timeEnd)}</span>
       </div>
       <div class="uc-meta">
         <b style="color:var(--ink);">${escapeHtml(e.requester||'–')}</b>
@@ -896,7 +1059,7 @@ function upcomingCardHtml(e,kind){
     return `<div class="upcoming-card-lg" data-kind="car" data-id="${e.id}" style="border-left-color:var(--car);">
       <div class="uc-top">
         <span class="uc-name">${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span>
-        <span class="uc-time" style="background:var(--car-soft);color:var(--car-dark);">${fmtTime(e.timeStart)}–${fmtTime(e.timeEnd)}</span>
+        <span class="uc-time" style="background:var(--car-soft);color:var(--car-dark);">${fmtTimeRange(e.timeStart,e.timeEnd)}</span>
       </div>
       <div class="uc-meta">
         <b style="color:var(--ink);">${escapeHtml(e.requester||'–')}</b>
@@ -916,7 +1079,7 @@ function entryCardHtml(e,kind){
     return `<div class="day-card rc${rc}" data-kind="room" data-id="${e.id}">
       <div class="row1"><span>${escapeHtml(e.room)}</span><span class="badge r${rc}">${fmtThaiDate(e.date)}</span></div>
       <div class="meta">
-        <b>เวลา</b> ${fmtTime(e.timeStart)} – ${fmtTime(e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
+        <b>เวลา</b> ${fmtTimeRange(e.timeStart, e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
         <br><b>ผู้แจ้งขอใช้:</b> ${escapeHtml(e.requester||'')} &nbsp;·&nbsp; <b>ผู้เข้าร่วม:</b> ${e.attendees||1} คน<br>
         ${escapeHtml(e.purpose||'')}${(e.note&&e.note!=='-')?`<br><b>หมายเหตุ:</b> ${escapeHtml(e.note)}`:''}
       </div>
@@ -926,7 +1089,7 @@ function entryCardHtml(e,kind){
     return `<div class="day-card" data-kind="car" data-id="${e.id}">
       <div class="row1"><span>${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span><span class="badge car">${fmtThaiDate(e.date)}</span></div>
       <div class="meta">
-        <b>เวลา</b> ${fmtTime(e.timeStart)} – ${fmtTime(e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
+        <b>เวลา</b> ${fmtTimeRange(e.timeStart, e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
         <br><b>ผู้ขอ:</b> ${escapeHtml(e.requester||'')} (${e.numPeople||1} คน)<br>
         ${escapeHtml(e.purpose||'')} · ${escapeHtml(e.destination||'')}${companions}
       </div>
@@ -1093,6 +1256,11 @@ document.getElementById('form-tab-car').addEventListener('click',()=>{
   document.getElementById('inline-room-fields').classList.add('hidden');
   document.getElementById('inline-submit-label').textContent='บันทึกและส่งข้อมูลการจอง';
   document.body.classList.remove('mode-room'); document.body.classList.add('mode-car');
+  // ensure time defaults
+  const ts=document.getElementById('i-car-time-start');
+  const te=document.getElementById('i-car-time-end');
+  if(ts&&!ts.value)ts.value='09:00';
+  if(te&&!te.value)te.value='12:00';
 });
 
 /* ── Inline companions ── */
@@ -1172,7 +1340,7 @@ function showPreview(kind,entry){
   document.getElementById('preview-title').textContent=kind==='room'?(entry.room||'–'):`${entry.plate||'–'} — ${entry.driver||'–'}`;
   // Time block
   document.getElementById('preview-date-str').textContent=fmtThaiDate(entry.date);
-  document.getElementById('preview-time-str').textContent=`${fmtTime(entry.timeStart)} – ${fmtTime(entry.timeEnd)} น.`;
+  document.getElementById('preview-time-str').textContent=fmtTimeRange(entry.timeStart, entry.timeEnd);
   // Main section
   const main=document.getElementById('preview-section-main');
   if(kind==='room'){
@@ -1471,7 +1639,176 @@ function setupTimeInputs(){
   await loadData();
   renderAll();
   setupGasSync();
+  setupDashboard();
 })();
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════ */
+let dashCharts={};
+let dashVisible=false;
+
+function setupDashboard(){
+  const btn=document.getElementById('dash-toggle-btn');
+  const panel=document.getElementById('dashboard-panel');
+  btn.addEventListener('click',()=>{
+    dashVisible=!dashVisible;
+    panel.classList.toggle('hidden',!dashVisible);
+    btn.classList.toggle('active',dashVisible);
+    if(dashVisible){ renderDashboard(); lucide.createIcons(); }
+  });
+  document.getElementById('export-pdf-btn').addEventListener('click',()=>{
+    document.getElementById('print-date-range').textContent=
+      'พิมพ์เมื่อ: '+new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    window.print();
+  });
+}
+
+function renderDashboard(){
+  renderKPI();
+  renderMonthlyChart();
+  renderRoomsChart();
+  renderDeptsChart();
+  renderSummaryTable();
+}
+
+/* ── KPI Cards ── */
+function renderKPI(){
+  const now=new Date();
+  const thisMonth=`${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+  const roomThisMonth=ROOM_BOOKINGS.filter(b=>(b.date||'').startsWith(thisMonth)).length;
+  const carThisMonth =CAR_BOOKINGS.filter(b=>(b.date||'').startsWith(thisMonth)).length;
+
+  // Most active dept
+  const deptCount={};
+  [...ROOM_BOOKINGS,...CAR_BOOKINGS].forEach(b=>{if(b.dept)deptCount[b.dept]=(deptCount[b.dept]||0)+1;});
+  const topDept=Object.entries(deptCount).sort((a,b)=>b[1]-a[1])[0];
+
+  // Most popular room
+  const roomCount={};
+  ROOM_BOOKINGS.forEach(b=>{if(b.room)roomCount[b.room]=(roomCount[b.room]||0)+1;});
+  const topRoom=Object.entries(roomCount).sort((a,b)=>b[1]-a[1])[0];
+
+  const kpis=[
+    {cls:'kpi-room',icon:'building-2',num:ROOM_BOOKINGS.length,label:'จองห้องประชุม (ทั้งหมด)',sub:`เดือนนี้ ${roomThisMonth} รายการ`},
+    {cls:'kpi-car', icon:'car',       num:CAR_BOOKINGS.length, label:'ขอใช้รถยนต์ (ทั้งหมด)', sub:`เดือนนี้ ${carThisMonth} รายการ`},
+    {cls:'kpi-month',icon:'calendar-check',num:roomThisMonth+carThisMonth,label:'รวมเดือนนี้',sub:new Date().toLocaleDateString('th-TH',{month:'long',year:'numeric'})},
+    {cls:'kpi-dept',icon:'users',     num:Object.keys(deptCount).length, label:'กลุ่มงานที่ใช้บริการ',sub:topDept?`มากสุด: ${topDept[0]} (${topDept[1]}ครั้ง)`:'—'},
+    {cls:'kpi-top', icon:'star',      num:topRoom?topRoom[1]:0, label:'ห้องยอดนิยม (ครั้ง)',sub:topRoom?shortRoom(topRoom[0]):'—'},
+  ];
+  document.getElementById('dash-kpi-row').innerHTML=kpis.map(k=>`
+    <div class="dash-kpi ${k.cls}">
+      <div class="dash-kpi-icon"><i data-lucide="${k.icon}"></i></div>
+      <div class="dash-kpi-num">${k.num}</div>
+      <div class="dash-kpi-label">${k.label}</div>
+      <div class="dash-kpi-sub" title="${k.sub}">${k.sub}</div>
+    </div>`).join('');
+}
+
+function shortRoom(name){
+  return name.replace('ห้องประชุม ','').replace('อาคาร ','อาคาร').substring(0,22)+(name.length>22?'…':'');
+}
+
+/* ── Monthly trend chart ── */
+function renderMonthlyChart(){
+  const labels=[], roomData=[], carData=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const ym=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+    labels.push(d.toLocaleDateString('th-TH',{month:'short',year:'2-digit'}));
+    roomData.push(ROOM_BOOKINGS.filter(b=>(b.date||'').startsWith(ym)).length);
+    carData.push(CAR_BOOKINGS.filter(b=>(b.date||'').startsWith(ym)).length);
+  }
+  destroyChart('monthly');
+  const ctx=document.getElementById('chart-monthly').getContext('2d');
+  dashCharts.monthly=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'ห้องประชุม',data:roomData,backgroundColor:'rgba(91,92,246,.75)',borderRadius:7,borderSkipped:false},
+        {label:'รถยนต์',data:carData,backgroundColor:'rgba(59,194,176,.75)',borderRadius:7,borderSkipped:false},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12,padding:12}},tooltip:{cornerRadius:10}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{grid:{color:'#F3F4F6'},ticks:{font:{size:10},stepSize:1,precision:0},beginAtZero:true}
+      }
+    }
+  });
+}
+
+/* ── Rooms doughnut chart ── */
+function renderRoomsChart(){
+  const roomCount={};
+  ROOM_BOOKINGS.forEach(b=>{if(b.room){const k=shortRoom(b.room);roomCount[k]=(roomCount[k]||0)+1;}});
+  const entries=Object.entries(roomCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const COLORS=['#5B5CF6','#F59E0B','#10B981','#EC4899','#3B82F6','#8B5CF6'];
+  destroyChart('rooms');
+  if(!entries.length){document.getElementById('chart-rooms').parentElement.innerHTML='<div style="height:220px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:.78rem;">ยังไม่มีข้อมูล</div>';return;}
+  const ctx=document.getElementById('chart-rooms').getContext('2d');
+  dashCharts.rooms=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:COLORS,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:10}},tooltip:{cornerRadius:10}}
+    }
+  });
+}
+
+/* ── Departments bar chart ── */
+function renderDeptsChart(){
+  const deptCount={};
+  [...ROOM_BOOKINGS,...CAR_BOOKINGS].forEach(b=>{if(b.dept)deptCount[b.dept]=(deptCount[b.dept]||0)+1;});
+  const entries=Object.entries(deptCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  destroyChart('depts');
+  if(!entries.length){document.getElementById('chart-depts').parentElement.innerHTML='<div style="height:220px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:.78rem;">ยังไม่มีข้อมูล</div>';return;}
+  const ctx=document.getElementById('chart-depts').getContext('2d');
+  dashCharts.depts=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:entries.map(e=>e[0].length>8?e[0].slice(0,8)+'…':e[0]),
+      datasets:[{label:'จำนวนการจอง',data:entries.map(e=>e[1]),backgroundColor:'rgba(139,92,246,.72)',borderRadius:6,borderSkipped:false}]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{cornerRadius:10,callbacks:{title:ctx=>{const i=ctx[0].dataIndex;return entries[i][0];}}}},
+      scales:{
+        x:{grid:{color:'#F3F4F6'},ticks:{font:{size:10},precision:0},beginAtZero:true},
+        y:{grid:{display:false},ticks:{font:{size:10}}}
+      }
+    }
+  });
+}
+
+/* ── Summary table ── */
+function renderSummaryTable(){
+  const all=[
+    ...ROOM_BOOKINGS.map(b=>({...b,_kind:'room'})),
+    ...CAR_BOOKINGS.map(b=>({...b,_kind:'car'}))
+  ].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  document.getElementById('dash-table-body').innerHTML=all.map(b=>`
+    <tr>
+      <td><span class="kind-badge ${b._kind}">${b._kind==='room'?'🏢 ห้อง':'🚗 รถ'}</span></td>
+      <td style="white-space:nowrap">${fmtThaiDate(b.date)}</td>
+      <td style="white-space:nowrap;font-family:'Inter',sans-serif;font-size:.72rem;">${fmtTimeRange(b.timeStart,b.timeEnd)}</td>
+      <td>${b._kind==='room'?(b.room||'—'):(b.plate||'—')}</td>
+      <td>${b.requester||'—'}</td>
+      <td>${b.dept||'—'}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${b.purpose||'—'}</td>
+    </tr>`).join('');
+}
+
+function destroyChart(key){
+  if(dashCharts[key]){dashCharts[key].destroy();delete dashCharts[key];}
+}
+
 </script>
 </body>
 </html>
