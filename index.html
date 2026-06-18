@@ -13,11 +13,18 @@
 <style>
 :root {
   --bg:         #d9e5e6;
-background-image:
-  radial-gradient(circle at 0% 0%, #dce8ff88 0%, transparent 45%),
-  radial-gradient(circle at 100% 100%, #e8d5ff66 0%, transparent 40%),
-  radial-gradient(circle at 60% 20%, #d0f0ff44 0%, transparent 35%);
-background-attachment: fixed;
+  body {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 30%, #fdf4ff 60%, #f0fdf4 100%);
+  background-size: 400% 400%;
+  animation: bgShift 12s ease infinite;
+  min-height: 100vh;
+  margin: 0;
+}
+@keyframes bgShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
   --panel:      #FFFFFF;
   --ink:        #0C1524;
   --muted:      #6B7280;
@@ -58,17 +65,13 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-body {
-  background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 30%, #fdf4ff 60%, #f0fdf4 100%);
-  background-size: 400% 400%;
-  animation: bgShift 12s ease infinite;
-  min-height: 100vh;
-  margin: 0;
-}
-@keyframes bgShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: var(--bg)
+    radial-gradient(ellipse 55% 45% at 85% 8%, rgba(var(--accent-r),var(--accent-g),var(--accent-b),.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 5% 90%, rgba(16,185,129,.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
 }
 
 /* ─── LAYOUT ─── */
@@ -86,43 +89,48 @@ body {
 .brand-ico i { width:19px;height:19px; }
 .brand-name { font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.03em;color:var(--ink);line-height:1; }
 .brand-sub  { font-size:.7rem;color:var(--muted);margin-top:3px;font-weight:500; }
-#date-label { font-size:.8rem;color:var(--muted);font-weight:600;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 16px;box-shadow:var(--sh1);white-space:nowrap; }
+#date-label { font-size:.8rem;color:#fff;font-weight:600;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);border:none;border-radius:999px;padding:7px 18px;box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35);white-space:nowrap; }
 
 /* ─── MAIN 3-COLUMN GRID ─── */
 .main-grid {
   display:grid;
-  grid-template-columns:290px 1fr 270px;
+  grid-template-columns:600px 1fr 700px;
   gap:18px;
   margin-bottom:20px;
-  align-items:start;
+  align-items:stretch;
 }
-@media(max-width:1200px){ .main-grid{ grid-template-columns:250px 1fr 240px; } }
+@media(max-width:1200px){ .main-grid{ grid-template-columns:200px 1fr 340px; } }
 @media(max-width:900px) { .main-grid{ grid-template-columns:1fr; } }
 
 /* ─── CALENDAR COLUMN ─── */
 .cal-col .cal-inner { padding:14px 14px 0; }
 .cal-col .cal-inner .cal-header { margin-bottom:10px; }
-.cal-col #cal-day-list { padding:10px 14px 14px; max-height:300px; overflow-y:auto; }
+.cal-col #cal-day-list { padding:10px 14px 14px; max-height:none; overflow-y:auto; }
 .cal-col .cal-list-head { margin-bottom:8px; }
 .cal-col #cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
 .cal-col .cal-cell { min-height:34px;border-radius:8px;padding:5px 3px 3px; }
 .cal-col .cal-cell .num { font-size:.66rem; }
 
 /* ─── PANEL ─── */
-.panel { background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh2);overflow:hidden; }
+.panel { background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh2);overflow:hidden;height:100%; }
 
 /* ─── INLINE TABS (form) ─── */
-.form-tabs { display:flex; border-bottom:1px solid var(--line); }
+.form-tabs { display:flex; border-bottom:1px solid var(--line); background:#F8F9FB; }
 .form-tab {
   flex:1; padding:14px 10px; text-align:center;
   font-size:.84rem;font-weight:700;color:var(--muted);
   cursor:pointer;border:none;background:transparent;
   border-bottom:3px solid transparent;margin-bottom:-1px;
-  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease);
+  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease);
   display:flex;align-items:center;justify-content:center;gap:7px;
 }
 .form-tab i { width:16px;height:16px; }
-.form-tab.active { color:var(--accent);border-bottom-color:var(--accent); }
+.form-tab.active {
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+  background:#fff;
+  box-shadow:inset 0 2px 0 var(--accent);
+}
 
 /* ─── INLINE FORM ─── */
 .inline-form { padding:20px 22px 22px; }
@@ -159,9 +167,9 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .btn-submit i { width:17px;height:17px; }
 
 /* ─── RIGHT PANEL: stats ─── */
-.stats-col { display:flex;flex-direction:column;gap:14px; }
+.stats-col { display:flex;flex-direction:column;gap:14px;height:100%; }
 
-.stat-cards { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.stat-cards { display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-shrink:0; }
 .stat-card {
   background:var(--panel);border:1px solid var(--line);border-radius:16px;
   padding:16px 18px;box-shadow:var(--sh1);
@@ -184,7 +192,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .live-dot { width:8px;height:8px;border-radius:50%;background:#F59E0B;flex-shrink:0;animation:pulse 2s infinite; }
 @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
 .count-badge { font-size:.72rem;font-weight:700;background:#F3F4F6;color:var(--muted);padding:3px 10px;border-radius:999px; }
-.recent-list { padding:12px 14px;max-height:380px;overflow-y:auto; }
+.recent-list { padding:12px 14px;max-height:none;overflow-y:auto; }
 .upcoming-day-label { font-size:.68rem;font-weight:700;color:var(--muted);letter-spacing:.06em;font-family:'Inter',sans-serif;margin:10px 0 5px;padding-left:2px; }
 .upcoming-day-label:first-child { margin-top:0; }
 .upcoming-today-pill { display:inline-block;background:var(--accent-soft);color:var(--accent);font-size:.65rem;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle; }
@@ -320,20 +328,132 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .toast.show { opacity:1;transform:translateY(0); }
 
 /* ─── POPUP ─── */
-.popup-overlay { position:fixed;inset:0;background:rgba(12,21,36,.45);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .22s var(--ease); }
-.popup-overlay.show { opacity:1;pointer-events:all; }
-.popup-box { background:#fff;border-radius:20px;box-shadow:var(--sh3);padding:28px 32px;max-width:380px;width:90%;text-align:center;transform:scale(.92) translateY(14px);transition:transform .28s var(--spring); }
-.popup-overlay.show .popup-box { transform:none; }
-.popup-icon { width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem; }
-.popup-icon.success { background:#E6FAF1;color:#10B981; }
-.popup-icon.error   { background:#FEF2F2;color:#DC2626; }
-.popup-icon.info    { background:#EEF2FF;color:#5B5CF6; }
-.popup-icon.warning { background:#FEF9E7;color:#F59E0B; }
-.popup-title { font-family:'Inter',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:8px; }
-.popup-msg   { font-size:.84rem;color:var(--muted);line-height:1.6;margin-bottom:20px; }
-.popup-btn { display:inline-flex;align-items:center;justify-content:center;padding:10px 28px;border-radius:11px;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:white;box-shadow:0 4px 12px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.3);transition:all var(--dur) var(--ease); }
-.popup-btn:hover { transform:translateY(-1px); }
-.popup-btn.secondary { background:#F5F6FA;color:var(--muted);box-shadow:none;border:1.5px solid var(--line);margin-right:8px; }
+
+/* ─── POPUP OVERLAY ─── */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  padding: 20px;
+}
+
+.popup-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ─── POPUP BOX ─── */
+.popup-box {
+  width: min(460px, 100%);
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.7);
+  border-radius: 28px;
+  box-shadow: 
+    0 10px 15px -3px rgba(15, 23, 42, 0.05),
+    0 25px 50px -12px rgba(15, 23, 42, 0.12); /* เงาฟุ้งนุ่มนวลแบบโมเดิร์น */
+  padding: 42px 36px 34px;
+  text-align: center;
+  transform: scale(.95) translateY(10px);
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-overlay.show .popup-box {
+  transform: scale(1) translateY(0);
+}
+
+/* แถบสีด้านบนสุดของการ์ด */
+.popup-box::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: linear-gradient(90deg, #34D399, #10B981, #059669);
+}
+
+/* ─── SUCCESS IMAGE ICON (ปรับปรุงเพื่อรูปภาพ PNG) ─── */
+.popup-icon.success {
+  width: 150px;
+  height: 150px;
+  border-radius: 24px; /* ทรงมนสี่เหลี่ยมสไตล์แอป iOS เข้ากับไอคอน Flat Design */
+  background: #F0FDF4; /* พื้นหลังสีเขียวมิ้นต์พาสเทลจางๆ */
+  border: 1px solid #DCFCE7;
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.12); /* เงาสีเขียวสะท้อนเบาๆ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  padding: 16px; /* เว้นขอบไม่ให้ตัวรูปภาพชิดกรอบเกินไป */
+  box-sizing: border-box;
+}
+
+.popup-icon.success img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ควบคุมให้สัดส่วนรูปภาพคงเดิมและไม่บิดเบี้ยว */
+}
+
+/* ─── TEXT ─── */
+.popup-title {
+  font-family: 'Inter', 'Noto Sans Thai', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.popup-msg {
+  font-family: 'Noto Sans Thai', sans-serif;
+  font-size: .95rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 30px;
+  white-space: pre-wrap;
+}
+
+/* ─── BUTTONS ─── */
+.popup-btn-group {
+  display: flex;
+  justify-content: center;
+}
+
+.popup-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 180px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: 'Noto Sans Thai', sans-serif;
+  font-size: .95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%); /* ไล่เฉดสีเขียวให้ดูมีมิติพรีเมียม */
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  transition: all .2s ease;
+}
+
+.popup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35);
+  filter: brightness(1.03);
+}
+
+.popup-btn:active {
+  transform: translateY(1px);
+}
 
 /* ─── MODAL ─── */
 .modal-backdrop { position:fixed;inset:0;background:rgba(12,21,36,.52);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50; }
@@ -390,15 +510,15 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .preview-kind-badge { display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:8px; }
 .preview-kind-badge.room { background:var(--room-soft);color:var(--room); }
 .preview-kind-badge.car  { background:var(--car-soft);color:var(--car-dark); }
-.preview-title { font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.025em;color:var(--ink);line-height:1.3; }
+.preview-title { font-family:'Noto Sans Thai',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:0;color:var(--ink);line-height:1.3; }
 .preview-body { padding:0 22px 22px; }
 .preview-section { margin-bottom:16px;padding:14px 16px;background:#F8F9FB;border-radius:14px; }
 .preview-section:last-child { margin-bottom:0; }
 .preview-row { display:flex;gap:8px;margin-bottom:8px;align-items:flex-start; }
 .preview-row:last-child { margin-bottom:0; }
-.preview-label { font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-family:'Inter',sans-serif;min-width:100px;padding-top:1px; }
-.preview-val { font-size:.84rem;color:var(--ink);font-weight:500;flex:1;line-height:1.5; }
-.preview-time-block { display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:6px 12px;font-family:'Inter',sans-serif;font-weight:800;font-size:.9rem;margin-bottom:12px; }
+.preview-label { font-size:.82rem;font-weight:700;color:var(--muted);font-family:'Noto Sans Thai',sans-serif;min-width:110px;padding-top:1px; }
+.preview-val { font-size:.92rem;color:var(--ink);font-weight:500;flex:1;line-height:1.5;font-family:'Noto Sans Thai',sans-serif; }
+.preview-time-block { display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:6px 12px;font-family:'Noto Sans Thai',sans-serif;font-weight:800;font-size:.95rem;margin-bottom:12px; }
 .preview-foot { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 22px;border-top:1px solid var(--line); }
 .btn-preview-edit { display:inline-flex;align-items:center;gap:7px;padding:10px 20px;background:var(--accent);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.36);transition:all var(--dur) var(--ease); }
 .btn-preview-edit:hover { transform:translateY(-2px); }
@@ -524,16 +644,18 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <p id="date-label"></p>
+      <button id="gas-cfg-btn" class="dash-btn" title="ตั้งค่า Google Apps Script URL">
+        <i data-lucide="settings-2"></i><span id="gas-status-hd">⚙️ Sheet</span>
+      </button>
+      <button id="gas-refresh-btn" class="dash-btn" title="โหลดข้อมูลจาก Google Sheet">
+        <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
+      </button>
+      <button id="gas-sync-btn" class="dash-btn" title="ซิ้งค์ข้อมูลไป Google Sheet">
+        <i data-lucide="cloud-upload"></i><span>ซิ้งค์ Sheet</span>
+      </button>
       <button id="dash-toggle-btn" class="dash-btn" title="ดูสถิติ Dashboard">
         <i data-lucide="bar-chart-2"></i><span>สถิติ</span>
       </button>
-      <button id="gas-refresh-btn" class="btn-add" style="background:#6B7280;box-shadow:none;padding:7px 14px;" title="โหลดข้อมูลล่าสุดจาก Google Sheet">
-        <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
-      </button>
-      <button id="gas-sync-btn" class="btn-add" style="background:var(--car-dark);box-shadow:none;padding:7px 14px;">
-        <i data-lucide="cloud-upload"></i><span>ซิ้งค์ Sheet</span>
-      </button>
-      <button id="gas-cfg-btn" class="icon-btn" title="ตั้งค่า GAS URL"><i data-lucide="settings"></i></button>
     </div>
   </header>
 
@@ -892,7 +1014,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 
 <div id="gas-config-panel" class="gas-config-panel" style="position:fixed;bottom:70px;right:22px;width:340px;z-index:100;">
   <label class="gas-config-label">Google Apps Script Web App URL</label>
-  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbwKLQD2oomrk6Mhj0GHiEcXzEowcX8Ju9Bjt_-yStKsAALBDHzu3PHRa25GcnhQsyRoMw/exec">
+  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbw7K3QGHWq-TrzzwOFQ_49fJISK66OGoMne4_GV6tHgF7GPSqJxWJq-WWvVtFeIErFI3Q/exec">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
     <span id="gas-status-badge" class="gas-status none">● ยังไม่ได้ตั้งค่า</span>
     <div style="display:flex;gap:6px;">
@@ -902,11 +1024,18 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   </div>
 </div>
 
+
 <script>
+
 /* ── DATA ── */
 const ROOMS = ["ห้องประชุม อาคาร A ชั้น 1","ห้องประชุม อาคาร A1 ชั้น 2 (ห้องสตูดิโอ)","ห้องประชุม อาคาร B ชั้น 1","ห้องประชุม อาคาร B ชั้น 2","ห้องประชุมศูนย์การเรียนรู้อาคาร D"];
 const DEPTS = ["กลุ่มนโยบายและแผน","กลุ่มประชาสัมพันธ์และสื่อสารองค์กร","กลุ่มงานสนับสนุน","กลุ่มวิชาการ","กลุ่มการเงินและบัญชี","กลุ่มบริหารทั่วไป","กลุ่มสารสนเทศ"];
 const VEHICLES = [{"plate":"ฮอ 4133","driver":"นายอดิศร แสงไชย"},{"plate":"ฮอ 2983","driver":"นายพิษณุพจน์ สิทธิธนาสกุล"}];
+
+const SEED_ROOMS = [{}];
+
+const SEED_CARS = [{}];
+
 const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const DOW_TH=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const ROOM_COLORS=['r0','r1','r2','r3','r4'];
@@ -981,7 +1110,13 @@ async function saveCars(){try{localStorage.setItem('car_bookings',JSON.stringify
 function autoSyncGas(){
   if(!GAS_URL)return;
   const body='payload='+encodeURIComponent(JSON.stringify({rooms:ROOM_BOOKINGS,cars:CAR_BOOKINGS}));
-  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body}).catch(()=>{});
+  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body})
+    .then(()=>{
+      const now=new Date();
+      lastSyncTime=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+      updateGasStatusBadge();
+    })
+    .catch(err=>console.warn('GAS sync error:',err));
 }
 
 /* ── Populate selects ── */
@@ -1562,11 +1697,18 @@ document.getElementById('popup-cancel-btn').addEventListener('click',()=>closePo
 document.getElementById('popup-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('popup-overlay'))closePopup(false);});
 
 /* ── GAS Sync ── */
+let lastSyncTime=null;
 function updateGasStatusBadge(){
   const badge=document.getElementById('gas-status-badge');
-  if(!badge)return;
-  if(GAS_URL){badge.className='gas-status ok';badge.textContent='● URL ตั้งค่าแล้ว';}
-  else{badge.className='gas-status none';badge.textContent='● ยังไม่ได้ตั้งค่า';}
+  const hd=document.getElementById('gas-status-hd');
+  if(badge){
+    if(GAS_URL){badge.className='gas-status ok';badge.textContent=lastSyncTime?'● ซิ้งค์ล่าสุด '+lastSyncTime:'● URL ตั้งค่าแล้ว';}
+    else{badge.className='gas-status none';badge.textContent='● ยังไม่ได้ตั้งค่า';}
+  }
+  if(hd){
+    if(GAS_URL){hd.textContent=lastSyncTime?'✅ '+lastSyncTime:'⚙️ Sheet';}
+    else{hd.textContent='⚙️ Sheet';}
+  }
 }
 function setupGasSync(){
   const btn=document.getElementById('gas-sync-btn');
@@ -1576,13 +1718,13 @@ function setupGasSync(){
   const urlInput=document.getElementById('gas-url-input');
   const saveBtn=document.getElementById('gas-url-save');
   const cancelBtn=document.getElementById('gas-url-cancel');
-  urlInput.value=GAS_URL; updateGasStatusBadge();
-  cfgBtn.addEventListener('click',()=>{urlInput.value=GAS_URL;cfgPanel.classList.toggle('show');});
-  cancelBtn.addEventListener('click',()=>cfgPanel.classList.remove('show'));
-  saveBtn.addEventListener('click',async()=>{
-    const url=urlInput.value.trim(); GAS_URL=url;
+  if(urlInput){urlInput.value=GAS_URL;} updateGasStatusBadge();
+  if(cfgBtn)cfgBtn.addEventListener('click',()=>{if(urlInput)urlInput.value=GAS_URL;if(cfgPanel)cfgPanel.classList.toggle('show');});
+  if(cancelBtn)cancelBtn.addEventListener('click',()=>{if(cfgPanel)cfgPanel.classList.remove('show');});
+  if(saveBtn)saveBtn.addEventListener('click',async()=>{
+    const url=urlInput?urlInput.value.trim():''; GAS_URL=url;
     try{localStorage.setItem('gas_url',url);}catch(e){}
-    cfgPanel.classList.remove('show'); updateGasStatusBadge();
+    if(cfgPanel)cfgPanel.classList.remove('show'); updateGasStatusBadge();
     if(url){await loadData();renderAll();await showPopup({type:'success',title:'บันทึก URL แล้ว ✓',msg:'โหลดข้อมูลจาก Google Sheet เรียบร้อย\n🏢 ห้องประชุม: '+ROOM_BOOKINGS.length+' รายการ\n🚗 รถยนต์: '+CAR_BOOKINGS.length+' รายการ'});}
     else await showPopup({type:'success',title:'บันทึกแล้ว',msg:'ล้าง GAS URL แล้ว ระบบจะใช้ข้อมูลใน localStorage แทน'});
   });
@@ -1594,12 +1736,12 @@ function setupGasSync(){
       catch(err){if(sp)sp.textContent='โหลดใหม่';refreshBtn.disabled=false;await showPopup({type:'error',title:'โหลดล้มเหลว',msg:'ไม่สามารถโหลดข้อมูลจาก GAS: '+err.message});}
     });
   }
-  btn.addEventListener('click',async()=>{
+  if(btn)btn.addEventListener('click',async()=>{
     if(!GAS_URL){await showPopup({type:'warning',title:'ยังไม่ได้ตั้งค่า GAS URL',msg:'กรุณากด ⚙️ เพื่อวาง Google Apps Script Web App URL ก่อนซิ้งค์'});return;}
     btn.disabled=true;const sp=btn.querySelector('span');if(sp)sp.textContent='กำลังซิ้งค์...';
     try{
       const body='payload='+encodeURIComponent(JSON.stringify({rooms:ROOM_BOOKINGS,cars:CAR_BOOKINGS}));
-      await fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body});
+      await fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
       if(sp)sp.textContent='ซิ้งค์ Sheet';btn.disabled=false;
       await showPopup({type:'success',title:'ซิ้งค์สำเร็จ ✓',msg:'ส่งข้อมูลไปยัง Google Sheet แล้ว\n🏢 ห้องประชุม: '+ROOM_BOOKINGS.length+' รายการ\n🚗 รถยนต์: '+CAR_BOOKINGS.length+' รายการ'});
     }catch(err){if(sp)sp.textContent='ซิ้งค์ Sheet';btn.disabled=false;await showPopup({type:'error',title:'ซิ้งค์ล้มเหลว',msg:'เกิดข้อผิดพลาด: '+err.message});}
@@ -1809,6 +1951,78 @@ function destroyChart(key){
   if(dashCharts[key]){dashCharts[key].destroy();delete dashCharts[key];}
 }
 
+// ===== ANIMATED PARTICLES BACKGROUND =====
+(function() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'dltv-particles';
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+  document.body.insertBefore(canvas, document.body.firstChild);
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = ['#818cf8','#a5b4fc','#93c5fd','#c4b5fd','#86efac','#fca5a5','#fcd34d'];
+  const particles = Array.from({length: 22}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 3 + Math.random() * 5,
+    dx: (Math.random() - 0.5) * 0.5,
+    dy: (Math.random() - 0.5) * 0.5,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    alpha: 0.12 + Math.random() * 0.18,
+  }));
+
+  // Also add large soft blobs
+  const blobs = Array.from({length: 5}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 120 + Math.random() * 180,
+    dx: (Math.random() - 0.5) * 0.25,
+    dy: (Math.random() - 0.5) * 0.25,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+  }));
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw blobs
+    blobs.forEach(b => {
+      b.x += b.dx; b.y += b.dy;
+      if (b.x < -b.r) b.x = canvas.width + b.r;
+      if (b.x > canvas.width + b.r) b.x = -b.r;
+      if (b.y < -b.r) b.y = canvas.height + b.r;
+      if (b.y > canvas.height + b.r) b.y = -b.r;
+      const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+      g.addColorStop(0, b.color + '22');
+      g.addColorStop(1, b.color + '00');
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+
+    // Draw particles
+    particles.forEach(p => {
+      p.x += p.dx; p.y += p.dy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + Math.round(p.alpha * 255).toString(16).padStart(2,'0');
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>
