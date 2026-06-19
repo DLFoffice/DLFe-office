@@ -371,7 +371,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   transform: scale(1) translateY(0);
 }
 
-/* แถบสีด้านบนสุดของการ์ด */
+/* แถบสีด้านบนสุด — เปลี่ยนตาม data-type */
 .popup-box::before {
   content: "";
   position: absolute;
@@ -379,28 +379,36 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   height: 5px;
   background: linear-gradient(90deg, #34D399, #10B981, #059669);
 }
+.popup-box[data-type="error"]::before   { background: linear-gradient(90deg,#F87171,#EF4444,#DC2626); }
+.popup-box[data-type="warning"]::before { background: linear-gradient(90deg,#FCD34D,#F59E0B,#D97706); }
+.popup-box[data-type="info"]::before    { background: linear-gradient(90deg,#93C5FD,#3B82F6,#2563EB); }
+.popup-box[data-type="success"]::before { background: linear-gradient(90deg,#34D399,#10B981,#059669); }
 
-/* ─── SUCCESS IMAGE ICON (ปรับปรุงเพื่อรูปภาพ PNG) ─── */
-.popup-icon.success {
-  width: 150px;
-  height: 150px;
-  border-radius: 24px; /* ทรงมนสี่เหลี่ยมสไตล์แอป iOS เข้ากับไอคอน Flat Design */
-  background: #F0FDF4; /* พื้นหลังสีเขียวมิ้นต์พาสเทลจางๆ */
-  border: 1px solid #DCFCE7;
-  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.12); /* เงาสีเขียวสะท้อนเบาๆ */
+/* ─── POPUP ICON ─── */
+.popup-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px;
-  padding: 16px; /* เว้นขอบไม่ให้ตัวรูปภาพชิดกรอบเกินไป */
-  box-sizing: border-box;
+  margin: 0 auto 22px;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
 }
+.popup-overlay.show .popup-icon { transform: scale(1.08); }
+.popup-icon svg { width: 44px; height: 44px; stroke-width: 2; }
 
-.popup-icon.success img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* ควบคุมให้สัดส่วนรูปภาพคงเดิมและไม่บิดเบี้ยว */
-}
+.popup-icon.success { background:#F0FDF4; border:2px solid #DCFCE7; box-shadow:0 8px 24px rgba(16,185,129,.18); }
+.popup-icon.success svg { stroke:#10B981; }
+
+.popup-icon.error   { background:#FFF1F2; border:2px solid #FFE4E6; box-shadow:0 8px 24px rgba(239,68,68,.18); }
+.popup-icon.error svg   { stroke:#EF4444; }
+
+.popup-icon.warning { background:#FFFBEB; border:2px solid #FEF3C7; box-shadow:0 8px 24px rgba(245,158,11,.18); }
+.popup-icon.warning svg { stroke:#F59E0B; }
+
+.popup-icon.info    { background:#EFF6FF; border:2px solid #DBEAFE; box-shadow:0 8px 24px rgba(59,130,246,.18); }
+.popup-icon.info svg    { stroke:#3B82F6; }
 
 /* ─── TEXT ─── */
 .popup-title {
@@ -439,16 +447,18 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   font-weight: 600;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%); /* ไล่เฉดสีเขียวให้ดูมีมิติพรีเมียม */
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   color: #fff;
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
   transition: all .2s ease;
 }
+.popup-btn.type-error   { background:linear-gradient(135deg,#EF4444,#DC2626); box-shadow:0 6px 16px rgba(239,68,68,.25); }
+.popup-btn.type-warning { background:linear-gradient(135deg,#F59E0B,#D97706); box-shadow:0 6px 16px rgba(245,158,11,.25); }
+.popup-btn.type-info    { background:linear-gradient(135deg,#3B82F6,#2563EB); box-shadow:0 6px 16px rgba(59,130,246,.25); }
 
 .popup-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35);
-  filter: brightness(1.03);
+  filter: brightness(1.07);
 }
 
 .popup-btn:active {
@@ -1863,17 +1873,47 @@ document.addEventListener('keydown',e=>{
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2600);}
 
 /* ── Popup ── */
+/* Lucide SVG paths for popup icons */
+const POPUP_ICONS = {
+  success: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  error: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="15" y1="9" x2="9" y2="15" stroke-linecap="round"/>
+    <line x1="9" y1="9" x2="15" y2="15" stroke-linecap="round"/>
+  </svg>`,
+  warning: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="12" y1="9" x2="12" y2="13" stroke-linecap="round"/>
+    <line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round"/>
+  </svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round"/>
+    <line x1="12" y1="16" x2="12.01" y2="16" stroke-linecap="round"/>
+  </svg>`
+};
+
 let _popupResolve=null;
 function showPopup({type='info',title='',msg='',okLabel='ตกลง',cancelLabel=null}){
   return new Promise(resolve=>{
     _popupResolve=resolve;
     const overlay=document.getElementById('popup-overlay');
-    const icons={success:'✓',error:'✕',info:'ℹ',warning:'⚠'};
-    document.getElementById('popup-icon').className=`popup-icon ${type}`;
-    document.getElementById('popup-icon').textContent=icons[type]||'ℹ';
+    const box=overlay.querySelector('.popup-box');
+    // icon
+    const iconEl=document.getElementById('popup-icon');
+    iconEl.className=`popup-icon ${type}`;
+    iconEl.innerHTML=POPUP_ICONS[type]||POPUP_ICONS.info;
+    // top bar & button color
+    box.setAttribute('data-type', type);
+    const okBtn=document.getElementById('popup-ok-btn');
+    okBtn.className=`popup-btn type-${type}`;
+    okBtn.textContent=okLabel;
+    // text
     document.getElementById('popup-title').textContent=title;
     document.getElementById('popup-msg').textContent=msg;
-    document.getElementById('popup-ok-btn').textContent=okLabel;
     const cancelBtn=document.getElementById('popup-cancel-btn');
     if(cancelLabel){cancelBtn.textContent=cancelLabel;cancelBtn.style.display='';}
     else cancelBtn.style.display='none';
