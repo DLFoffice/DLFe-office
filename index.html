@@ -496,6 +496,9 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
 }
 .upcoming-card-lg:hover { transform:translateX(3px);box-shadow:var(--sh2);background:#fff; }
+.upcoming-card-lg.is-today { background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-left-width:4px; }
+.upcoming-card-lg.is-today:hover { background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%); }
+.upcoming-card-lg.is-today .uc-name { color:#15803d; }
 .upcoming-card-lg .uc-top { display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:4px; }
 .upcoming-card-lg .uc-name { font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .upcoming-card-lg .uc-time { font-size:.7rem;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0; }
@@ -528,6 +531,9 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .btn-preview-del i { width:15px;height:15px; }
 .btn-preview-close { display:inline-flex;align-items:center;gap:7px;padding:10px 16px;background:transparent;border:1.5px solid var(--line);color:var(--muted);font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border-radius:12px;cursor:pointer;transition:all var(--dur) var(--ease); }
 .btn-preview-close:hover { background:#F5F6FA; }
+.btn-preview-print { display:inline-flex;align-items:center;gap:7px;padding:10px 16px;background:#F0FDF4;color:#16A34A;border:1.5px solid #BBF7D0;font-family:'Noto Sans Thai',sans-serif;font-size:.84rem;font-weight:700;border-radius:12px;cursor:pointer;transition:all var(--dur) var(--ease); }
+.btn-preview-print:hover { background:#DCFCE7;transform:translateY(-1px); }
+.btn-preview-print i { width:15px;height:15px; }
 
 /* ─── HIDDEN ─── */
 .hidden { display:none!important; }
@@ -644,9 +650,6 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <p id="date-label"></p>
-      <button id="gas-cfg-btn" class="dash-btn" title="ตั้งค่า Google Apps Script URL">
-        <i data-lucide="settings-2"></i><span id="gas-status-hd">⚙️ Sheet</span>
-      </button>
       <button id="gas-refresh-btn" class="dash-btn" title="โหลดข้อมูลจาก Google Sheet">
         <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
       </button>
@@ -1005,6 +1008,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
     <div class="preview-foot">
       <button id="preview-del-btn" class="btn-preview-del"><i data-lucide="trash-2"></i> ลบรายการ</button>
       <div style="display:flex;gap:8px;">
+        <button id="preview-print-btn" class="btn-preview-print"><i data-lucide="printer"></i> พิมพ์ใบจอง</button>
         <button id="preview-close-btn" class="btn-preview-close">ปิด</button>
         <button id="preview-edit-btn" class="btn-preview-edit"><i data-lucide="pencil"></i> แก้ไข</button>
       </div>
@@ -1012,17 +1016,7 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
   </div>
 </div>
 
-<div id="gas-config-panel" class="gas-config-panel" style="position:fixed;bottom:70px;right:22px;width:340px;z-index:100;">
-  <label class="gas-config-label">Google Apps Script Web App URL</label>
-  <input id="gas-url-input" type="text" placeholder="https://script.google.com/macros/s/AKfycbw7K3QGHWq-TrzzwOFQ_49fJISK66OGoMne4_GV6tHgF7GPSqJxWJq-WWvVtFeIErFI3Q/exec">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-    <span id="gas-status-badge" class="gas-status none">● ยังไม่ได้ตั้งค่า</span>
-    <div style="display:flex;gap:6px;">
-      <button id="gas-url-save" class="popup-btn" style="padding:7px 16px;font-size:.76rem;">บันทึก</button>
-      <button id="gas-url-cancel" class="popup-btn secondary" style="padding:7px 14px;font-size:.76rem;margin:0;">ปิด</button>
-    </div>
-  </div>
-</div>
+<!-- GAS URL ฝังในโค้ดโดยผู้ดูแลระบบ — ไม่ต้องแสดง config panel -->
 
 
 <script>
@@ -1079,8 +1073,10 @@ function roomColorClass(roomName){const i=ROOMS.indexOf(roomName);return i>=0?RO
 
 /* ── Storage ── */
 let ROOM_BOOKINGS=[], CAR_BOOKINGS=[];
-let GAS_URL='';
-try{GAS_URL=localStorage.getItem('gas_url')||'';}catch(e){}
+/* ══════════════════════════════════════
+   🔧 ผู้ดูแลระบบ: วาง GAS Web App URL ที่นี่
+   ══════════════════════════════════════ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzAIeXbU3okMMn1H7DQKU7slbo4Ll4IpTMLskVzJw2FsKQRYot5uyu190RExo_-S9Vinw/exec';
 
 async function loadData(){
   if(GAS_URL){
@@ -1167,19 +1163,20 @@ function renderRecent(){
   Object.keys(grouped).sort().forEach(date=>{
     const isToday=date===t;
     html+=`<div class="upcoming-day-label">${fmtThaiDate(date)}${isToday?'<span class="upcoming-today-pill">วันนี้</span>':''}</div>`;
-    grouped[date].forEach(e=>{ html+=upcomingCardHtml(e,e._k); });
+    grouped[date].forEach(e=>{ html+=upcomingCardHtml(e,e._k,isToday); });
   });
   el.innerHTML=html;
   attachCardClickHandlers(el);
 }
 
 /* ── Compact upcoming card (bigger) ── */
-function upcomingCardHtml(e,kind){
+function upcomingCardHtml(e,kind,isToday){
+  const todayClass=isToday?' is-today':'';
   if(kind==='room'){
     const rc=ROOMS.indexOf(e.room)%ROOM_COLORS.length;
     const colorVar=`var(--r${rc})`;
     const softVar=`var(--r${rc}-soft)`;
-    return `<div class="upcoming-card-lg rc${rc}" data-kind="room" data-id="${e.id}" style="border-left-color:${colorVar}">
+    return `<div class="upcoming-card-lg rc${rc}${todayClass}" data-kind="room" data-id="${e.id}" style="border-left-color:${colorVar}">
       <div class="uc-top">
         <span class="uc-name">${escapeHtml(e.room)}</span>
         <span class="uc-time" style="background:${softVar};color:${colorVar};">${fmtTimeRange(e.timeStart,e.timeEnd)}</span>
@@ -1191,7 +1188,7 @@ function upcomingCardHtml(e,kind){
       </div>
     </div>`;
   } else {
-    return `<div class="upcoming-card-lg" data-kind="car" data-id="${e.id}" style="border-left-color:var(--car);">
+    return `<div class="upcoming-card-lg${todayClass}" data-kind="car" data-id="${e.id}" style="border-left-color:var(--car);">
       <div class="uc-top">
         <span class="uc-name">${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span>
         <span class="uc-time" style="background:var(--car-soft);color:var(--car-dark);">${fmtTimeRange(e.timeStart,e.timeEnd)}</span>
@@ -1505,6 +1502,198 @@ function showPreview(kind,entry){
   previewBackdrop.classList.add('show'); previewBackdrop.setAttribute('aria-hidden','false');
 }
 
+
+/* ══════════════════════════════════════════
+   PRINT BOOKING DOCUMENT
+══════════════════════════════════════════ */
+function printBookingDoc(kind, entry){
+  const orgName  = 'สำนักงานกองทุนเพื่อการพัฒนาระบบสื่อสาธารณะ (สสท.)';
+  const orgNameShort = 'สถาบันส่งเสริมการเรียนรู้แห่งชาติ (DLF)';
+  const logoUrl  = 'https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png';
+  const printDate = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const docDate   = fmtThaiDate(entry.date);
+  const timeRange = fmtTimeRange(entry.timeStart, entry.timeEnd);
+
+  /* ── helper: row ── */
+  const row = (label, val, bold) =>
+    `<tr><td class="lbl">${label}</td><td class="val"${bold?' style="font-weight:700;"':''}>${val||'–'}</td></tr>`;
+
+  /* ── signature box ── */
+  const sig = (title, name, sub) => `
+    <div class="sig-box">
+      <div class="sig-line"></div>
+      <div class="sig-name">(${name||'……………………………………'})</div>
+      <div class="sig-title">${title}</div>
+      ${sub?`<div class="sig-sub">${sub}</div>`:''}
+      <div class="sig-date">วันที่ ………/………/………</div>
+    </div>`;
+
+  let docTitle, tableRows, sigRow;
+
+  if(kind === 'room'){
+    docTitle = 'แบบฟอร์มขอใช้ห้องประชุม';
+    tableRows = `
+      ${row('ห้องประชุม', `<strong>${escapeHtml(entry.room||'–')}</strong>`, true)}
+      ${row('วันที่ใช้งาน', docDate)}
+      ${row('เวลา', timeRange)}
+      ${row('กลุ่มงาน / หน่วยงาน', escapeHtml(entry.dept||'–'))}
+      ${row('ผู้แจ้งขอใช้', escapeHtml(entry.requester||'–'))}
+      ${row('จำนวนผู้เข้าร่วม', (entry.attendees||1)+' คน')}
+      ${row('วัตถุประสงค์', escapeHtml(entry.purpose||'–'))}
+      ${entry.note ? row('หมายเหตุ', escapeHtml(entry.note)) : ''}`;
+    sigRow = `
+      ${sig('ผู้ขอใช้ห้องประชุม', entry.requester, entry.dept)}
+      ${sig('เจ้าหน้าที่รับจอง', '', 'งานบริหารทั่วไป')}
+      ${sig('ผู้มีอำนาจอนุมัติ', '', '')}`;
+  } else {
+    const companions = (entry.companions&&entry.companions.length)
+      ? entry.companions.map(escapeHtml).join(', ') : '–';
+    docTitle = 'แบบฟอร์มขอใช้รถยนต์ราชการ';
+    tableRows = `
+      ${row('ผู้ขออนุญาต', escapeHtml(entry.requester||'–'))}
+      ${row('กลุ่มงาน / หน่วยงาน', escapeHtml(entry.dept||'–'))}
+      ${row('วันที่ใช้งาน', docDate)}
+      ${row('เวลา', timeRange)}
+      ${row('ทะเบียนรถยนต์', `<strong>${escapeHtml(entry.plate||'–')}</strong>`, true)}
+      ${row('พนักงานขับรถ', escapeHtml(entry.driver||'–'))}
+      ${row('จำนวนผู้โดยสาร', (entry.numPeople||1)+' คน')}
+      ${row('ผู้ร่วมเดินทาง', companions)}
+      ${row('สถานที่ปลายทาง', escapeHtml(entry.destination||'–'))}
+      ${row('วัตถุประสงค์', escapeHtml(entry.purpose||'–'))}`;
+    sigRow = `
+      ${sig('ผู้ขออนุญาตใช้รถ', entry.requester, entry.dept)}
+      ${sig('พนักงานขับรถ', entry.driver, entry.plate)}
+      ${sig('ผู้มีอำนาจอนุมัติ', '', '')}`;
+  }
+
+  const html = `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>${docTitle}</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sarabun', sans-serif; font-size:14pt; color:#111; background:#fff;
+         padding:20mm 20mm 18mm 25mm; max-width:210mm; margin:0 auto; }
+  @page { size:A4; margin:0; }
+  @media print { body { padding:20mm 20mm 18mm 25mm; } }
+
+  /* ── HEADER ── */
+  .doc-header { display:flex; align-items:center; gap:18px; padding-bottom:14px;
+                border-bottom:3px double #1e3a5f; margin-bottom:18px; }
+  .doc-logo { width:64px; height:64px; object-fit:contain; flex-shrink:0; }
+  .doc-org { flex:1; }
+  .doc-org-name { font-size:14pt; font-weight:700; color:#1e3a5f; line-height:1.4; }
+  .doc-org-sub  { font-size:10pt; color:#555; margin-top:2px; }
+  .doc-meta { text-align:right; font-size:10pt; color:#555; line-height:1.9; }
+  .doc-meta strong { color:#111; font-size:11pt; }
+
+  /* ── TITLE ── */
+  .doc-title { text-align:center; font-size:18pt; font-weight:700; color:#1e3a5f;
+               margin:18px 0 6px; letter-spacing:.04em; }
+  .doc-id-row { text-align:center; font-size:10pt; color:#555; margin-bottom:18px; }
+  .doc-id-box { display:inline-block; border:1px solid #888; border-radius:6px;
+                padding:3px 16px; min-width:180px; font-size:10pt; color:#888; }
+
+  /* ── TABLE ── */
+  .detail-table { width:100%; border-collapse:collapse; margin-bottom:22px; }
+  .detail-table td { padding:8px 12px; border:1px solid #d0d5dd; vertical-align:top; }
+  .detail-table .lbl { background:#F0F4FA; color:#1e3a5f; font-weight:700;
+                        width:38%; white-space:nowrap; font-size:12pt; }
+  .detail-table .val { font-size:12pt; line-height:1.6; }
+
+  /* ── NOTE BOX ── */
+  .note-box { border:1px solid #d0d5dd; border-radius:8px; padding:10px 14px;
+              min-height:52px; margin-bottom:22px; font-size:11pt; color:#888; }
+  .note-label { font-size:10pt; font-weight:700; color:#1e3a5f; margin-bottom:6px; }
+
+  /* ── SIGNATURE ── */
+  .sig-section { display:flex; justify-content:space-between; gap:14px;
+                 margin-top:32px; padding-top:16px; border-top:1.5px solid #d0d5dd; }
+  .sig-box { flex:1; text-align:center; }
+  .sig-line { border-bottom:1.5px solid #333; margin:0 10px 8px; height:52px; }
+  .sig-name  { font-size:11pt; margin-bottom:3px; }
+  .sig-title { font-size:11pt; font-weight:700; color:#1e3a5f; margin-bottom:2px; }
+  .sig-sub   { font-size:9.5pt; color:#666; }
+  .sig-date  { font-size:10pt; color:#555; margin-top:6px; }
+
+  /* ── FOOTER ── */
+  .doc-footer { margin-top:28px; padding-top:10px; border-top:1px solid #e0e4ed;
+                display:flex; justify-content:space-between; font-size:9pt; color:#888; }
+
+  /* ── PRINT BUTTON (hidden on print) ── */
+  .print-action { text-align:center; margin-bottom:20px; }
+  .print-btn { background:#1e3a5f; color:#fff; border:none; border-radius:10px;
+               padding:10px 32px; font-family:'Sarabun',sans-serif; font-size:13pt;
+               font-weight:700; cursor:pointer; margin:0 6px; }
+  .print-btn:hover { background:#2d5085; }
+  .close-btn { background:#f3f4f6; color:#444; border:1px solid #d1d5db; border-radius:10px;
+               padding:10px 24px; font-family:'Sarabun',sans-serif; font-size:13pt;
+               font-weight:700; cursor:pointer; margin:0 6px; }
+  @media print { .print-action { display:none!important; } }
+</style>
+</head>
+<body>
+
+<div class="print-action">
+  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+  <button class="close-btn" onclick="window.close()">✕ ปิด</button>
+</div>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <img class="doc-logo" src="${logoUrl}" alt="Logo">
+  <div class="doc-org">
+    <div class="doc-org-name">DLFOffice</div>
+    <div class="doc-org-sub">ระบบบริหารการจองห้องประชุมและยานพาหนะส่วนกลาง</div>
+  </div>
+  <div class="doc-meta">
+    เลขที่เอกสาร <strong>…………………………</strong><br>
+    วันที่พิมพ์ <strong>${printDate}</strong>
+  </div>
+</div>
+
+<!-- TITLE -->
+<div class="doc-title">${docTitle}</div>
+<div class="doc-id-row">
+  รหัสการจอง: <span class="doc-id-box">${entry.id||'–'}</span>
+</div>
+
+<!-- DETAILS TABLE -->
+<table class="detail-table">
+  <tbody>${tableRows}</tbody>
+</table>
+
+<!-- ADDITIONAL NOTE -->
+<div class="note-label">หมายเหตุเพิ่มเติม / ความต้องการพิเศษ</div>
+<div class="note-box">&nbsp;</div>
+
+<!-- SIGNATURES -->
+<div class="sig-section">${sigRow}</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <span>พิมพ์โดย DLFOffice — ระบบบริหารการจองฯ</span>
+  <span>วันที่พิมพ์: ${printDate}</span>
+</div>
+
+</body>
+</html>`;
+
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+/* ── Print button event ── */
+document.getElementById('preview-print-btn').addEventListener('click',()=>{
+  if(!_previewKind||!_previewId)return;
+  const entry=(_previewKind==='room'?ROOM_BOOKINGS:CAR_BOOKINGS).find(x=>x.id===_previewId);
+  if(entry) printBookingDoc(_previewKind, entry);
+});
+
 function closePreview(){
   previewBackdrop.classList.remove('show'); previewBackdrop.setAttribute('aria-hidden','true');
   _previewKind=null; _previewId=null;
@@ -1699,45 +1888,25 @@ document.getElementById('popup-overlay').addEventListener('click',e=>{if(e.targe
 /* ── GAS Sync ── */
 let lastSyncTime=null;
 function updateGasStatusBadge(){
-  const badge=document.getElementById('gas-status-badge');
-  const hd=document.getElementById('gas-status-hd');
-  if(badge){
-    if(GAS_URL){badge.className='gas-status ok';badge.textContent=lastSyncTime?'● ซิ้งค์ล่าสุด '+lastSyncTime:'● URL ตั้งค่าแล้ว';}
-    else{badge.className='gas-status none';badge.textContent='● ยังไม่ได้ตั้งค่า';}
-  }
-  if(hd){
-    if(GAS_URL){hd.textContent=lastSyncTime?'✅ '+lastSyncTime:'⚙️ Sheet';}
-    else{hd.textContent='⚙️ Sheet';}
-  }
+  // URL ฝังตายตัวในโค้ดแล้ว — แค่แสดงเวลา sync บน refresh/sync button
+  const syncBtn=document.getElementById('gas-sync-btn');
+  const syncSpan=syncBtn?syncBtn.querySelector('span'):null;
+  if(syncSpan&&lastSyncTime){syncSpan.textContent='ซิ้งค์แล้ว '+lastSyncTime;}
 }
 function setupGasSync(){
   const btn=document.getElementById('gas-sync-btn');
   const refreshBtn=document.getElementById('gas-refresh-btn');
-  const cfgBtn=document.getElementById('gas-cfg-btn');
-  const cfgPanel=document.getElementById('gas-config-panel');
-  const urlInput=document.getElementById('gas-url-input');
-  const saveBtn=document.getElementById('gas-url-save');
-  const cancelBtn=document.getElementById('gas-url-cancel');
-  if(urlInput){urlInput.value=GAS_URL;} updateGasStatusBadge();
-  if(cfgBtn)cfgBtn.addEventListener('click',()=>{if(urlInput)urlInput.value=GAS_URL;if(cfgPanel)cfgPanel.classList.toggle('show');});
-  if(cancelBtn)cancelBtn.addEventListener('click',()=>{if(cfgPanel)cfgPanel.classList.remove('show');});
-  if(saveBtn)saveBtn.addEventListener('click',async()=>{
-    const url=urlInput?urlInput.value.trim():''; GAS_URL=url;
-    try{localStorage.setItem('gas_url',url);}catch(e){}
-    if(cfgPanel)cfgPanel.classList.remove('show'); updateGasStatusBadge();
-    if(url){await loadData();renderAll();await showPopup({type:'success',title:'บันทึก URL แล้ว ✓',msg:'โหลดข้อมูลจาก Google Sheet เรียบร้อย\n🏢 ห้องประชุม: '+ROOM_BOOKINGS.length+' รายการ\n🚗 รถยนต์: '+CAR_BOOKINGS.length+' รายการ'});}
-    else await showPopup({type:'success',title:'บันทึกแล้ว',msg:'ล้าง GAS URL แล้ว ระบบจะใช้ข้อมูลใน localStorage แทน'});
-  });
+  updateGasStatusBadge();
   if(refreshBtn){
     refreshBtn.addEventListener('click',async()=>{
-      if(!GAS_URL){await showPopup({type:'warning',title:'ยังไม่ได้ตั้งค่า GAS URL',msg:'กรุณากด ⚙️ เพื่อวาง Google Apps Script Web App URL ก่อน'});return;}
+      // GAS_URL ฝังตายตัว — ไม่ต้องเช็ค
       refreshBtn.disabled=true;const sp=refreshBtn.querySelector('span');if(sp)sp.textContent='กำลังโหลด...';
       try{await loadData();renderAll();if(sp)sp.textContent='โหลดใหม่';refreshBtn.disabled=false;showToast('โหลดข้อมูลสำเร็จ — ห้อง '+ROOM_BOOKINGS.length+' / รถ '+CAR_BOOKINGS.length+' รายการ');}
       catch(err){if(sp)sp.textContent='โหลดใหม่';refreshBtn.disabled=false;await showPopup({type:'error',title:'โหลดล้มเหลว',msg:'ไม่สามารถโหลดข้อมูลจาก GAS: '+err.message});}
     });
   }
   if(btn)btn.addEventListener('click',async()=>{
-    if(!GAS_URL){await showPopup({type:'warning',title:'ยังไม่ได้ตั้งค่า GAS URL',msg:'กรุณากด ⚙️ เพื่อวาง Google Apps Script Web App URL ก่อนซิ้งค์'});return;}
+    // GAS_URL ฝังตายตัว — ไม่ต้องเช็ค
     btn.disabled=true;const sp=btn.querySelector('span');if(sp)sp.textContent='กำลังซิ้งค์...';
     try{
       const body='payload='+encodeURIComponent(JSON.stringify({rooms:ROOM_BOOKINGS,cars:CAR_BOOKINGS}));
