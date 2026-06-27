@@ -1220,7 +1220,7 @@ function normalizeTime(t){
   if(!isNaN(d.getTime())&&(d.getHours()!==0||d.getMinutes()!==0)){return pad(d.getHours())+':'+pad(d.getMinutes());}
   return '';
 }
-function normBooking(x){return {...x,date:normDate(x.date||''),timeStart:normalizeTime(x.timeStart),timeEnd:normalizeTime(x.timeEnd)};}
+function normBooking(x){return {...x,date:normDate(x.date||''),timeStart:normalizeTime(x.timeStart),timeEnd:normalizeTime(x.timeEnd),status:x.status||'pending'};}
 
 function escapeHtml(s){if(s===undefined||s===null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function roomColorClass(roomName){const i=ROOMS.indexOf(roomName);return i>=0?ROOM_COLORS[i%ROOM_COLORS.length]:'r0';}
@@ -1238,8 +1238,15 @@ async function loadData(){
       const r=await fetch(GAS_URL+'?action=data&t='+Date.now(),{cache:'no-store'});
       const j=await r.json();
       if(j.ok&&(j.rooms||j.cars)){
-        ROOM_BOOKINGS=(j.rooms||[]).map(x=>normBooking({...x,id:x.id||uid(),kind:'room'}));
-        CAR_BOOKINGS=(j.cars||[]).map(x=>normBooking({...x,id:x.id||uid(),kind:'car'}));
+        // Merge status from localStorage so approval data is preserved even after GAS reload
+        let localRooms={}, localCars={};
+        try{
+          const lr=localStorage.getItem('room_bookings'); const lc=localStorage.getItem('car_bookings');
+          if(lr) JSON.parse(lr).forEach(x=>{if(x.id)localRooms[x.id]=x.status||'pending';});
+          if(lc) JSON.parse(lc).forEach(x=>{if(x.id)localCars[x.id]=x.status||'pending';});
+        }catch(e){}
+        ROOM_BOOKINGS=(j.rooms||[]).map(x=>{const id=x.id||uid();return normBooking({...x,id,kind:'room',status:localRooms[id]||x.status||'pending'});});
+        CAR_BOOKINGS=(j.cars||[]).map(x=>{const id=x.id||uid();return normBooking({...x,id,kind:'car',status:localCars[id]||x.status||'pending'});});
         try{localStorage.setItem('room_bookings',JSON.stringify(ROOM_BOOKINGS));localStorage.setItem('car_bookings',JSON.stringify(CAR_BOOKINGS));}catch(e){}
         return;
       }
@@ -2323,17 +2330,40 @@ function destroyChart(key){
 ══════════════════════════════════════════ */
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin';
+const SESSION_KEY = 'dlf_admin_session';
 
 let isAdmin = false;
 
+function saveSession(admin) {
+  try {
+    if (admin) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({role:'admin', ts: Date.now()}));
+    } else {
+      localStorage.removeItem(SESSION_KEY);
+    }
+  } catch(e) {}
+}
+
+function loadSession() {
+  try {
+    const s = localStorage.getItem(SESSION_KEY);
+    if (!s) return false;
+    const parsed = JSON.parse(s);
+    // Session valid for 8 hours
+    if (parsed.role === 'admin' && (Date.now() - parsed.ts) < 8 * 60 * 60 * 1000) return true;
+    localStorage.removeItem(SESSION_KEY);
+  } catch(e) {}
+  return false;
+}
+
 function setAdminMode(admin) {
   isAdmin = admin;
+  saveSession(admin);
   if (admin) {
     document.body.classList.add('is-admin');
   } else {
     document.body.classList.remove('is-admin');
   }
-  // Update header badge
   const badgeArea = document.getElementById('user-badge-area');
   if (admin) {
     badgeArea.innerHTML = `
@@ -2379,6 +2409,7 @@ function doLogin() {
 
 function doLogout() {
   setAdminMode(false);
+  showLoginOverlay();
 }
 
 // Login events
@@ -2415,9 +2446,14 @@ document.getElementById('preview-reject-btn').addEventListener('click', async ()
   renderAll();
 });
 
-// Init: show login overlay on page load
+// Init: check session on page load — skip login if already logged in
 window.addEventListener('load', () => {
-  showLoginOverlay();
+  if (loadSession()) {
+    hideLoginOverlay();
+    setAdminMode(true);
+  } else {
+    showLoginOverlay();
+  }
 });
 
 // ===== ANIMATED PARTICLES BACKGROUND =====
