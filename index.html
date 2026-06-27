@@ -641,9 +641,144 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
 .print-header-title { font-family:'Inter',sans-serif;font-size:1rem;font-weight:900;color:#0C1524; }
 .print-header-sub { font-size:.72rem;color:#6B7280;margin-top:2px; }
 
+/* ── LOGIN OVERLAY ── */
+#login-overlay {
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#e0e7ff 0%,#f0f9ff 35%,#fdf4ff 65%,#f0fdf4 100%);
+  background-size:400% 400%;
+  animation:bgShift 12s ease infinite;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-card {
+  background:#fff;border-radius:20px;padding:40px 44px 36px;
+  box-shadow:0 24px 64px rgba(91,92,246,.18),0 4px 16px rgba(0,0,0,.08);
+  width:100%;max-width:400px;text-align:center;
+  animation:loginSlideUp .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes loginSlideUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+.login-logo { margin-bottom:18px; }
+.login-logo img { width:64px;height:auto; }
+.login-title { font-family:'Inter',sans-serif;font-size:1.25rem;font-weight:900;color:#0C1524;letter-spacing:-.03em;margin-bottom:4px; }
+.login-sub { font-size:.8rem;color:#6B7280;margin-bottom:28px; }
+.login-field { text-align:left;margin-bottom:14px; }
+.login-field label { display:block;font-size:.78rem;font-weight:600;color:#374151;margin-bottom:5px; }
+.login-field input {
+  width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;
+  font-family:'Noto Sans Thai',sans-serif;font-size:.9rem;color:#0C1524;
+  outline:none;transition:border .2s;background:#F9FAFB;
+}
+.login-field input:focus { border-color:#5B5CF6;background:#fff;box-shadow:0 0 0 3px rgba(91,92,246,.12); }
+.login-btn {
+  width:100%;padding:12px;margin-top:8px;
+  background:linear-gradient(135deg,#5B5CF6 0%,#4338CA 100%);
+  color:#fff;border:none;border-radius:11px;font-size:.95rem;font-weight:700;
+  font-family:'Noto Sans Thai',sans-serif;cursor:pointer;
+  box-shadow:0 6px 20px rgba(91,92,246,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.login-btn:hover { transform:translateY(-1px);box-shadow:0 10px 28px rgba(91,92,246,.4); }
+.login-btn:active { transform:translateY(0); }
+.login-error {
+  background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;
+  border-radius:8px;padding:9px 12px;font-size:.8rem;font-weight:600;
+  margin-top:10px;display:none;
+}
+.login-guest-btn {
+  margin-top:14px;background:none;border:1.5px solid #E5E7EB;border-radius:10px;
+  width:100%;padding:9px;color:#6B7280;font-size:.82rem;font-weight:600;
+  font-family:'Noto Sans Thai',sans-serif;cursor:pointer;transition:border .2s,color .2s;
+}
+.login-guest-btn:hover { border-color:#9CA3AF;color:#374151; }
+
+/* ── ADMIN HEADER BADGE ── */
+.admin-badge {
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#5B5CF6 0%,#4338CA 100%);
+  color:#fff;border-radius:999px;padding:5px 14px;font-size:.78rem;font-weight:700;
+  box-shadow:0 4px 12px rgba(91,92,246,.3);
+}
+.admin-badge i { width:13px;height:13px; }
+.guest-badge {
+  display:inline-flex;align-items:center;gap:6px;
+  background:#F3F4F6;color:#6B7280;border-radius:999px;padding:5px 14px;
+  font-size:.78rem;font-weight:600;border:1.5px solid #E5E7EB;
+}
+.guest-badge i { width:13px;height:13px; }
+#logout-btn {
+  background:none;border:1.5px solid #E5E7EB;border-radius:8px;
+  padding:5px 12px;font-size:.78rem;color:#6B7280;cursor:pointer;
+  font-family:'Noto Sans Thai',sans-serif;font-weight:600;
+  transition:border .2s,color .2s;display:inline-flex;align-items:center;gap:5px;
+}
+#logout-btn:hover { border-color:#DC2626;color:#DC2626; }
+#logout-btn i { width:13px;height:13px; }
+
+/* ── APPROVAL STATUS BADGE ── */
+.status-badge {
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:999px;
+  flex-shrink:0;
+}
+.status-badge.pending { background:#FEF3C7;color:#92400E; }
+.status-badge.approved { background:#D1FAE5;color:#065F46; }
+.status-badge.rejected { background:#FEE2E2;color:#991B1B; }
+
+/* ── APPROVE/REJECT BUTTONS in preview ── */
+.approve-row {
+  display:flex;gap:8px;margin-top:10px;padding-top:12px;
+  border-top:1px solid #F3F4F6;
+}
+.btn-approve {
+  flex:1;padding:9px;border:none;border-radius:10px;cursor:pointer;
+  background:linear-gradient(135deg,#10B981 0%,#047857 100%);
+  color:#fff;font-size:.83rem;font-weight:700;font-family:'Noto Sans Thai',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 4px 12px rgba(16,185,129,.3);transition:transform .15s;
+}
+.btn-approve:hover { transform:translateY(-1px); }
+.btn-reject {
+  flex:1;padding:9px;border:none;border-radius:10px;cursor:pointer;
+  background:linear-gradient(135deg,#EF4444 0%,#B91C1C 100%);
+  color:#fff;font-size:.83rem;font-weight:700;font-family:'Noto Sans Thai',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 4px 12px rgba(239,68,68,.3);transition:transform .15s;
+}
+.btn-reject:hover { transform:translateY(-1px); }
+
+/* admin-only elements hidden by default */
+.admin-only { display:none !important; }
+body.is-admin .admin-only { display:flex !important; }
+body.is-admin .admin-only-inline { display:inline-flex !important; }
+.admin-only-inline { display:none !important; }
+
 </style>
 </head>
 <body class="mode-room">
+
+<!-- ══════════════════════════════════════════
+     LOGIN OVERLAY
+════════════════════════════════════════════ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt="DLF Logo">
+    </div>
+    <div class="login-title">DLFOffice</div>
+    <div class="login-sub">ระบบบริหารการจองห้องประชุมและยานพาหนะ</div>
+    <div class="login-field">
+      <label>ชื่อผู้ใช้</label>
+      <input type="text" id="login-username" placeholder="กรอกชื่อผู้ใช้" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="login-password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="login-error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+    <button class="login-btn" id="login-submit-btn">เข้าสู่ระบบ (Admin)</button>
+    <button class="login-guest-btn" id="login-guest-btn">👁️ เข้าดูข้อมูลเฉยๆ (ไม่ต้องล็อกอิน)</button>
+  </div>
+</div>
+
 <div class="wrap">
 
   <!-- ── HEADER ── -->
@@ -659,6 +794,9 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div id="user-badge-area" style="display:flex;align-items:center;gap:8px;">
+        <!-- filled by JS -->
+      </div>
       <p id="date-label"></p>
       <button id="gas-refresh-btn" class="dash-btn" title="โหลดข้อมูลจาก Google Sheet">
         <i data-lucide="refresh-cw"></i><span>โหลดใหม่</span>
@@ -1016,11 +1154,17 @@ input[type="time"] { -webkit-appearance:none;appearance:none; }
       <div class="preview-section" id="preview-section-extra" style="display:none;"></div>
     </div>
     <div class="preview-foot">
-      <button id="preview-del-btn" class="btn-preview-del"><i data-lucide="trash-2"></i> ลบรายการ</button>
-      <div style="display:flex;gap:8px;">
-        <button id="preview-print-btn" class="btn-preview-print"><i data-lucide="printer"></i> พิมพ์ใบจอง</button>
-        <button id="preview-close-btn" class="btn-preview-close">ปิด</button>
-        <button id="preview-edit-btn" class="btn-preview-edit"><i data-lucide="pencil"></i> แก้ไข</button>
+      <button id="preview-del-btn" class="btn-preview-del admin-only"><i data-lucide="trash-2"></i> ลบรายการ</button>
+      <div style="display:flex;gap:8px;flex-direction:column;width:100%;">
+        <div class="approve-row admin-only" id="approve-row">
+          <button id="preview-approve-btn" class="btn-approve"><i data-lucide="check-circle"></i> อนุมัติ</button>
+          <button id="preview-reject-btn" class="btn-reject"><i data-lucide="x-circle"></i> ไม่อนุมัติ</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button id="preview-print-btn" class="btn-preview-print"><i data-lucide="printer"></i> พิมพ์ใบจอง</button>
+          <button id="preview-close-btn" class="btn-preview-close">ปิด</button>
+          <button id="preview-edit-btn" class="btn-preview-edit admin-only"><i data-lucide="pencil"></i> แก้ไข</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1214,12 +1358,18 @@ function upcomingCardHtml(e,kind,isToday){
 }
 
 /* ── Entry card ── */
+function statusBadgeHtml(status){
+  if(status==='approved') return '<span class="status-badge approved">✓ อนุมัติแล้ว</span>';
+  if(status==='rejected') return '<span class="status-badge rejected">✕ ไม่อนุมัติ</span>';
+  return '<span class="status-badge pending">⏳ รอการอนุมัติ</span>';
+}
+
 function entryCardHtml(e,kind){
   if(kind==='room'){
     const ri=ROOMS.indexOf(e.room);
     const rc=ri>=0?ri%ROOM_COLORS.length:0;
     return `<div class="day-card rc${rc}" data-kind="room" data-id="${e.id}">
-      <div class="row1"><span>${escapeHtml(e.room)}</span><span class="badge r${rc}">${fmtThaiDate(e.date)}</span></div>
+      <div class="row1"><span>${escapeHtml(e.room)}</span><div style="display:flex;gap:6px;align-items:center;">${statusBadgeHtml(e.status)}<span class="badge r${rc}">${fmtThaiDate(e.date)}</span></div></div>
       <div class="meta">
         <b>เวลา</b> ${fmtTimeRange(e.timeStart, e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
         <br><b>ผู้แจ้งขอใช้:</b> ${escapeHtml(e.requester||'')} &nbsp;·&nbsp; <b>ผู้เข้าร่วม:</b> ${e.attendees||1} คน<br>
@@ -1227,9 +1377,9 @@ function entryCardHtml(e,kind){
       </div>
     </div>`;
   } else {
-    const companions=(e.companions&&e.companions.length)?`<br><b>ผู้ร่วมเดินทาง:</b> ${e.companions.map(escapeHtml).join(', ')}`:'';
+    const companions=(e.companions&&e.companions.length)?`<br><b>ผู้ร่วมเดินทาง:</b> ${e.companions.map(escapeHtml).join(', ')}`:''
     return `<div class="day-card" data-kind="car" data-id="${e.id}">
-      <div class="row1"><span>${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span><span class="badge car">${fmtThaiDate(e.date)}</span></div>
+      <div class="row1"><span>${escapeHtml(e.plate)} — ${escapeHtml(e.driver)}</span><div style="display:flex;gap:6px;align-items:center;">${statusBadgeHtml(e.status)}<span class="badge car">${fmtThaiDate(e.date)}</span></div></div>
       <div class="meta">
         <b>เวลา</b> ${fmtTimeRange(e.timeStart, e.timeEnd)} &nbsp;·&nbsp; ${escapeHtml(e.dept||'')}
         <br><b>ผู้ขอ:</b> ${escapeHtml(e.requester||'')} (${e.numPeople||1} คน)<br>
@@ -1429,7 +1579,7 @@ document.getElementById('inline-submit-btn').addEventListener('click',async()=>{
     const date=normDate(document.getElementById('i-room-date').value);
     if(!requester||!purpose||!date){errEl.classList.remove('hidden');return;}
     ROOM_BOOKINGS.push({
-      id:uid(),kind:'room',
+      id:uid(),kind:'room',status:'pending',
       room:document.getElementById('i-room-select').value,
       date, timeStart:document.getElementById('i-room-time-start').value,
       timeEnd:document.getElementById('i-room-time-end').value,
@@ -1449,7 +1599,7 @@ document.getElementById('inline-submit-btn').addEventListener('click',async()=>{
     if(!requester||!purpose||!date){errEl.classList.remove('hidden');return;}
     const companions=getInlineCompanions();
     CAR_BOOKINGS.push({
-      id:uid(),kind:'car',requester,
+      id:uid(),kind:'car',status:'pending',requester,
       dept:document.getElementById('i-car-dept').value,
       purpose, destination:document.getElementById('i-car-destination').value.trim(),
       numPeople:companions.length+1,companions,date,
@@ -1508,6 +1658,14 @@ function showPreview(kind,entry){
     `;
   }
   document.getElementById('preview-section-extra').style.display='none';
+  // Show current approval status in preview
+  const statusEl = document.getElementById('preview-status-row');
+  if(statusEl) statusEl.remove();
+  const statusDiv = document.createElement('div');
+  statusDiv.id = 'preview-status-row';
+  statusDiv.style.cssText = 'padding:10px 20px 0;';
+  statusDiv.innerHTML = `<div class="preview-row"><span class="preview-label">สถานะการอนุมัติ</span><span class="preview-val">${statusBadgeHtml(entry.status)}</span></div>`;
+  document.getElementById('preview-section-main').after(statusDiv);
   lucide.createIcons();
   previewBackdrop.classList.add('show'); previewBackdrop.setAttribute('aria-hidden','false');
 }
@@ -1832,7 +1990,7 @@ form.addEventListener('submit',async e=>{
     if(!requester||!purpose||!date){formError.classList.remove('hidden');return;}
     const data={kind:'room',room:document.getElementById('room-select').value,date,timeStart:document.getElementById('room-time-start').value,timeEnd:document.getElementById('room-time-end').value,dept:document.getElementById('room-dept').value,requester,purpose,attendees:parseInt(document.getElementById('room-attendees').value)||1,note:document.getElementById('room-note').value.trim()};
     if(editingId&&editingKind==='room'){const idx=ROOM_BOOKINGS.findIndex(r=>r.id===editingId);if(idx>-1)ROOM_BOOKINGS[idx]={...ROOM_BOOKINGS[idx],...data};}
-    else ROOM_BOOKINGS.push({id:uid(),...data});
+    else ROOM_BOOKINGS.push({id:uid(),status:'pending',...data});
     await saveRooms(); closeModal();
     await showPopup({type:'success',title:editingId?'แก้ไขการจองแล้ว':'บันทึกการจองแล้ว',msg:editingId?'แก้ไขการจองห้องประชุมเรียบร้อยแล้ว':'บันทึกการจองห้องประชุมเรียบร้อยแล้ว'});
   } else {
@@ -1843,7 +2001,7 @@ form.addEventListener('submit',async e=>{
     const companions=getCompanions();
     const data={kind:'car',requester,dept:document.getElementById('car-dept').value,purpose,destination:document.getElementById('car-destination').value.trim(),numPeople:companions.length+1,companions,date,timeStart:document.getElementById('car-time-start').value,timeEnd:document.getElementById('car-time-end').value,plate:document.getElementById('car-plate').value,driver:document.getElementById('car-driver').value};
     if(editingId&&editingKind==='car'){const idx=CAR_BOOKINGS.findIndex(c=>c.id===editingId);if(idx>-1)CAR_BOOKINGS[idx]={...CAR_BOOKINGS[idx],...data};}
-    else CAR_BOOKINGS.push({id:uid(),...data});
+    else CAR_BOOKINGS.push({id:uid(),status:'pending',...data});
     await saveCars(); closeModal();
     await showPopup({type:'success',title:editingId?'แก้ไขการจองแล้ว':'บันทึกการจองแล้ว',msg:editingId?'แก้ไขการขอใช้รถยนต์เรียบร้อยแล้ว':'บันทึกการขอใช้รถยนต์เรียบร้อยแล้ว'});
   }
@@ -2159,6 +2317,108 @@ function renderSummaryTable(){
 function destroyChart(key){
   if(dashCharts[key]){dashCharts[key].destroy();delete dashCharts[key];}
 }
+
+/* ══════════════════════════════════════════
+   AUTH / LOGIN SYSTEM
+══════════════════════════════════════════ */
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin';
+
+let isAdmin = false;
+
+function setAdminMode(admin) {
+  isAdmin = admin;
+  if (admin) {
+    document.body.classList.add('is-admin');
+  } else {
+    document.body.classList.remove('is-admin');
+  }
+  // Update header badge
+  const badgeArea = document.getElementById('user-badge-area');
+  if (admin) {
+    badgeArea.innerHTML = `
+      <span class="admin-badge"><i data-lucide="shield-check"></i> Admin</span>
+      <button id="logout-btn"><i data-lucide="log-out"></i> ออกจากระบบ</button>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', doLogout);
+  } else {
+    badgeArea.innerHTML = `
+      <span class="guest-badge"><i data-lucide="eye"></i> ผู้เยี่ยมชม (ดูอย่างเดียว)</span>
+      <button id="logout-btn"><i data-lucide="log-in"></i> เข้าสู่ระบบ Admin</button>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', showLoginOverlay);
+  }
+  lucide.createIcons();
+}
+
+function showLoginOverlay() {
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  setTimeout(() => document.getElementById('login-username').focus(), 100);
+}
+
+function hideLoginOverlay() {
+  document.getElementById('login-overlay').style.display = 'none';
+}
+
+function doLogin() {
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    hideLoginOverlay();
+    setAdminMode(true);
+    showPopup({type:'success', title:'เข้าสู่ระบบสำเร็จ', msg:'ยินดีต้อนรับ Admin! คุณสามารถอนุมัติและแก้ไขการจองได้'});
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+  }
+}
+
+function doLogout() {
+  setAdminMode(false);
+}
+
+// Login events
+document.getElementById('login-submit-btn').addEventListener('click', doLogin);
+document.getElementById('login-guest-btn').addEventListener('click', () => {
+  hideLoginOverlay();
+  setAdminMode(false);
+});
+document.getElementById('login-username').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-password').focus(); });
+document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+/* ── APPROVE / REJECT handlers ── */
+document.getElementById('preview-approve-btn').addEventListener('click', async () => {
+  if(!isAdmin || !_previewKind || !_previewId) return;
+  const arr = _previewKind==='room' ? ROOM_BOOKINGS : CAR_BOOKINGS;
+  const idx = arr.findIndex(x => x.id === _previewId);
+  if(idx < 0) return;
+  arr[idx].status = 'approved';
+  if(_previewKind==='room') await saveRooms(); else await saveCars();
+  closePreview();
+  await showPopup({type:'success', title:'อนุมัติแล้ว', msg:'อนุมัติการจองเรียบร้อยแล้ว'});
+  renderAll();
+});
+
+document.getElementById('preview-reject-btn').addEventListener('click', async () => {
+  if(!isAdmin || !_previewKind || !_previewId) return;
+  const arr = _previewKind==='room' ? ROOM_BOOKINGS : CAR_BOOKINGS;
+  const idx = arr.findIndex(x => x.id === _previewId);
+  if(idx < 0) return;
+  arr[idx].status = 'rejected';
+  if(_previewKind==='room') await saveRooms(); else await saveCars();
+  closePreview();
+  await showPopup({type:'warning', title:'ไม่อนุมัติ', msg:'ปฏิเสธการจองเรียบร้อยแล้ว'});
+  renderAll();
+});
+
+// Init: show login overlay on page load
+window.addEventListener('load', () => {
+  showLoginOverlay();
+});
 
 // ===== ANIMATED PARTICLES BACKGROUND =====
 (function() {
