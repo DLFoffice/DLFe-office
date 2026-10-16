@@ -32,8 +32,12 @@ async function loadDocs(year){
 function openDocsView(){if((!docs.loaded||docs.tok!==AUTH_TOKEN)&&!docs.loading){docs.data=null;docs.loaded=false;loadDocs();}else renderDocs();}
 const docTypeData=t=>(docs.data&&docs.data.types&&docs.data.types[t])||{items:[],lastNo:'',nextNo:'',count:0};
 const findDoc=(t,id)=>docTypeData(t).items.find(x=>x.id===id);
-const isMineDoc=x=>{const me=myName();const n=v=>String(v||'').replace(/\s*\(ผู้ดูแล\)\s*$/,'').replace(/\s+/g,' ').trim();return !!me&&(n(x.requester)===me||n(x.recorder)===me);};
+/* เทียบชื่อโดยไม่สนคำนำหน้า (นาย/นาง/นางสาว/ว่าที่ร้อยตรี/ดร.) และช่องว่าง — ชื่อจากระบบ HR มีคำนำหน้า แต่ทะเบียนเดิมไม่มี */
+const normPerson=v=>String(v||'').replace(/\s*\(ผู้ดูแล\)\s*$/,'').replace(/^(ว่าที่\s*ร้อย\s*(ตรี|โท|เอก)\s*(หญิง)?|นางสาว|นาง|นาย|น\.ส\.|ดร\.|ผศ\.|รศ\.|ศ\.)\s*/,'').replace(/\s+/g,'').trim();
+const isMineDoc=x=>{const me=normPerson(myName());return !!me&&(normPerson(x.requester)===me||normPerson(x.recorder)===me);};
 const canEditDoc=x=>isAdmin||isMineDoc(x);
+/* แนบไฟล์: ค่าเริ่มต้นทุกคนที่เข้าสู่ระบบแนบได้ (ตั้ง DOC_UPLOAD_POLICY=owner เพื่อจำกัดเฉพาะผู้ขอ/ผู้บันทึก) */
+const canAttachDoc=x=>isAdmin||(docs.data&&docs.data.uploadPolicy!=='owner')||isMineDoc(x);
 const docLabel=(t,no)=>(t==='announce'||t==='order'?DOC_TYPES_UI[t].name+' ที่ ':'ที่ ')+no;
 
 /* ── แสดงผล ── */
@@ -96,7 +100,7 @@ const fmtSize=b=>b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/
 function openDocDetail(t,id){
   const x=findDoc(t,id);if(!x)return;
   docs.pv={t,id};
-  const U=DOC_TYPES_UI[t],cancelled=x.status==='cancelled',edit=canEditDoc(x)&&!cancelled;
+  const U=DOC_TYPES_UI[t],cancelled=x.status==='cancelled',edit=canEditDoc(x)&&!cancelled,attach=canAttachDoc(x)&&!cancelled;
   const rows=[['hash','เลขที่หนังสือ',docLabel(t,x.docNo)],['calendar','วันที่ออกเลข',fmtThaiDate(x.date)],['mail','เรียน / ถึง',x.to],
     ['user','เจ้าหน้าที่ผู้ขอ',x.requester],['briefcase','กลุ่มงาน',x.dept],['pen-line','วันที่ลงนาม',x.signDate?fmtThaiDate(x.signDate):'ยังไม่ระบุ'],
     ['user-check','ผู้บันทึก',x.recorder],['message-square','หมายเหตุ',x.note]];
@@ -114,7 +118,7 @@ function openDocDetail(t,id){
       <h4 class="dfh">ไฟล์หนังสือ (${files.length})</h4>
       <div class="dflist">${files.length?files.map(f=>`<div class="dfi"><i data-lucide="${fileIcon(f.name)}"></i><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>
         ${isAdmin?`<button class="icon-btn sm" data-dact="rmfile" data-url="${esc(f.url)}" title="ลบไฟล์" aria-label="ลบไฟล์"><i data-lucide="trash-2"></i></button>`:''}</div>`).join(''):'<p class="fnone">ยังไม่มีไฟล์แนบ</p>'}</div>
-      ${edit?`<label class="dropzone sm" id="pv-drop"><input type="file" id="pv-files" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"><i data-lucide="upload-cloud"></i><b>แนบไฟล์เพิ่ม</b><small>ไฟล์จะถูกตั้งชื่อเป็น "${esc(x.docNo)}" อัตโนมัติ</small></label><div class="fq" id="pv-queue"></div>`:''}
+      ${attach?`<label class="dropzone sm" id="pv-drop"><input type="file" id="pv-files" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"><i data-lucide="upload-cloud"></i><b>แนบไฟล์เพิ่ม</b><small>ไฟล์จะถูกตั้งชื่อเป็น "${esc(x.docNo)}" อัตโนมัติ</small></label><div class="fq" id="pv-queue"></div>`:(cancelled?'':'<p class="fnone">แนบไฟล์ได้เฉพาะผู้ขอ ผู้บันทึก หรือผู้ดูแลระบบ</p>')}
     </div>
     <div class="pv-foot"><div class="pv-actions">
       ${isAdmin&&!cancelled?'<button class="btn btn-danger btn-sm" data-dact="cancel"><i data-lucide="ban"></i>ยกเลิกเลข</button>':''}
