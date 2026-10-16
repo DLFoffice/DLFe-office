@@ -54,6 +54,11 @@
 .dflist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .dfi{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--fill)}
 .dfi>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}
+.dfi-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.dfi-main small{font-size:.7rem;color:var(--muted)}
+.dfi.busy{opacity:.55;pointer-events:none;background:repeating-linear-gradient(-45deg,var(--fill) 0 10px,#fff 10px 20px);background-size:28px 28px;animation:stripe 1s linear infinite}
+@keyframes stripe{to{background-position:28px 0}}
+.dfi .icon-btn.danger:hover{color:var(--bad);border-color:#FECACA;background:#FFF5F5}
 .dfi a{flex:1;min-width:0;font-size:.86rem;font-weight:500;color:var(--ink);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dfi a:hover{color:var(--room);text-decoration:underline}
 .icon-btn.sm{width:30px;height:30px;border-radius:9px}

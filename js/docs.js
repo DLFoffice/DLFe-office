@@ -2,7 +2,7 @@
    DLFOffice · docs.js
    ระบบออกเลขหนังสือ (ภายใน / ภายนอก / ประกาศ / คำสั่ง) + แนบไฟล์ลง Google Drive
    - ออกเลขที่เซิร์ฟเวอร์ (Documents.gs) ภายใต้ล็อก → ไม่มีเลขซ้ำ
-   - ไฟล์ถูกเปลี่ยนชื่อเป็นเลขที่หนังสือ และเก็บในโฟลเดอร์ตามประเภท/ปี
+   - ไฟล์ถูกเปลี่ยนชื่อเป็น เลขที่หนังสือ + ชื่อเรื่อง (แทนที่/ลบได้โดยผู้อัปโหลด ผู้ขอ/ผู้บันทึก หรือผู้ดูแล) และเก็บในโฟลเดอร์ตามประเภท/ปี
 ═══════════════════════════════════════════ */
 const DOC_TYPES_UI = {
   internal:{name:'หนังสือภายใน', short:'ภายใน', icon:'file-text', c:'#4F46E5', s:'#EEF0FF', d:'#3730A3'},
@@ -38,6 +38,8 @@ const isMineDoc=x=>{const me=normPerson(myName());return !!me&&(normPerson(x.req
 const canEditDoc=x=>isAdmin||isMineDoc(x);
 /* แนบไฟล์: ค่าเริ่มต้นทุกคนที่เข้าสู่ระบบแนบได้ (ตั้ง DOC_UPLOAD_POLICY=owner เพื่อจำกัดเฉพาะผู้ขอ/ผู้บันทึก) */
 const canAttachDoc=x=>isAdmin||(docs.data&&docs.data.uploadPolicy!=='owner')||isMineDoc(x);
+/* แทนที่/ลบไฟล์: ผู้ดูแล, ผู้ขอ/ผู้บันทึก หรือคนที่อัปโหลดไฟล์นั้น */
+const canManageFile=(x,f)=>canEditDoc(x)||(!!f.by&&!!myName()&&normPerson(f.by)===normPerson(myName()));
 const docLabel=(t,no)=>(t==='announce'||t==='order'?DOC_TYPES_UI[t].name+' ที่ ':'ที่ ')+no;
 
 /* ── แสดงผล ── */
@@ -116,9 +118,11 @@ function openDocDetail(t,id){
       <div class="pv-status"><span>สถานะ</span>${cancelled?'<span class="st st-rejected">ยกเลิกเลขแล้ว</span>':'<span class="st st-approved">ใช้งาน</span>'}</div>
       <dl class="pv-dl">${rows.map(r=>`<dt><i data-lucide="${r[0]}"></i>${r[1]}</dt><dd>${esc(r[2]||'–')}</dd>`).join('')}</dl>
       <h4 class="dfh">ไฟล์หนังสือ (${files.length})</h4>
-      <div class="dflist">${files.length?files.map(f=>`<div class="dfi"><i data-lucide="${fileIcon(f.name)}"></i><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>
-        ${isAdmin?`<button class="icon-btn sm" data-dact="rmfile" data-url="${esc(f.url)}" title="ลบไฟล์" aria-label="ลบไฟล์"><i data-lucide="trash-2"></i></button>`:''}</div>`).join(''):'<p class="fnone">ยังไม่มีไฟล์แนบ</p>'}</div>
-      ${attach?`<label class="dropzone sm" id="pv-drop"><input type="file" id="pv-files" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"><i data-lucide="upload-cloud"></i><b>แนบไฟล์เพิ่ม</b><small>ไฟล์จะถูกตั้งชื่อเป็น "${esc(x.docNo)}" อัตโนมัติ</small></label><div class="fq" id="pv-queue"></div>`:(cancelled?'':'<p class="fnone">แนบไฟล์ได้เฉพาะผู้ขอ ผู้บันทึก หรือผู้ดูแลระบบ</p>')}
+      <div class="dflist">${files.length?files.map(f=>{const m=!cancelled&&canManageFile(x,f);return `<div class="dfi"><i data-lucide="${fileIcon(f.name)}"></i>
+        <div class="dfi-main"><a href="${esc(f.url)}" target="_blank" rel="noopener" title="${esc(f.name)}">${esc(f.name)}</a>${f.by&&f.by!=='-'?`<small>อัปโหลดโดย ${esc(f.by)}</small>`:''}</div>
+        ${m?`<button class="icon-btn sm" data-dact="repfile" data-url="${esc(f.url)}" title="แทนที่ด้วยไฟล์ใหม่ (กรณีอัปโหลดผิด)" aria-label="แทนที่ไฟล์"><i data-lucide="refresh-cw"></i></button>
+        <button class="icon-btn sm danger" data-dact="rmfile" data-url="${esc(f.url)}" title="ลบไฟล์" aria-label="ลบไฟล์"><i data-lucide="trash-2"></i></button>`:''}</div>`;}).join(''):'<p class="fnone">ยังไม่มีไฟล์แนบ</p>'}</div>
+      ${attach?`<label class="dropzone sm" id="pv-drop"><input type="file" id="pv-files" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"><i data-lucide="upload-cloud"></i><b>แนบไฟล์เพิ่ม</b><small>ตั้งชื่อไฟล์อัตโนมัติเป็น "${esc(x.docNo)} ${esc(String(x.subject||'').slice(0,40))}${String(x.subject||'').length>40?'…':''}"</small></label><div class="fq" id="pv-queue"></div>`:(cancelled?'':'<p class="fnone">แนบไฟล์ได้เฉพาะผู้ขอ ผู้บันทึก หรือผู้ดูแลระบบ</p>')}
     </div>
     <div class="pv-foot"><div class="pv-actions">
       ${isAdmin&&!cancelled?'<button class="btn btn-danger btn-sm" data-dact="cancel"><i data-lucide="ban"></i>ยกเลิกเลข</button>':''}
@@ -233,7 +237,28 @@ function resetDocFormFooter(){
     <button type="button" class="btn btn-primary" id="df-submit"><i data-lucide="hash"></i><span id="df-submit-txt">ออกเลขหนังสือ</span></button>`;
   $('#df-submit').addEventListener('click',submitDocForm);
 }
-/* อัปโหลดทีละไฟล์ (base64) → เซิร์ฟเวอร์เปลี่ยนชื่อเป็นเลขหนังสือ */
+/* แทนที่ไฟล์ที่อัปโหลดผิด: เลือกไฟล์ใหม่ → ชื่อเดิม ไฟล์เก่าไปถังขยะ Drive */
+function pickFile(){
+  return new Promise(res=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png';
+    inp.addEventListener('change',()=>res(inp.files[0]||null));inp.click();
+  });
+}
+async function replaceDocFile(t,id,url,btn){
+  const file=await pickFile();if(!file)return;
+  if(file.size>DOC_MAX_MB*1048576){showPopup({type:'error',title:'ไฟล์ใหญ่เกินไป',msg:`ไม่เกิน ${DOC_MAX_MB} MB ต่อไฟล์`});return;}
+  const x=findDoc(t,id),old=x&&x.files.find(f=>f.url===url);
+  if(!await showPopup({type:'warning',title:'แทนที่ไฟล์?',msg:`"${old?old.name:''}" จะถูกแทนที่ด้วย "${file.name}" (ไฟล์เดิมย้ายไปถังขยะ Drive กู้คืนได้ 30 วัน)`,okLabel:'แทนที่',cancelLabel:'ยกเลิก'}))return;
+  const row=btn&&btn.closest('.dfi');if(row)row.classList.add('busy');
+  try{
+    const data=await fileToBase64(file);
+    const j=await gasPost({action:'doc.replaceFile',type:t,id,url,file:{name:file.name,mime:file.type||'application/octet-stream',data}},{noRetry:true});
+    if(j&&j.ok){upsertLocalDoc(t,j.item);renderDocs();if(docs.pv&&docs.pv.id===id)openDocDetail(t,id);toast('แทนที่ไฟล์แล้ว');}
+    else if(!(j&&j.handled))showPopup({type:'error',title:'แทนที่ไม่สำเร็จ',msg:(j&&j.message)||'กรุณาลองใหม่'});
+  }catch(e){showPopup({type:'error',title:'อ่านไฟล์ไม่ได้',msg:'กรุณาลองใหม่'});}
+  if(row)row.classList.remove('busy');
+}
+/* อัปโหลดทีละไฟล์ (base64) → เซิร์ฟเวอร์ตั้งชื่อเป็น เลขหนังสือ + ชื่อเรื่อง */
 async function uploadFiles(t,id,fileList,queueSel,queue){
   queue=queue||[...fileList].filter(f=>f.size<=DOC_MAX_MB*1048576).map(file=>({file,name:file.name,size:file.size,state:'wait'}));
   if([...fileList].some(f=>f.size>DOC_MAX_MB*1048576))toast(`มีไฟล์ที่ใหญ่เกิน ${DOC_MAX_MB} MB ถูกข้าม`);
@@ -307,6 +332,7 @@ function initDocs(){
         const j=await gasPost({action:'doc.cancel',type:pv.t,id:pv.id});
         if(j.ok){upsertLocalDoc(pv.t,j.item);openDocDetail(pv.t,pv.id);renderDocs();toast('ยกเลิกเลขแล้ว');}else if(!j.handled)showPopup({type:'error',title:'ไม่สำเร็จ',msg:j.message||'กรุณาลองใหม่'});
       }
+      else if(act==='repfile'&&pv)replaceDocFile(pv.t,pv.id,a.dataset.url,a);
       else if(act==='rmfile'&&pv){
         if(!await showPopup({type:'warning',title:'ลบไฟล์นี้?',msg:'ไฟล์จะถูกย้ายไปถังขยะของ Google Drive (กู้คืนได้ภายใน 30 วัน)',okLabel:'ลบไฟล์',cancelLabel:'ยกเลิก'}))return;
         const j=await gasPost({action:'doc.removeFile',type:pv.t,id:pv.id,url:a.dataset.url});
