@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   DLFOffice · print.js
+   Smart-Office DLF · print.js
    แบบฟอร์มพิมพ์ราชการ (ห้องประชุม / รถยนต์)
 ═══════════════════════════════════════════ */
 /* ═══════════════════════════════════════════
@@ -115,7 +115,7 @@ p{margin:0}
   </div>
   ${body}
   ${bottom}
-  <div class="foot"><span>ออกโดยระบบ DLFOffice · รหัสอ้างอิง ${esc(e.id)}</span><span>สถานะในระบบ: ${STATUS[e.status]||'-'}</span></div>
+  <div class="foot"><span>ออกโดยระบบ Smart-Office DLF · รหัสอ้างอิง ${esc(e.id)}</span><span>สถานะในระบบ: ${STATUS[e.status]||'-'}</span></div>
 </div>
 </body></html>`;
   const w=window.open('','_blank','width=960,height=900');
