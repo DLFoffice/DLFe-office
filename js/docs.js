@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   DLFOffice · docs.js
+   Smart-Office DLF · docs.js
    ระบบออกเลขหนังสือ (ภายใน / ภายนอก / ประกาศ / คำสั่ง) + แนบไฟล์ลง Google Drive
    - ออกเลขที่เซิร์ฟเวอร์ (Documents.gs) ภายใต้ล็อก → ไม่มีเลขซ้ำ
    - ไฟล์ถูกเปลี่ยนชื่อเป็น เลขที่หนังสือ + ชื่อเรื่อง (แทนที่/ลบได้โดยผู้อัปโหลด ผู้ขอ/ผู้บันทึก หรือผู้ดูแล) และเก็บในโฟลเดอร์ตามประเภท/ปี
@@ -98,6 +98,11 @@ function docRowHtml(t,x){
 function fileIcon(n){const e=String(n).split('.').pop().toLowerCase();return ['jpg','jpeg','png','gif','webp'].includes(e)?'image':['xls','xlsx','csv'].includes(e)?'sheet':'file-text';}
 const fmtSize=b=>b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
 
+/* เลขล่าสุดของประเภท/ปี (ลบได้ แล้วรันเลขต่อ) */
+function isLatestDoc(t,x){
+  const T=docs.data&&docs.data.types[t];if(!T||!x.seq)return false;
+  return x.seq>=T.items.filter(y=>y.year===x.year).reduce((m,y)=>Math.max(m,y.seq||0),0);
+}
 /* ── รายละเอียด ── */
 function openDocDetail(t,id){
   const x=findDoc(t,id);if(!x)return;
@@ -125,7 +130,8 @@ function openDocDetail(t,id){
       ${attach?`<label class="dropzone sm" id="pv-drop"><input type="file" id="pv-files" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"><i data-lucide="upload-cloud"></i><b>แนบไฟล์เพิ่ม</b><small>ตั้งชื่อไฟล์อัตโนมัติเป็น "${esc(x.docNo)} ${esc(String(x.subject||'').slice(0,40))}${String(x.subject||'').length>40?'…':''}"</small></label><div class="fq" id="pv-queue"></div>`:(cancelled?'':'<p class="fnone">แนบไฟล์ได้เฉพาะผู้ขอ ผู้บันทึก หรือผู้ดูแลระบบ</p>')}
     </div>
     <div class="pv-foot"><div class="pv-actions">
-      ${isAdmin&&!cancelled?'<button class="btn btn-danger btn-sm" data-dact="cancel"><i data-lucide="ban"></i>ยกเลิกเลข</button>':''}
+      ${isAdmin&&isLatestDoc(t,x)?'<button class="btn btn-danger btn-sm" data-dact="delete" title="ลบเลขล่าสุด แล้วเลขถัดไปจะรันต่อเลขนี้"><i data-lucide="trash-2"></i>ลบเลข</button>':''}
+      ${isAdmin&&!cancelled?`<button class="btn ${isLatestDoc(t,x)?'btn-ghost':'btn-danger'} btn-sm" data-dact="cancel"><i data-lucide="ban"></i>ยกเลิกเลข</button>`:''}
       <span class="spacer"></span>
       ${edit?'<button class="btn btn-ghost btn-sm" data-dact="edit"><i data-lucide="pencil"></i>แก้ไขรายละเอียด</button>':''}
       <button class="btn btn-primary btn-sm" data-dact="close-pv" style="background:${U.c}">ปิด</button>
@@ -345,6 +351,15 @@ function initDocs(){
       else if(act==='rmq'){docs.form.files.splice(+a.dataset.i,1);renderQueue('#df-queue',docs.form.files);}
       else if(act==='again'){resetDocFormFooter();openDocForm('new',docs.form.type);}
       else if(act==='edit'&&pv){resetDocFormFooter();openDocForm('edit',pv.t,pv.id);}
+      else if(act==='delete'&&pv){
+        const x=findDoc(pv.t,pv.id);
+        if(!await showPopup({type:'warning',title:'ลบเลข '+x.docNo+' ?',msg:'รายการนี้จะถูกลบออกจากทะเบียน'+(x.files&&x.files.length?' และไฟล์แนบ '+x.files.length+' ไฟล์จะย้ายไปถังขยะ Drive':'')+' — เลขถัดไปจะกลับมาเป็น '+x.docNo,okLabel:'ลบเลข',cancelLabel:'ไม่ใช่'}))return;
+        const j=await gasPost({action:'doc.delete',type:pv.t,id:pv.id});
+        if(j.ok){
+          const T=docs.data.types[pv.t];T.items=T.items.filter(y=>y.id!==pv.id);T.count=T.items.length;if(x.year===new Date().getFullYear()+543){T.nextNo=j.nextNo;T.lastNo=j.lastNo;}
+          closeDocDetail();renderDocs();toast('ลบเลข '+j.deleted+' แล้ว · เลขถัดไป '+j.nextNo);
+        }else if(!j.handled)showPopup({type:'error',title:'ลบไม่ได้',msg:j.message||'กรุณาลองใหม่'});
+      }
       else if(act==='cancel'&&pv){
         const x=findDoc(pv.t,pv.id);
         if(!await showPopup({type:'warning',title:'ยกเลิกเลข '+x.docNo+' ?',msg:'เลขนี้จะถูกบันทึกว่า "ยกเลิก" และจะไม่ถูกนำกลับมาใช้อีก',okLabel:'ยกเลิกเลข',cancelLabel:'ไม่ใช่'}))return;
