@@ -1,0 +1,129 @@
+/* ═══════════════════════════════════════════
+   DLFOffice · docs.css
+   ทะเบียนหนังสือ: การ์ดประเภท, รายการ, ฟอร์มออกเลข, แนบไฟล์
+═══════════════════════════════════════════ */
+
+/* ─── แถบเครื่องมือ ─── */
+[data-view="docs"] .toolbar .search{min-width:200px}
+#ddept{max-width:200px}
+#dfolder,#dsheet{padding:7px 11px}
+
+/* ─── การ์ดประเภทหนังสือ ─── */
+.dtypes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.dtype{position:relative;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;text-align:left;padding:16px 18px;border-radius:var(--r);background:#fff;border:1.5px solid var(--line);box-shadow:var(--sh1);overflow:hidden;transition:transform .2s var(--ease-out),box-shadow .2s,border-color .2s}
+.dtype::after{content:'';position:absolute;inset:auto 0 0 0;height:3px;background:var(--c);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease-out)}
+.dtype:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.dtype.on{border-color:var(--c);background:linear-gradient(180deg,var(--cs),#fff 75%)}
+.dtype.on::after{transform:none}
+.dtype-ico{grid-row:span 2;width:46px;height:46px;border-radius:13px;background:var(--cs);color:var(--c);display:grid;place-items:center}
+.dtype.on .dtype-ico{background:var(--c);color:#fff;box-shadow:0 8px 18px -8px var(--c)}
+.dtype-ico svg{width:22px;height:22px}
+.dtype-txt{min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.dtype-txt small{font-size:.78rem;color:var(--muted);font-weight:600}
+.dtype-txt b{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:1.25rem;font-weight:800;color:var(--cd);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtype-txt em{font-style:normal;font-size:.68rem;color:var(--faint)}
+.dtype-meta{grid-column:2;display:flex;flex-wrap:wrap;gap:2px 10px;font-size:.72rem;color:var(--muted)}
+.dtype-meta b{color:var(--ink2)}
+
+/* ─── รายการหนังสือ ─── */
+.drow{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,260px) 86px;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--c);border-radius:13px;background:#fff;margin-bottom:8px;cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s,border-color .15s}
+.drow:hover{transform:translateY(-1px);box-shadow:var(--sh2)}
+.drow.is-cancel{opacity:.6;background:var(--fill)}
+.drow.is-cancel .dno b,.drow.is-cancel .dsub{text-decoration:line-through;text-decoration-color:var(--faint)}
+.dno b{display:block;font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:.98rem;font-weight:800;color:var(--cd);white-space:nowrap}
+.dno small{font-size:.72rem;color:var(--muted)}
+.dsub{font-weight:600;font-size:.9rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dmeta{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:3px;font-size:.75rem;color:var(--muted)}
+.dmeta span{display:inline-flex;align-items:center;gap:5px;min-width:0}
+.dmeta svg{width:13px;height:13px}
+.dfiles{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+.fchip{display:inline-flex;align-items:center;gap:5px;max-width:100%;font-size:.72rem;font-weight:500;color:var(--ink2);background:var(--fill);border:1px solid var(--line);border-radius:8px;padding:3px 8px;text-decoration:none;transition:background .15s,border-color .15s}
+.fchip:hover{background:var(--cs);border-color:var(--c);color:var(--cd)}
+.fchip svg{width:13px;height:13px;flex-shrink:0;color:var(--c)}
+.fchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fchip.more{color:var(--muted)}
+.fnone{font-size:.74rem;color:var(--faint)}
+.dst{text-align:right}
+
+/* ─── หน้าต่างรายละเอียด ─── */
+.doc-sheet{width:min(600px,100%)}
+.dbig{display:flex;align-items:center;gap:10px}
+.dbig b{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:1.7rem;font-weight:800;color:var(--cd);letter-spacing:-.01em}
+.dbig .icon-btn{width:34px;height:34px;background:#fff}
+.dfh{font-size:.84rem;font-weight:600;color:var(--muted);margin:18px 0 8px}
+.dflist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.dfi{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--fill)}
+.dfi>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}
+.dfi a{flex:1;min-width:0;font-size:.86rem;font-weight:500;color:var(--ink);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dfi a:hover{color:var(--room);text-decoration:underline}
+.icon-btn.sm{width:30px;height:30px;border-radius:9px}
+.icon-btn.sm svg{width:15px;height:15px}
+
+/* ─── ฟอร์มออกเลข ─── */
+.docf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 22px 14px;background:linear-gradient(180deg,var(--cs),#fff);border-bottom:1px solid var(--line2)}
+.docf-kicker{display:inline-block;font-size:.72rem;font-weight:600;color:var(--cd);background:#fff;border-radius:99px;padding:2px 10px;margin-bottom:6px}
+.docf-head h2{font-size:1.25rem;font-weight:700}
+#docf-body{padding:16px 22px 4px}
+.docf-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.dtab{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font-size:.84rem;font-weight:600;color:var(--muted);transition:all .15s}
+.dtab svg{width:16px;height:16px}
+.dtab:hover{border-color:var(--c);color:var(--cd)}
+.dtab.on{background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 8px 16px -8px var(--c)}
+.docf-next{display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--cd);background:var(--cs);border-radius:11px;padding:10px 13px;margin-bottom:16px}
+.docf-next:empty{display:none}
+.docf-next svg{width:16px;height:16px;flex-shrink:0}
+.docf-next b{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:.95rem}
+.docf-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px 20px;border-top:1px solid var(--line2);background:#FCFCFE}
+#docf-body textarea.inp{min-height:64px}
+#docf-body.done .field:not(#df-files-field),#docf-body.done .row2,#docf-body.done #df-drop,#docf-body.done #df-error,#docf-body.done #df-files-field>label:first-child{display:none}
+
+/* dropzone + คิวอัปโหลด */
+.dropzone,.field .dropzone{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 14px;border:2px dashed var(--line);border-radius:14px;background:var(--fill);text-align:center;cursor:pointer;transition:border-color .2s,background .2s,transform .2s var(--ease-out)}
+.dropzone svg{width:26px;height:26px;color:var(--room);margin-bottom:2px}
+.dropzone b{font-size:.88rem}
+.dropzone small{font-size:.74rem;color:var(--muted)}
+.dropzone:hover,.dropzone.over{border-color:var(--room);background:#F5F5FF}
+.dropzone.over{transform:scale(1.01)}
+.dropzone.sm,.field .dropzone.sm{padding:12px;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}
+.dropzone.sm svg{margin:0}
+.fq{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fq:empty{margin:0}
+.fqi{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:11px;border:1px solid var(--line);background:#fff;animation:rise .35s var(--ease-out)}
+.fqi>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}
+.fqi>div{flex:1;min-width:0}
+.fqi b{display:block;font-size:.84rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fqi small{display:block;font-size:.72rem;color:var(--muted)}
+.fqi.ok{border-color:#A7F3D0;background:#F0FDF7}
+.fqi.ok>svg{color:var(--ok)}
+.fqi.err{border-color:#FECACA;background:#FFF7F7}
+.fqi.err>svg,.fqi.err small{color:var(--bad)}
+.spin-i{display:inline-block;width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0}
+.spin-i.dark{border-color:var(--line);border-top-color:var(--room)}
+
+/* ผลการออกเลข */
+.issued{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 16px;animation:rise .5s var(--ease-out)}
+.issued-ico{width:58px;height:58px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;margin-bottom:10px;box-shadow:0 12px 26px -10px var(--c);animation:pop .55s var(--ease-out)}
+.issued-ico svg{width:30px;height:30px;stroke-width:3}
+.issued small{font-size:.8rem;color:var(--muted);font-weight:600}
+.issued-no{display:flex;align-items:center;gap:12px;margin:4px 0 8px;flex-wrap:wrap;justify-content:center}
+.issued-no b{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:2.2rem;font-weight:800;color:var(--cd);letter-spacing:-.02em;line-height:1.15}
+.issued p{font-size:.92rem;font-weight:500;max-width:440px}
+.issued-meta{font-size:.74rem;color:var(--muted);margin-top:4px}
+
+@media(max-width:1280px){.dtypes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:960px){
+  .drow{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+  .drow .dno{grid-column:1}.drow .dst{grid-column:2;grid-row:1}
+  .drow .dmain,.drow .dfiles{grid-column:1/-1}
+}
+@media(max-width:640px){
+  [data-view="docs"] .toolbar #dnew{order:-1;width:100%;padding:11px}
+  #ddept{max-width:none}
+  .dtypes{gap:10px}
+  .dtype{padding:12px;gap:2px 10px}
+  .dtype-ico{width:38px;height:38px;grid-row:auto}
+  .dtype-meta{grid-column:1/-1}
+  .dtype-txt b{font-size:1.05rem}
+  .docf-types{grid-template-columns:repeat(2,1fr)}
+  .issued-no b{font-size:1.7rem}
+}

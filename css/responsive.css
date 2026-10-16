@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════
+   DLFOffice · responsive.css
+   ปรับตามขนาดจอ + การพิมพ์ (ต้องโหลดเป็นไฟล์สุดท้าย)
+═══════════════════════════════════════════ */
+/* ─── RESPONSIVE ─── */
+@media(max-width:1280px){
+  .book-grid{grid-template-columns:1fr}
+  .avail{position:static}
+  .cal-layout{grid-template-columns:1fr}
+  .agenda{position:static}
+  .charts{grid-template-columns:1fr 1fr}
+  .charts>:first-child{grid-column:1/-1}
+  .kpis-5{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:960px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:286px;transform:translateX(-102%);transition:transform .28s var(--ease);box-shadow:var(--sh3)}
+  .sidebar.open{transform:none}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .menu-btn{display:grid}
+  .topbar{padding:10px 16px;gap:10px}
+  .tb-title h1{font-size:1.08rem}
+  .tb-title p,.clock,.conn #conn-txt,.tb-new span{display:none}
+  .content{padding:16px 14px 104px}
+  .grid-2{grid-template-columns:1fr}
+  .kpis,.kpis-5{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .kpi{padding:13px 14px;gap:11px}
+  .kpi-ico{width:40px;height:40px}
+  .kpi-v{font-size:1.4rem}
+  .charts{grid-template-columns:1fr}
+  .hero{padding:20px;border-radius:18px}
+  .hero-actions{width:100%}
+  .hero-btn{flex:1;min-width:150px}
+  .bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;font-size:.66rem;font-weight:500;color:var(--muted);position:relative}
+  .bn-item svg{width:21px;height:21px}
+  .bn-item.active{color:#4338CA}
+  .bn-item.bn-main svg{width:24px;height:24px;background:var(--room);color:#fff;border-radius:12px;padding:5px;box-sizing:content-box;margin-top:-14px;box-shadow:0 6px 14px rgba(91,92,246,.45)}
+  .bn-item .nav-badge{position:absolute;top:2px;right:calc(50% - 22px);margin:0;font-size:.6rem;padding:0 6px}
+  .toast{bottom:90px}
+  .ov{padding:0;align-items:flex-end}
+  .sheet{border-radius:22px 22px 0 0;max-height:94vh;transform:translateY(40px)}
+  .pop{border-radius:22px 22px 0 0}
+}
+@media(max-width:640px){
+  .row2,.row3{grid-template-columns:1fr 1fr}
+  .row3 .field:first-child{grid-column:1/-1}
+  .tiles{grid-template-columns:1fr}
+  .fsec{padding:16px}
+  .form-actions{padding:16px}
+  .form-err{margin:0 16px}
+  .form-actions .btn-lg{flex:1}
+  .cc{min-height:60px;align-items:center;padding:5px 2px;border-radius:11px;gap:3px}
+  .cc-top{justify-content:center}
+  .cnt,.evs,.hol-tag,.wk-tag{display:none}
+  .dots{display:flex}
+  .cc.hol::after{content:'';position:absolute;left:8px;right:8px;bottom:4px;height:3px;border-radius:2px;background:#FB7185}
+  .cal-grid{gap:3px;padding:8px 6px 10px}
+  .cal-dow{padding:8px 6px;gap:3px}
+  .cal-top{padding:16px 14px 12px}
+  .cal-sum{padding:0 14px 12px}
+  .cal-title h3{font-size:1.3rem}
+  .cal-legend{padding:12px 14px 14px}
+  .av-scale,.av-row{grid-template-columns:72px 1fr}
+  .toolbar .seg,.toolbar select{flex:1}
+  .seg-lg{width:100%}
+  .seg-lg button{flex:1;justify-content:center;padding:10px 8px}
+  .pv-dl{grid-template-columns:1fr;gap:2px}
+  .pv-dl dd{margin-bottom:10px}
+}
+
+/* ─── PRINT (สถิติ) ─── */
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff}
+  .sidebar,.topbar,.bottom-nav,.scrim,.no-print,.ov,.toast{display:none!important}
+  .app{display:block}
+  .content{padding:0;max-width:none}
+  .view{display:none!important}
+  .view[data-view="stats"]{display:block!important;animation:none}
+  .print-header{display:flex!important;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #E5E7EB}
+  .kpis-5{grid-template-columns:repeat(5,1fr)}
+  .charts{grid-template-columns:2fr 1fr 1fr}
+  .card,.kpi{box-shadow:none;break-inside:avoid}
+}
