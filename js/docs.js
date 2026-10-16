@@ -145,7 +145,7 @@ function openDocForm(mode,t,id){
   const f=docs.form;f.mode=mode;f.type=t||docs.type;f.id=id||null;f.files=[];f.busy=false;
   const x=mode==='edit'?findDoc(f.type,id):null;
   $('#docf-body').classList.remove('done');
-  $('#df-subject').value=x?x.subject:'';$('#df-to').value=x?x.to:'';
+  $('#df-subject').value=x?x.subject:'';setDocTo(x?x.to:'');
   $('#df-req').value=x?x.requester:myName();
   const dept=x?x.dept:(state.user&&state.user.dept&&DEPTS.includes(state.user.dept)?state.user.dept:'');
   $('#df-dept').innerHTML='<option value="">— เลือกกลุ่มงาน —</option>'+[...new Set([...DEPTS,dept].filter(Boolean))].map(d=>`<option${d===dept?' selected':''}>${esc(d)}</option>`).join('');
@@ -173,6 +173,21 @@ function renderDocForm(){
   renderQueue('#df-queue',f.files);
   icons();
 }
+/* เรียน: dropdown + "อื่น ๆ" พิมพ์เอง */
+function setDocTo(v){
+  v=String(v||'').trim();
+  const other=!!v&&!DOC_TO_OPTIONS.includes(v);
+  $('#df-to-sel').innerHTML='<option value="">— ไม่ระบุ —</option>'+DOC_TO_OPTIONS.map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')+`<option value="__other"${other?' selected':''}>อื่น ๆ (ระบุเอง)</option>`;
+  $('#df-to').value=other?v:'';$('#df-to').classList.toggle('hidden',!other);
+}
+function getDocTo(){const s=$('#df-to-sel').value;return s==='__other'?$('#df-to').value.trim():s;}
+/* มีข้อมูลที่ยังไม่บันทึกหรือไม่ (ใช้ถามก่อนปิดด้วยปุ่ม Esc) */
+function docFormDirty(){
+  if($('#docf-body').classList.contains('done'))return false;
+  const f=docs.form,x=f.mode==='edit'?findDoc(f.type,f.id):null;
+  if(x)return $('#df-subject').value.trim()!==x.subject||getDocTo()!==(x.to||'')||$('#df-note').value.trim()!==(x.note||'');
+  return !!($('#df-subject').value.trim()||getDocTo()||$('#df-note').value.trim()||f.files.length);
+}
 function closeDocForm(){
   if(docs.form.busy)return;
   $('#docf-ov').classList.remove('show');$('#docf-ov').setAttribute('aria-hidden','true');closeDP();
@@ -196,7 +211,7 @@ async function submitDocForm(){
   const f=docs.form;if(f.busy)return;
   const subject=$('#df-subject').value.trim();
   if(!subject){$('#df-subject').closest('.field').classList.add('invalid');$('#df-subject').focus();return;}
-  const item={subject,to:$('#df-to').value.trim(),requester:$('#df-req').value.trim()||myName(),dept:$('#df-dept').value,signDate:$('#df-sign').value,note:$('#df-note').value.trim()};
+  const item={subject,to:getDocTo(),requester:$('#df-req').value.trim()||myName(),dept:$('#df-dept').value,signDate:$('#df-sign').value,note:$('#df-note').value.trim()};
   f.busy=true;const btn=$('#df-submit');btn.disabled=true;$('#df-submit-txt').textContent=f.mode==='edit'?'กำลังบันทึก…':'กำลังออกเลข…';
   let j;
   if(f.mode==='edit')j=await gasPost({action:'doc.update',type:f.type,id:f.id,item});
@@ -309,8 +324,12 @@ function initDocs(){
   $('#ddept').addEventListener('change',e=>{docs.dept=e.target.value;renderDocs();});
   $('#dstatus').addEventListener('change',e=>{docs.status=e.target.value;renderDocs();});
   $('#dmine').addEventListener('click',()=>{docs.mine=!docs.mine;renderDocs();});
-  $('#docf-ov').addEventListener('click',e=>{if(e.target.id==='docf-ov')closeDocForm();});
-  $('#doc-ov').addEventListener('click',e=>{if(e.target.id==='doc-ov')closeDocDetail();});
+  // ฟอร์มออกเลข: ไม่ปิดเมื่อคลิกด้านนอก (กันข้อมูลหาย) — ปิดได้ด้วยปุ่ม ✕ / ยกเลิก เท่านั้น
+  $('#df-to-sel').addEventListener('change',e=>{const o=e.target.value==='__other';$('#df-to').classList.toggle('hidden',!o);if(o)$('#df-to').focus();});
+  // หน้ารายละเอียด: ปิดเมื่อคลิกด้านนอก เฉพาะกรณีกดและปล่อยเมาส์บนพื้นหลังจริง ๆ (ไม่ใช่ลากคลุมข้อความแล้วปล่อยนอกกรอบ)
+  let pvDown=false;
+  $('#doc-ov').addEventListener('mousedown',e=>{pvDown=e.target.id==='doc-ov';});
+  $('#doc-ov').addEventListener('click',e=>{if(pvDown&&e.target.id==='doc-ov')closeDocDetail();pvDown=false;});
   document.addEventListener('click',async e=>{
     const tp=e.target.closest('[data-dtype]');
     if(tp){docs.type=tp.dataset.dtype;docs.dept='all';renderDocs();return;}
@@ -347,7 +366,10 @@ function initDocs(){
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('drow')){const [t,id]=e.target.dataset.doc.split(':');openDocDetail(t,id);}
     if(e.key==='Escape'&&!$('#pop-ov').classList.contains('show')&&!dp.open){
-      if($('#docf-ov').classList.contains('show'))closeDocForm();
+      if($('#docf-ov').classList.contains('show')){
+        if(!docFormDirty())closeDocForm();
+        else showPopup({type:'warning',title:'ปิดฟอร์มนี้?',msg:'ข้อมูลที่กรอกไว้จะไม่ถูกบันทึก',okLabel:'ปิดฟอร์ม',cancelLabel:'กรอกต่อ'}).then(y=>{if(y)closeDocForm();});
+      }
       else if($('#doc-ov').classList.contains('show'))closeDocDetail();
     }
   });
