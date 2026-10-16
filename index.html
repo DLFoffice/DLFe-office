@@ -276,32 +276,77 @@ textarea.inp{min-height:84px;resize:vertical}
 
 /* ─── CALENDAR ─── */
 .cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
-.cal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 18px}
-.cal-nav{display:flex;align-items:center;gap:10px}
-.cal-nav h3{font-size:1.1rem;font-weight:700;min-width:150px;text-align:center}
-.cal-tools{display:flex;align-items:center;gap:8px}
-.cal-dow,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
-.cal-dow{padding:0 12px;border-top:1px solid var(--line2)}
-.cal-dow div{font-size:.72rem;font-weight:600;color:var(--muted);text-align:center;padding:10px 0}
-.cal-grid{gap:6px;padding:0 12px 14px}
-.cc{min-height:104px;border-radius:12px;border:1px solid var(--line2);background:#fff;padding:7px 7px 6px;text-align:left;display:flex;flex-direction:column;gap:3px;transition:all .15s;min-width:0}
-.cc:hover{border-color:#D3D8E3;background:var(--fill)}
-.cc.empty{background:transparent;border-color:transparent;cursor:default}
-.cc.wknd{background:#FBFBFD}
-.cn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;color:var(--ink2);width:26px;height:26px;border-radius:8px;display:grid;place-items:center}
-.cc.past .cn{color:var(--faint)}
-.cc.today .cn{background:var(--room);color:#fff}
-.cc.sel{border-color:var(--room);box-shadow:0 0 0 3px rgba(91,92,246,.14);background:#FAFAFF}
+.cal-card{overflow:hidden;container-type:inline-size}
+@container (max-width:860px){.evp span{display:none}.evp{justify-content:center;padding:2px 4px}.cc{min-height:104px}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:20px 22px 14px}
+.cal-title{display:flex;align-items:baseline;gap:10px}
+.cal-title h3{font-size:1.65rem;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.cal-title span{font-size:1rem;color:var(--muted);font-weight:500}
+.cal-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cal-navg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--sh1)}
+.cal-navg button{height:36px;min-width:38px;display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.cal-navg button:hover{background:var(--fill);color:var(--ink)}
+.cal-navg button+button{border-left:1px solid var(--line)}
+.cal-navg .tdy{padding:0 14px;font-size:.84rem;font-weight:600;color:var(--ink2)}
+.cal-sum{display:flex;flex-wrap:wrap;gap:8px;padding:0 22px 16px}
+.cal-stat{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:500;color:var(--ink2);background:var(--fill);border:1px solid var(--line2);border-radius:99px;padding:5px 12px;white-space:nowrap}
+.cal-stat b{font-family:'Inter',sans-serif;font-weight:700;color:var(--ink)}
+.cal-stat i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.hol-chip{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:500;color:#9F1239;background:#FFF1F2;border:1px solid #FECDD3;border-radius:99px;padding:5px 12px;white-space:nowrap;transition:background .15s}
+.hol-chip:hover{background:#FFE4E6}
+.hol-chip b{font-family:'Inter',sans-serif;font-weight:700}
+.cal-dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:9px 14px;background:var(--fill);border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.cal-dow div{font-size:.76rem;font-weight:600;color:var(--muted);text-align:center}
+.cal-dow .we{color:#E11D48}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:10px 14px 14px}
+.cc{position:relative;min-height:116px;border-radius:14px;border:1px solid var(--line2);background:#fff;padding:7px 7px 8px;text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0;transition:border-color .15s,box-shadow .15s,transform .15s}
+.cc:hover{border-color:#C9CEE0;box-shadow:var(--sh1);transform:translateY(-1px)}
+.cc.out{background:transparent;border-style:dashed;opacity:.5}
+.cc.out:hover{opacity:.8}
+.cc.wknd{background:#FFF8F9}
+.cc.wknd .cn{color:#E11D48}
+.cc.hol{background:linear-gradient(180deg,#FFF1F2 0%,#FFF8F9 55%,#fff 100%);border-color:#FECDD3}
+.cc.hol .cn{color:#BE123C}
+.cc-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.cn{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;min-width:28px;height:28px;padding:0 4px;border-radius:9px;display:grid;place-items:center;color:var(--ink2)}
+.cc.past:not(.today):not(.out) .cn{opacity:.5}
+.cc.today .cn{background:var(--room);color:#fff!important;box-shadow:0 5px 12px -3px rgba(91,92,246,.55);opacity:1}
+.cc.sel{border-color:var(--room);box-shadow:0 0 0 3px rgba(91,92,246,.16)}
+.cnt{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:700;color:var(--muted);background:var(--fill);border:1px solid var(--line2);border-radius:99px;padding:0 7px;line-height:18px}
+.hol-tag{font-size:.68rem;font-weight:600;color:#BE123C;line-height:1.3;padding-left:7px;border-left:2px solid #FB7185;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.wk-tag{font-size:.64rem;color:#F43F5E;opacity:.75;padding-left:2px}
 .evs{display:flex;flex-direction:column;gap:3px;min-width:0}
-.evp{display:block;font-size:.68rem;font-weight:500;color:var(--cd);background:var(--cs);border-left:3px solid var(--c);border-radius:5px;padding:1px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.evp.pend{border-left-style:dashed}
+.evp{display:flex;align-items:center;gap:5px;font-size:.68rem;font-weight:500;color:var(--cd);background:var(--cs);border-radius:7px;padding:2px 7px;white-space:nowrap;overflow:hidden;min-width:0}
+.evp::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--c);flex-shrink:0}
+.evp b{font-family:'Inter',sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+.evp span{overflow:hidden;text-overflow:ellipsis}
+.evp.pend{background:#fff;box-shadow:inset 0 0 0 1px var(--c)}
 .evm{font-size:.66rem;color:var(--muted);font-weight:600;padding-left:4px}
 .dots{display:none;gap:3px;flex-wrap:wrap;justify-content:center}
 .dots i{width:6px;height:6px;border-radius:50%}
-.cal-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:12px 18px 16px;border-top:1px solid var(--line2);font-size:.72rem;color:var(--muted)}
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:12px 22px 16px;border-top:1px solid var(--line2);font-size:.74rem;color:var(--muted)}
 .cal-legend span{display:inline-flex;align-items:center;gap:6px}
-.cal-legend i{width:9px;height:9px;border-radius:3px}
+.cal-legend i{width:10px;height:10px;border-radius:3px}
+.cal-legend .sep{width:1px;height:14px;background:var(--line)}
 .agenda{position:sticky;top:92px}
+.ag-banner{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:13px;margin-bottom:14px;font-size:.84rem;line-height:1.45}
+.ag-banner svg{flex-shrink:0}
+.ag-banner b{display:block}
+.ag-banner small{display:block;font-size:.76rem;opacity:.85}
+.ag-banner.hol{background:#FFF1F2;color:#9F1239;border:1px solid #FECDD3}
+.ag-banner.we{background:#FFF8F9;color:#BE123C;border:1px solid #FFE4E6}
+.ag-next{margin-top:18px;padding-top:14px;border-top:1px solid var(--line2)}
+.ag-next h5{font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ag-next h5 svg{width:14px;height:14px;color:#F43F5E}
+.ag-hol{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:8px 10px;border-radius:11px;transition:background .15s}
+.ag-hol:hover{background:#FFF1F2}
+.ag-hol .d{width:44px;flex-shrink:0;text-align:center;border-radius:10px;background:#FFF1F2;color:#BE123C;padding:4px 0;line-height:1.15}
+.ag-hol .d b{display:block;font-family:'Inter',sans-serif;font-size:1.05rem}
+.ag-hol .d small{font-size:.64rem;font-weight:600}
+.ag-hol .t{min-width:0;font-size:.84rem}
+.ag-hol .t small{display:block;font-size:.72rem;color:var(--muted)}
+.conflict.warn{background:var(--warn-s);color:var(--warn-d)}
+.conflict .sub-note{display:block;font-size:.78rem;margin-top:3px;opacity:.9}
 
 /* ─── LIST ─── */
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line2)}
@@ -387,7 +432,7 @@ body.locked .app,body.locked .bottom-nav{display:none}
 .ls-brand b{display:block;font-family:'Inter',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.02em}
 .ls-brand small{display:block;font-size:.8rem;opacity:.8}
 .ls-hero h2{font-size:2.3rem;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin-bottom:26px}
-.ls-hero h2 span{color:#99F6E4}
+.ls-hero h2 .ls-line>span{color:#fff}
 .ls-feats{list-style:none;display:flex;flex-direction:column;gap:12px;max-width:420px}
 .ls-feats li{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px)}
 .ls-feats li>svg{width:38px;height:38px;padding:9px;border-radius:11px;background:#fff;color:#4338CA;box-sizing:border-box;flex-shrink:0}
@@ -474,6 +519,12 @@ body:not(.is-admin) .admin-nav{display:none!important}
 .dp-foot .spacer{flex:1}
 .dp-legend{font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:5px;padding:0 14px 8px}
 .dp-legend b{width:5px;height:5px;border-radius:50%;background:var(--acc);display:inline-block}
+.dp-legend .dp-hk{width:10px;height:10px;border-radius:3px;background:#FFE4E6;border:1px solid #FB7185;display:inline-block;margin-left:10px}
+.dp-d.hol{background:#FFF1F2;color:#E11D48}
+.dp-d.hol.out{background:transparent}
+.dp-d.hol.sel{background:var(--acc);color:#fff;box-shadow:0 6px 14px -4px rgba(var(--acc-rgb),.6)}
+.dp-hols{display:flex;flex-direction:column;gap:2px;padding:0 14px 8px;font-size:.72rem;color:#9F1239}
+.dp-hols b{font-family:'Inter',sans-serif;display:inline-block;min-width:18px}
 
 /* van tile */
 .tile-ico{width:38px;height:38px;border-radius:11px;background:var(--cs);color:var(--c);display:grid;place-items:center;flex-shrink:0}
@@ -481,6 +532,150 @@ body:not(.is-admin) .admin-nav{display:none!important}
 .tile.on .tile-ico{background:#fff}
 .tile-plate{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:1rem!important;letter-spacing:.02em}
 .drv-hint{font-size:.74rem;color:var(--muted);margin-top:6px}
+
+/* ═══════════ MOTION SYSTEM ═══════════ */
+:root{--ease-out:cubic-bezier(.16,1,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(18px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@keyframes lineUp{from{transform:translateY(110%)}to{transform:none}}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,50px) scale(1.18)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-60px,-70px) scale(1.12)}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-40px) scale(.9)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes shimmer{to{background-position:200% center}}
+@keyframes shine{from{transform:translateX(-130%) skewX(-20deg)}to{transform:translateX(260%) skewX(-20deg)}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}
+
+/* aurora background (ใช้ทั้งหน้า login และ hero ในระบบ) */
+.aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.aurora i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.aurora i:nth-child(1){width:520px;height:520px;background:#818CF8;top:-180px;right:-140px;animation:drift1 18s ease-in-out infinite}
+.aurora i:nth-child(2){width:460px;height:460px;background:#2DD4BF;bottom:-200px;left:-140px;opacity:.45;animation:drift2 22s ease-in-out infinite}
+.aurora i:nth-child(3){width:320px;height:320px;background:#C084FC;top:38%;left:34%;opacity:.32;animation:drift3 16s ease-in-out infinite}
+.dotgrid{position:absolute;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(255,255,255,.2) 1px,transparent 1.2px);background-size:22px 22px;-webkit-mask-image:radial-gradient(ellipse at 30% 40%,#000 0%,transparent 72%);mask-image:radial-gradient(ellipse at 30% 40%,#000 0%,transparent 72%)}
+
+/* login: art panel */
+.ls-art{background:linear-gradient(150deg,#1E1B4B 0%,#312E81 30%,#4338CA 62%,#4F46E5 82%,#0F766E 130%)!important}
+.ls-art::before,.ls-art::after{display:none}
+.ls-art>.aurora,.ls-art>.dotgrid{position:absolute;z-index:0}
+.ls-kicker{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:500;padding:6px 14px 6px 10px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);margin-bottom:18px;backdrop-filter:blur(6px)}
+.ls-kicker svg{width:15px;height:15px;color:#99F6E4}
+.ls-hero h2{font-size:2.5rem!important;line-height:1.22!important}
+.ls-line{display:block;overflow:hidden;padding:.16em 0 .08em;margin:-.16em 0 -.08em}
+.ls-line>span{display:block}
+.ls-hero h2 em{font-style:normal;background:linear-gradient(90deg,#5EEAD4,#A5F3FC,#C4B5FD,#5EEAD4);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite}
+.ls-feats{max-width:360px!important}
+.ls-feats li{transition:transform .25s var(--ease-out),background .25s}
+.ls-feats li:hover{transform:translateX(6px);background:rgba(255,255,255,.16)}
+.ls-floats{position:absolute;right:44px;top:50%;transform:translateY(-50%);width:262px;display:flex;flex-direction:column;gap:16px;z-index:1}
+.fl-in{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 40px -18px rgba(15,23,42,.5);animation:floatY 6s ease-in-out infinite}
+.fl-b .fl-in{animation-duration:7s;animation-delay:-2s;background:#fff;color:var(--ink);display:flex;align-items:center;gap:11px;margin-left:-34px}
+.fl-c .fl-in{animation-duration:8s;animation-delay:-4s;margin-left:22px}
+.fl-row{display:flex;align-items:center;gap:8px}
+.fl-row b{font-size:.86rem}
+.fl-dot{width:9px;height:9px;border-radius:3px}
+.fl-in small{display:block;font-size:.74rem;opacity:.8;margin-top:2px}
+.fl-pill{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:.72rem;font-weight:600;color:#065F46;background:#D1FAE5;border-radius:99px;padding:3px 10px}
+.fl-pill svg{width:13px;height:13px}
+.fl-ava{width:36px;height:36px;border-radius:50%;background:#06C755;color:#fff;display:grid;place-items:center;flex-shrink:0;animation:pulseRing 2.4s ease-out infinite}
+.fl-ava svg{width:19px;height:19px}
+.fl-b b{font-size:.84rem}
+.fl-b small{color:var(--muted);opacity:1}
+.fl-week{display:flex;gap:6px}
+.fl-week span{flex:1;text-align:center;font-size:.72rem;font-weight:600;padding:6px 0 7px;border-radius:9px;background:rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;gap:3px;min-height:40px}
+.fl-week span.on{background:#fff;color:#4338CA}
+.fl-week i{width:14px;height:3px;border-radius:2px;background:#5EEAD4}
+.fl-week span.on i{background:#5B5CF6}
+@media(max-width:1399px){.ls-floats{display:none}}
+
+/* login: form pane */
+.ls-pane{position:relative;flex-direction:column;gap:18px}
+.ls-pane::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(620px 420px at 100% 0%,rgba(91,92,246,.10),transparent 60%),radial-gradient(520px 420px at 0% 100%,rgba(14,165,160,.08),transparent 60%)}
+.ls-card{position:relative;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:26px;padding:34px 32px 28px;box-shadow:0 30px 60px -30px rgba(67,56,202,.35),var(--sh1);animation:none!important}
+.ls-card.shake{animation:shake .45s!important}
+.ls-hello{display:inline-block;font-size:.8rem;font-weight:600;color:#4338CA;background:#EEF0FF;border-radius:99px;padding:4px 12px;margin-bottom:12px}
+.ls-mbrand .ls-logo{width:46px;height:46px;border-radius:13px}
+.ls-mbrand .ls-logo img{width:34px}
+.ifield{position:relative}
+.ifield>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--faint);transition:color .2s,transform .2s;pointer-events:none}
+.ifield .inp{padding-left:44px!important;transition:border-color .2s,box-shadow .25s,background .2s}
+.ifield:focus-within>svg{color:#5B5CF6;transform:translateY(-50%) scale(1.08)}
+.ifield .inp:focus{box-shadow:0 0 0 4px rgba(91,92,246,.14),0 8px 20px -10px rgba(91,92,246,.4)}
+#ls-btn{height:52px;gap:10px;border-radius:14px;background-image:linear-gradient(135deg,#6366F1,#4338CA);transition:transform .2s var(--ease-out),box-shadow .2s,background .3s}
+#ls-btn svg{transition:transform .25s var(--ease-out)}
+#ls-btn:hover:not(:disabled) svg{transform:translateX(4px)}
+#ls-btn.loading{cursor:wait}
+#ls-btn .spin-i{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .7s linear infinite}
+#ls-btn.done{background-image:linear-gradient(135deg,#10B981,#059669);box-shadow:0 10px 24px -8px rgba(16,185,129,.6)}
+#ls-btn.done svg{animation:pop .45s var(--ease-out)}
+.ls-copy{font-size:.74rem;color:var(--faint)}
+.ls-err{animation:rise .35s var(--ease-out)}
+
+/* login: entrance + exit */
+#login-screen.ls-in .rv{animation:rise .8s var(--ease-out) both;animation-delay:var(--d,0s)}
+#login-screen.ls-in .ls-line>span{animation:lineUp .95s var(--ease-out) both;animation-delay:var(--d,0s)}
+#login-screen.ls-in .ls-feats li{animation:slideIn .8s var(--ease-out) both}
+#login-screen.ls-in .ls-feats li:nth-child(1){animation-delay:.52s}
+#login-screen.ls-in .ls-feats li:nth-child(2){animation-delay:.6s}
+#login-screen.ls-in .ls-feats li:nth-child(3){animation-delay:.68s}
+#login-screen.ls-in .fl{animation:rise .9s var(--ease-out) both;animation-delay:var(--d,0s)}
+#login-screen.ls-in .fl-pill{animation:pop .5s var(--ease-out) 1.5s both}
+#login-screen.ls-in .ls-art{animation:fadeArt .9s ease both}
+@keyframes fadeArt{from{opacity:.4}to{opacity:1}}
+#login-screen .ls-art,#login-screen .ls-card{transition:transform .55s var(--ease-out),opacity .45s}
+#login-screen.leaving .ls-art{transform:translateX(-3%) scale(.98);opacity:0}
+#login-screen.leaving .ls-card{transform:scale(.95) translateY(10px);opacity:0}
+
+/* portal transition (วงกลมขยายเข้าสู่ระบบ) */
+.portal{position:fixed;inset:0;z-index:700;pointer-events:none;background:linear-gradient(140deg,#312E81,#4F46E5 55%,#0F766E);clip-path:circle(0 at var(--x,50%) var(--y,50%));transition:clip-path .75s cubic-bezier(.7,0,.2,1),opacity .5s ease;display:grid;place-items:center}
+.portal.grow{clip-path:circle(150vmax at var(--x,50%) var(--y,50%))}
+.portal.fade{opacity:0}
+.portal-in{display:flex;flex-direction:column;align-items:center;gap:14px;color:#fff;opacity:0;transform:translateY(8px);transition:opacity .35s .3s,transform .5s .3s var(--ease-out)}
+.portal.grow .portal-in{opacity:1;transform:none}
+.portal-in .ls-logo{width:64px;height:64px;border-radius:18px;animation:pop .6s var(--ease-out) .3s both}
+.portal-in .ls-logo img{width:46px}
+.portal-in b{font-size:1rem;font-weight:600;letter-spacing:.01em}
+
+/* app: entrance + view transitions (ภาษาเดียวกับหน้า login) */
+.view{animation:none!important}
+.view.active>*{animation:rise .55s var(--ease-out) both}
+.view.active>*:nth-child(2){animation-delay:.05s}
+.view.active>*:nth-child(3){animation-delay:.1s}
+.view.active>*:nth-child(4){animation-delay:.15s}
+.view.active>*:nth-child(n+5){animation-delay:.2s}
+body.app-enter .sidebar{animation:slideIn .8s var(--ease-out) .05s both}
+body.app-enter .topbar{animation:rise .7s var(--ease-out) .12s both}
+body.app-enter .view.active>*{animation-delay:calc(.2s + var(--i,0) * .07s)}
+body.app-enter .view.active>*:nth-child(2){--i:1}
+body.app-enter .view.active>*:nth-child(3){--i:2}
+body.app-enter .view.active>*:nth-child(4){--i:3}
+body.app-enter .view.active>*:nth-child(n+5){--i:4}
+.tb-title{animation:rise .45s var(--ease-out) both}
+
+/* app: brand + nav ให้เข้ากับหน้า login */
+.brand .ls-logo{width:46px;height:46px;border-radius:13px;flex-shrink:0;box-shadow:0 8px 18px -8px rgba(67,56,202,.45);border:1px solid var(--line2)}
+.brand .ls-logo img{width:34px}
+.nav-item{position:relative}
+.nav-item svg{transition:transform .25s var(--ease-out),color .15s}
+.nav-item:hover svg{transform:translateX(2px)}
+.nav-item.active{background:linear-gradient(90deg,#EEF0FF,#F5F3FF)}
+.nav-item.active::before{content:'';position:absolute;left:-14px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(#6366F1,#0EA5A0);animation:pop .35s var(--ease-out)}
+.hero{background:linear-gradient(150deg,#1E1B4B 0%,#312E81 25%,#4338CA 55%,#4F46E5 78%,#0F766E 130%)}
+.hero::after{display:none}
+.hero>.aurora,.hero>.dotgrid{position:absolute;z-index:0}
+.hero .aurora i{opacity:.4}
+.btn-primary{position:relative;overflow:hidden;isolation:isolate}
+.btn-primary::after{content:'';position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);transform:translateX(-130%) skewX(-20deg);pointer-events:none}
+.btn-primary:hover:not(:disabled)::after{animation:shine .85s var(--ease-out)}
+.card,.kpi{transition:box-shadow .25s,transform .25s var(--ease-out),border-color .25s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.acct-ava.ini{background:linear-gradient(135deg,#6366F1,#0EA5A0)}
+.bn-item.bn-main svg{background:linear-gradient(135deg,#6366F1,#4338CA)!important}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:1280px){
@@ -531,12 +726,17 @@ body:not(.is-admin) .admin-nav{display:none!important}
   .form-actions{padding:16px}
   .form-err{margin:0 16px}
   .form-actions .btn-lg{flex:1}
-  .cc{min-height:54px;align-items:center;padding:5px 2px}
-  .evs{display:none}
+  .cc{min-height:60px;align-items:center;padding:5px 2px;border-radius:11px;gap:3px}
+  .cc-top{justify-content:center}
+  .cnt,.evs,.hol-tag,.wk-tag{display:none}
   .dots{display:flex}
-  .cal-grid{gap:3px;padding:0 6px 10px}
-  .cal-dow{padding:0 6px}
-  .cal-nav h3{min-width:0;font-size:1rem}
+  .cc.hol::after{content:'';position:absolute;left:8px;right:8px;bottom:4px;height:3px;border-radius:2px;background:#FB7185}
+  .cal-grid{gap:3px;padding:8px 6px 10px}
+  .cal-dow{padding:8px 6px;gap:3px}
+  .cal-top{padding:16px 14px 12px}
+  .cal-sum{padding:0 14px 12px}
+  .cal-title h3{font-size:1.3rem}
+  .cal-legend{padding:12px 14px 14px}
   .av-scale,.av-row{grid-template-columns:72px 1fr}
   .toolbar .seg,.toolbar select{flex:1}
   .seg-lg{width:100%}
@@ -567,7 +767,7 @@ body:not(.is-admin) .admin-nav{display:none!important}
   <!-- ═════════ SIDEBAR ═════════ -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt="DLF">
+      <span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt="DLF"></span>
       <div>
         <div class="brand-name">DLFOffice</div>
         <div class="brand-sub">ระบบจองห้องประชุม<br>และยานพาหนะส่วนกลาง</div>
@@ -603,6 +803,7 @@ body:not(.is-admin) .admin-nav{display:none!important}
       <!-- ─────────── HOME ─────────── -->
       <section class="view" data-view="home">
         <div class="hero">
+          <div class="aurora"><i></i><i></i><i></i></div><div class="dotgrid"></div>
           <div>
             <div class="hero-hi" id="hero-hi">สวัสดี</div>
             <div class="hero-date" id="hero-date"></div>
@@ -740,23 +941,24 @@ body:not(.is-admin) .admin-nav{display:none!important}
       <!-- ─────────── CALENDAR ─────────── -->
       <section class="view" data-view="calendar">
         <div class="cal-layout">
-          <div class="card">
+          <div class="card cal-card">
             <div class="cal-top">
-              <div class="cal-nav">
-                <button class="icon-btn" id="cal-prev" aria-label="เดือนก่อน"><i data-lucide="chevron-left"></i></button>
-                <h3 id="cal-label"></h3>
-                <button class="icon-btn" id="cal-next" aria-label="เดือนถัดไป"><i data-lucide="chevron-right"></i></button>
-              </div>
-              <div class="cal-tools">
-                <button class="btn btn-ghost btn-sm" id="cal-today">วันนี้</button>
+              <div class="cal-title"><h3 id="cal-month"></h3><span id="cal-year"></span></div>
+              <div class="cal-ctrl">
                 <div class="seg" id="cal-filter">
                   <button data-f="all" class="on">ทั้งหมด</button>
-                  <button data-f="room">ห้อง</button>
-                  <button data-f="car">รถ</button>
+                  <button data-f="room"><i data-lucide="building-2"></i>ห้อง</button>
+                  <button data-f="car"><i data-lucide="bus"></i>รถ</button>
+                </div>
+                <div class="cal-navg">
+                  <button id="cal-prev" aria-label="เดือนก่อน"><i data-lucide="chevron-left"></i></button>
+                  <button class="tdy" id="cal-today">วันนี้</button>
+                  <button id="cal-next" aria-label="เดือนถัดไป"><i data-lucide="chevron-right"></i></button>
                 </div>
               </div>
             </div>
-            <div class="cal-dow"><div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div></div>
+            <div class="cal-sum" id="cal-sum"></div>
+            <div class="cal-dow"><div class="we">อาทิตย์</div><div>จันทร์</div><div>อังคาร</div><div>พุธ</div><div>พฤหัสบดี</div><div>ศุกร์</div><div class="we">เสาร์</div></div>
             <div class="cal-grid" id="cal-grid"></div>
             <div class="cal-legend" id="cal-legend"></div>
           </div>
@@ -765,7 +967,7 @@ body:not(.is-admin) .admin-nav{display:none!important}
               <div><h3 id="ag-title"></h3><p id="ag-sub"></p></div>
               <button class="btn btn-soft btn-sm" data-act="book-on" id="ag-book"><i data-lucide="plus"></i>จองวันนี้</button>
             </div>
-            <div class="card-b scroll" id="ag-list"></div>
+            <div class="card-b scroll" style="max-height:640px" id="ag-list"></div>
           </div>
         </div>
       </section>
@@ -855,30 +1057,54 @@ body:not(.is-admin) .admin-nav{display:none!important}
 
 <div id="login-screen">
   <section class="ls-art" aria-hidden="true">
-    <div class="ls-brand"><span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""></span><div><b>DLFOffice</b><small>ระบบจองห้องประชุมและยานพาหนะส่วนกลาง</small></div></div>
+    <div class="aurora"><i></i><i></i><i></i></div><div class="dotgrid"></div>
+    <div class="ls-brand rv" style="--d:.05s"><span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""></span><div><b>DLFOffice</b><small>ระบบจองห้องประชุมและยานพาหนะส่วนกลาง</small></div></div>
     <div class="ls-hero">
-      <h2>จองห้องประชุม<br>และรถตู้ส่วนกลาง<br><span>ได้ในไม่กี่คลิก</span></h2>
+      <span class="ls-kicker rv" style="--d:.15s"><i data-lucide="sparkles"></i>ระบบจองออนไลน์ ใช้บัญชีเดียวกับระบบ HR</span>
+      <h2>
+        <span class="ls-line"><span style="--d:.22s">จองห้องประชุม</span></span>
+        <span class="ls-line"><span style="--d:.32s">และรถตู้ส่วนกลาง</span></span>
+        <span class="ls-line"><span style="--d:.42s"><em>ได้ในไม่กี่คลิก</em></span></span>
+      </h2>
       <ul class="ls-feats">
         <li><i data-lucide="building-2"></i><div><b>ห้องประชุมทุกอาคาร</b><small>ดูตารางว่างแบบเรียลไทม์ก่อนจอง</small></div></li>
         <li><i data-lucide="bus"></i><div><b>รถตู้ส่วนกลาง</b><small>เลือกทะเบียนรถและพนักงานขับรถ</small></div></li>
         <li><i data-lucide="message-circle"></i><div><b>แจ้งผลผ่าน LINE</b><small>รู้ทันทีเมื่อคำขอได้รับการอนุมัติ</small></div></li>
       </ul>
     </div>
-    <div class="ls-foot" id="ls-org"></div>
+    <div class="ls-floats">
+      <div class="fl fl-a" style="--d:.7s"><div class="fl-in">
+        <div class="fl-row"><span class="fl-dot" style="background:#5B5CF6"></span><b>ห้องประชุม อาคาร A ชั้น 1</b></div>
+        <small>วันนี้ · 09:00 – 12:00 น.</small>
+        <span class="fl-pill"><i data-lucide="check"></i>อนุมัติแล้ว</span>
+      </div></div>
+      <div class="fl fl-b" style="--d:.9s"><div class="fl-in">
+        <span class="fl-ava"><i data-lucide="message-circle"></i></span>
+        <div><b>DLFOffice Bot</b><small>📥 คำขอใหม่ · รถตู้ นญ 9873 · 13:00 น.</small></div>
+      </div></div>
+      <div class="fl fl-c" style="--d:1.1s"><div class="fl-in">
+        <div class="fl-week"><span>จ<i></i></span><span>อ<i></i><i></i></span><span class="on">พ<i></i></span><span>พฤ</span><span>ศ<i></i></span></div>
+        <small>ตารางการใช้ห้องสัปดาห์นี้</small>
+      </div></div>
+    </div>
+    <div class="ls-foot rv" style="--d:.6s" id="ls-org"></div>
   </section>
   <section class="ls-pane">
-    <div class="ls-card">
-      <div class="ls-mbrand"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""><b>DLFOffice</b></div>
-      <h1>เข้าสู่ระบบ</h1>
-      <p class="sub">ยินดีต้อนรับ กรอกข้อมูลเพื่อเริ่มใช้งานระบบจอง</p>
-      <div class="field"><label for="ls-user">ชื่อผู้ใช้</label><input id="ls-user" class="inp" autocomplete="username" placeholder="เลขบัตรประชาชน 13 หลัก หรือชื่อผู้ใช้ผู้ดูแล" spellcheck="false"><div class="ls-count" id="ls-count"></div></div>
-      <div class="field"><label for="ls-pass">รหัสผ่าน</label><div class="pw-wrap"><input id="ls-pass" type="password" class="inp" autocomplete="current-password" placeholder="รหัสผ่าน"><button type="button" class="pw-eye" id="ls-eye" aria-label="แสดงรหัสผ่าน"><i data-lucide="eye"></i></button></div></div>
+    <div class="ls-card" id="ls-card">
+      <div class="ls-mbrand rv" style="--d:.05s"><span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""></span><b>DLFOffice</b></div>
+      <span class="ls-hello rv" style="--d:.1s">👋 ยินดีต้อนรับ</span>
+      <h1 class="rv" style="--d:.16s">เข้าสู่ระบบ</h1>
+      <p class="sub rv" style="--d:.22s">กรอกข้อมูลเพื่อเริ่มใช้งานระบบจองห้องประชุมและรถตู้</p>
+      <div class="field rv" style="--d:.3s"><label for="ls-user">ชื่อผู้ใช้</label><div class="ifield"><i data-lucide="user-round"></i><input id="ls-user" class="inp" autocomplete="username" placeholder="เลขบัตรประชาชน 13 หลัก" spellcheck="false"></div><div class="ls-count" id="ls-count"></div></div>
+      <div class="field rv" style="--d:.38s"><label for="ls-pass">รหัสผ่าน</label><div class="ifield pw-wrap"><i data-lucide="lock"></i><input id="ls-pass" type="password" class="inp" autocomplete="current-password" placeholder="รหัสผ่าน"><button type="button" class="pw-eye" id="ls-eye" aria-label="แสดงรหัสผ่าน"><i data-lucide="eye"></i></button></div></div>
       <div class="ls-err" id="ls-err" role="alert"></div>
-      <button class="btn btn-primary btn-lg" id="ls-btn" style="width:100%">เข้าสู่ระบบ</button>
-      <div class="ls-hint"><b>พนักงาน</b> ใช้เลขบัตรประชาชน 13 หลักเป็นทั้งชื่อผู้ใช้และรหัสผ่าน (บัญชีเดียวกับระบบ HR)<br><b>ผู้ดูแลระบบ</b> ใช้บัญชีที่กำหนดไว้ในระบบ</div>
+      <button class="btn btn-primary btn-lg rv" id="ls-btn" style="--d:.46s;width:100%"><span class="bl">เข้าสู่ระบบ</span><i data-lucide="arrow-right"></i></button>
+      <div class="ls-hint rv" style="--d:.54s"><b>พนักงาน</b> ใช้เลขบัตรประชาชน 13 หลักเป็นทั้งชื่อผู้ใช้และรหัสผ่าน (บัญชีเดียวกับระบบ HR)<br><b>ผู้ดูแลระบบ</b> ใช้บัญชีที่กำหนดไว้ในระบบ</div>
     </div>
+    <div class="ls-copy rv" style="--d:.62s">© DLFOffice · ระบบจองห้องประชุมและยานพาหนะ</div>
   </section>
 </div>
+<div class="portal" id="portal"><div class="portal-in"><span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""></span><b>กำลังเข้าสู่ระบบ…</b></div></div>
 
 <div class="toast" id="toast"><i data-lucide="check-circle"></i><span id="toast-txt"></span></div>
 
@@ -890,7 +1116,7 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbw7K3QGHWq-TrzzwOFQ_49f
 const ROOMS = ["ห้องประชุม อาคาร A ชั้น 1","ห้องประชุม อาคาร A1 ชั้น 2 (ห้องสตูดิโอ)","ห้องประชุม อาคาร B ชั้น 1","ห้องประชุม อาคาร B ชั้น 2","ห้องประชุมศูนย์การเรียนรู้อาคาร D"];
 const DEPTS = ["กลุ่มนโยบายและแผน","กลุ่มประชาสัมพันธ์และสื่อสารองค์กร","กลุ่มงานสนับสนุน","กลุ่มวิชาการ","กลุ่มการเงินและบัญชี","กลุ่มบริหารทั่วไป","กลุ่มสารสนเทศ"];
 /* รถตู้ส่วนกลาง (เลือกทะเบียนก่อน แล้วเลือกผู้ขับแยก) */
-const VEHICLES = [{plate:"ฮอ 4133",type:"รถตู้"},{plate:"ฮอ 2983",type:"รถตู้"}];
+const VEHICLES = [{plate:"นญ 9873",type:"รถตู้"},{plate:"นฎ 364",type:"รถตู้"}];
 const DRIVERS  = ["นายอดิศร แสงไชย","นายพิษณุพจน์ สิทธิธนาสกุล"];
 /* ข้อมูลหัวแบบฟอร์มราชการ */
 const FORM_ORG   = 'มูลนิธิการศึกษาทางไกลผ่านดาวเทียม ในพระบรมราชูปถัมภ์';
@@ -1004,6 +1230,7 @@ async function loadData(){
     if(!j.ok)throw new Error(j.message||j.error||'load failed');
     ROOM_BOOKINGS=(j.rooms||[]).map(x=>normBooking({...x,kind:'room'}));
     CAR_BOOKINGS=(j.cars||[]).map(x=>normBooking({...x,kind:'car'}));
+    setHolidays(j.holidays);
     cacheSave();setConn(true);return true;
   }catch(err){
     console.warn('load fail',err);setConn(false);return false;
@@ -1082,6 +1309,7 @@ function go(view){
   $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));
   $$('[data-go]').forEach(b=>{if(b.classList.contains('nav-item')||b.classList.contains('bn-item'))b.classList.toggle('active',b.dataset.go===view);});
   $('#pg-title').textContent=VIEW_META[view].t;$('#pg-sub').textContent=VIEW_META[view].s;
+  const tt=$('.tb-title');tt.style.animation='none';void tt.offsetWidth;tt.style.animation='';
   document.body.classList.toggle('k-car',view==='book'&&state.bookKind==='car');
   closeDrawer();window.scrollTo({top:0,behavior:'instant'});
   if(view==='book'){renderResTiles();renderAvailability();}
@@ -1187,37 +1415,100 @@ function renderList(){
 function calSource(){const f=state.calFilter;return allBookings().filter(b=>b.status!=='rejected'&&(f==='all'||b.kind===f));}
 function renderCalendar(){
   const y=state.calMonth.getFullYear(),m=state.calMonth.getMonth(),t=todayStr();
-  $('#cal-label').textContent=MONTHS[m]+' '+(y+543);
+  $('#cal-month').textContent=MONTHS[m];$('#cal-year').textContent='พ.ศ. '+(y+543);
   const map={};calSource().forEach(b=>{(map[b.date]=map[b.date]||[]).push(b);});
   Object.values(map).forEach(a=>a.sort(byTime));
-  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
-  let h='';
-  for(let i=0;i<first;i++)h+='<div class="cc empty"></div>';
-  for(let d=1;d<=days;d++){
-    const ds=y+'-'+pad(m+1)+'-'+pad(d),evs=map[ds]||[],dow=(first+d-1)%7;
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),cells=Math.ceil((first+days)/7)*7;
+  const start=new Date(y,m,1-first);
+  let h='',work=0,monthEv=0,rooms=0,cars=0;const hols=[];
+  for(let i=0;i<cells;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    const ds=ymd(d),inM=d.getMonth()===m,dow=d.getDay(),we=dow===0||dow===6,hol=holidayName(ds);
+    const evs=inM?(map[ds]||[]):[];
+    if(inM){
+      if(!we&&!hol)work++;
+      if(hol)hols.push({ds,name:hol,d:d.getDate()});
+      monthEv+=evs.length;evs.forEach(b=>b.kind==='room'?rooms++:cars++);
+    }
     let cls='cc';
-    if(ds===t)cls+=' today';if(ds===state.calSel)cls+=' sel';if(ds<t)cls+=' past';if(dow===0||dow===6)cls+=' wknd';
-    const pills=evs.slice(0,3).map(b=>{const c=colorOf(b);return `<span class="evp${b.status==='pending'?' pend':''}" style="--c:${c.m};--cs:${c.s};--cd:${c.d}">${b.timeStart||''} ${esc(b.kind==='room'?shortRoom(b.room):b.plate)}</span>`;}).join('');
-    const more=evs.length>3?`<span class="evm">+${evs.length-3} รายการ</span>`:'';
+    if(!inM)cls+=' out';if(ds===t)cls+=' today';if(ds===state.calSel&&inM)cls+=' sel';if(ds<t)cls+=' past';
+    if(we)cls+=' wknd';if(hol)cls+=' hol';
+    const maxP=hol?2:3;
+    const pills=evs.slice(0,maxP).map(b=>{const c=colorOf(b);return `<span class="evp${b.status==='pending'?' pend':''}" style="--c:${c.m};--cs:${c.s};--cd:${c.d}"><b>${b.timeStart||'—'}</b><span>${esc(b.kind==='room'?shortRoom(b.room):b.plate)}</span></span>`;}).join('');
+    const more=evs.length>maxP?`<span class="evm">+${evs.length-maxP} รายการ</span>`:'';
     const dots=evs.slice(0,4).map(b=>`<i style="background:${colorOf(b).m}"></i>`).join('');
-    h+=`<button type="button" class="${cls}" data-date="${ds}"><span class="cn">${d}</span><span class="evs">${pills}${more}</span><span class="dots">${dots}</span></button>`;
+    const tip=[fmtDayHead(ds).main,hol?'วันหยุดราชการ: '+hol:(we?'วันหยุดเสาร์-อาทิตย์':''),evs.length?'การจอง '+evs.length+' รายการ':''].filter(Boolean).join(' · ');
+    h+=`<button type="button" class="${cls}" data-date="${ds}" title="${esc(tip)}">
+      <span class="cc-top"><span class="cn">${d.getDate()}</span>${evs.length?`<span class="cnt">${evs.length}</span>`:''}</span>
+      ${hol&&inM?`<span class="hol-tag">${esc(hol)}</span>`:''}
+      <span class="evs">${pills}${more}</span><span class="dots">${dots}</span></button>`;
   }
-  const rem=(first+days)%7;if(rem)for(let i=rem;i<7;i++)h+='<div class="cc empty"></div>';
   $('#cal-grid').innerHTML=h;
-  const leg=state.calFilter==='car'?[]:ROOMS.map((r,i)=>`<span><i style="background:${ROOM_PALETTE[i%5].m}"></i>${esc(shortRoom(r))}</span>`);
-  if(state.calFilter!=='room')leg.push(`<span><i style="background:${CAR_COLOR.m}"></i>รถยนต์</span>`);
+  const f=state.calFilter;
+  $('#cal-sum').innerHTML=
+    `<span class="cal-stat">การจองเดือนนี้ <b>${monthEv}</b> รายการ</span>`+
+    (f!=='car'?`<span class="cal-stat"><i style="background:var(--room)"></i>ห้องประชุม <b>${rooms}</b></span>`:'')+
+    (f!=='room'?`<span class="cal-stat"><i style="background:var(--car)"></i>รถยนต์ <b>${cars}</b></span>`:'')+
+    `<span class="cal-stat">วันทำการ <b>${work}</b> วัน</span>`+
+    hols.map(x=>`<button type="button" class="hol-chip" data-jump="${x.ds}" title="${esc(fmtDayHead(x.ds).main)}"><b>${x.d}</b>${esc(x.name)}</button>`).join('');
+  const leg=f==='car'?[]:ROOMS.map((r,i)=>`<span><i style="background:${ROOM_PALETTE[i%5].m}"></i>${esc(shortRoom(r))}</span>`);
+  if(f!=='room')leg.push(`<span><i style="background:${CAR_COLOR.m}"></i>รถยนต์</span>`);
+  leg.push('<span class="sep"></span>',
+    '<span><i style="background:#FFF1F2;border:1px solid #FB7185"></i>วันหยุดราชการ</span>',
+    '<span><i style="background:#FFF8F9;border:1px solid #FECDD3"></i>เสาร์ – อาทิตย์</span>',
+    '<span><i style="background:#fff;box-shadow:inset 0 0 0 1px var(--room)"></i>รออนุมัติ</span>');
   $('#cal-legend').innerHTML=leg.join('');
   renderAgenda();
 }
+function calJump(ds){
+  const d=parseYmd(ds);state.calSel=ds;state.calMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();
+}
 function renderAgenda(){
-  const d=state.calSel,dh=fmtDayHead(d),t=todayStr();
+  const d=state.calSel,dh=fmtDayHead(d),t=todayStr(),dt=parseYmd(d),we=dt.getDay()===0||dt.getDay()===6,hol=holidayName(d);
   $('#ag-title').textContent=dh.tag?dh.tag+' · '+fmtThaiDate(d):fmtThaiDate(d);
   const list=calSource().filter(b=>b.date===d).sort(byTime);
-  $('#ag-sub').textContent='วัน'+DOW[parseYmd(d).getDay()]+' · '+list.length+' รายการ';
+  $('#ag-sub').textContent='วัน'+DOW[dt.getDay()]+' · '+list.length+' รายการ';
   $('#ag-book').dataset.date=d;$('#ag-book').classList.toggle('hidden',d<t);
-  $('#ag-list').innerHTML=list.length?list.map(b=>itemHtml(b,{actions:true})).join(''):emptyHtml('calendar-plus','ไม่มีการจองในวันนี้',d>=t?'กด "จองวันนี้" เพื่อเริ่มจอง':'');
+  let h='';
+  if(hol)h+=`<div class="ag-banner hol"><i data-lucide="flag"></i><div><b>วันหยุดราชการ</b><small>${esc(hol)}</small></div></div>`;
+  else if(we)h+=`<div class="ag-banner we"><i data-lucide="sun"></i><div><b>วันหยุดเสาร์ – อาทิตย์</b><small>ตรวจสอบความพร้อมของผู้ดูแลก่อนจอง</small></div></div>`;
+  h+=list.length?list.map(b=>itemHtml(b,{actions:true})).join(''):emptyHtml('calendar-plus','ไม่มีการจองในวันนี้',d>=t?'กด "จองวันนี้" เพื่อเริ่มจอง':'');
+  const next=Object.keys(HOLIDAYS).filter(k=>k>=t).sort().slice(0,4);
+  if(next.length)h+=`<div class="ag-next"><h5><i data-lucide="flag"></i>วันหยุดราชการที่จะถึง</h5>`+next.map(k=>{const x=parseYmd(k);
+    return `<button type="button" class="ag-hol" data-jump="${k}"><span class="d"><b>${x.getDate()}</b><small>${MONTHS_S[x.getMonth()]}</small></span><span class="t">${esc(HOLIDAYS[k])}<small>วัน${DOW[x.getDay()]} · ${k===t?'วันนี้':'อีก '+Math.round((x-parseYmd(t))/864e5)+' วัน'}</small></span></button>`;}).join('')+'</div>';
+  $('#ag-list').innerHTML=h;
   icons();
 }
+
+/* ─── วันหยุดราชการ (แหล่งเดียวกับระบบ HR) ───
+   ข้อมูลหลักมาจาก Google Calendar ผ่าน Apps Script — ถ้ายังดึงไม่ได้ใช้รายการสำรองนี้ */
+const FALLBACK_HOLIDAYS={
+  '2026-01-01':'วันขึ้นปีใหม่','2026-01-02':'วันหยุดพิเศษ (ครม.)','2026-03-03':'วันมาฆบูชา','2026-04-06':'วันจักรี',
+  '2026-04-13':'วันสงกรานต์','2026-04-14':'วันสงกรานต์','2026-04-15':'วันสงกรานต์','2026-05-01':'วันแรงงานแห่งชาติ',
+  '2026-05-04':'วันฉัตรมงคล','2026-05-13':'วันพืชมงคล','2026-05-31':'วันวิสาขบูชา','2026-06-01':'ชดเชยวันวิสาขบูชา',
+  '2026-06-03':'วันเฉลิมพระชนมพรรษาสมเด็จพระราชินี','2026-07-28':'วันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว',
+  '2026-07-29':'วันอาสาฬหบูชา','2026-07-30':'วันเข้าพรรษา','2026-08-12':'วันแม่แห่งชาติ','2026-10-13':'วันนวมินทรมหาราช',
+  '2026-10-16':'วันหยุดพิเศษ (ครม.)','2026-10-23':'วันปิยมหาราช','2026-12-05':'วันพ่อแห่งชาติ','2026-12-07':'ชดเชยวันพ่อแห่งชาติ',
+  '2026-12-10':'วันรัฐธรรมนูญ','2026-12-31':'วันสิ้นปี',
+  '2027-01-01':'วันขึ้นปีใหม่','2027-02-21':'วันมาฆบูชา','2027-02-22':'ชดเชยวันมาฆบูชา','2027-04-06':'วันจักรี',
+  '2027-04-13':'วันสงกรานต์','2027-04-14':'วันสงกรานต์','2027-04-15':'วันสงกรานต์','2027-05-01':'วันแรงงานแห่งชาติ',
+  '2027-05-03':'ชดเชยวันแรงงานแห่งชาติ','2027-05-04':'วันฉัตรมงคล','2027-05-20':'วันวิสาขบูชา',
+  '2027-06-03':'วันเฉลิมพระชนมพรรษาสมเด็จพระราชินี','2027-07-18':'วันอาสาฬหบูชา','2027-07-19':'ชดเชยวันอาสาฬหบูชา',
+  '2027-07-28':'วันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว','2027-08-12':'วันแม่แห่งชาติ','2027-10-13':'วันนวมินทรมหาราช',
+  '2027-10-23':'วันปิยมหาราช','2027-10-25':'ชดเชยวันปิยมหาราช','2027-12-05':'วันพ่อแห่งชาติ','2027-12-06':'ชดเชยวันพ่อแห่งชาติ',
+  '2027-12-10':'วันรัฐธรรมนูญ','2027-12-31':'วันสิ้นปี'
+};
+/* วันหยุดเฉพาะของหน่วยงาน เช่น '2026-11-15':'วันสถาปนามูลนิธิ' */
+const ORG_EXTRA_HOLIDAYS={};
+let HOLIDAYS=Object.assign({},FALLBACK_HOLIDAYS,ORG_EXTRA_HOLIDAYS);
+try{const c=JSON.parse(localStorage.getItem('dlf_holidays')||'null');if(c&&Object.keys(c).length)HOLIDAYS=Object.assign({},c,ORG_EXTRA_HOLIDAYS);}catch(e){}
+function setHolidays(map){
+  if(!map||!Object.keys(map).length)return;
+  HOLIDAYS=Object.assign({},map,ORG_EXTRA_HOLIDAYS);
+  try{localStorage.setItem('dlf_holidays',JSON.stringify(map));}catch(e){}
+}
+function holidayName(ds){return HOLIDAYS[ds]||'';}
+function isWeekendYmd(ds){const w=parseYmd(ds).getDay();return w===0||w===6;}
 
 /* ═══════════════════════════════════════════
    BOOKING FORM
@@ -1298,7 +1589,8 @@ function thaiDateLong(s){if(!validYmd(s))return '';const d=parseYmd(s);return '�
 function setFormDate(v,silent){
   $('#f-date').value=v||'';
   const t=$('#f-date-txt'),dh=validYmd(v)?fmtDayHead(v):null;
-  t.innerHTML=validYmd(v)?esc(thaiDateLong(v))+(dh.tag?`<small>(${dh.tag})</small>`:''):'<span style="color:var(--faint)">เลือกวันที่</span>';
+  const hn=validYmd(v)?holidayName(v):'';
+  t.innerHTML=validYmd(v)?esc(thaiDateLong(v))+(dh.tag?`<small>(${dh.tag})</small>`:'')+(hn?`<small style="color:#E11D48">· ${esc(hn)}</small>`:''):'<span style="color:var(--faint)">เลือกวันที่</span>';
   $('#f-date').closest('.field').classList.remove('invalid');
   if(!silent)onFormChange();
 }
@@ -1328,6 +1620,10 @@ function openDP(){
   dp.y=d.getFullYear();dp.m=d.getMonth();dp.view='days';dp.open=true;
   renderDP();$('#dp').classList.add('show');$('#f-date-btn').classList.add('open');
 }
+function dpHolidayNote(){
+  const hs=Object.keys(HOLIDAYS).filter(k=>{const d=parseYmd(k);return d.getFullYear()===dp.y&&d.getMonth()===dp.m;}).sort();
+  return hs.length?`<div class="dp-hols">${hs.map(k=>`<span><b>${parseYmd(k).getDate()}</b> ${esc(HOLIDAYS[k])}</span>`).join('')}</div>`:'';
+}
 function closeDP(){dp.open=false;$('#dp').classList.remove('show');$('#f-date-btn').classList.remove('open');}
 function renderDP(){
   const box=$('#dp'),sel=$('#f-date').value,t=todayStr(),min=$('#f-date').dataset.min||'';
@@ -1342,9 +1638,10 @@ function renderDP(){
       const d=new Date(start);d.setDate(start.getDate()+i);
       const ds=ymd(d),dow=d.getDay(),n=count[ds]||0;
       let cls='dp-d';
-      if(d.getMonth()!==dp.m)cls+=' out';if(dow===0||dow===6)cls+=' wk';if(ds===t)cls+=' today';if(ds===sel)cls+=' sel';
+      const hn=holidayName(ds);
+      if(d.getMonth()!==dp.m)cls+=' out';if(dow===0||dow===6)cls+=' wk';if(hn)cls+=' hol';if(ds===t)cls+=' today';if(ds===sel)cls+=' sel';
       const dots=n?`<i>${'<b></b>'.repeat(Math.min(n,3))}</i>`:'';
-      body+=`<button type="button" class="${cls}" data-dp="day" data-d="${ds}"${min&&ds<min?' disabled':''} title="${esc(thaiDateLong(ds))}${n?' · มีจอง '+n+' รายการ':''}">${d.getDate()}${dots}</button>`;
+      body+=`<button type="button" class="${cls}" data-dp="day" data-d="${ds}"${min&&ds<min?' disabled':''} title="${esc(thaiDateLong(ds))}${hn?' · วันหยุด: '+esc(hn):''}${n?' · มีจอง '+n+' รายการ':''}">${d.getDate()}${dots}</button>`;
     }
     body+='</div>';
   }else{
@@ -1365,7 +1662,7 @@ function renderDP(){
       <button type="button" class="dp-nav" data-dp="next" aria-label="ถัดไป"><i data-lucide="chevron-right"></i></button>
     </div>
     <div class="dp-body">${body}</div>
-    ${dp.view==='days'?`<div class="dp-legend"><b></b>วันที่มีการจอง${esc(resName)}แล้ว</div>`:''}
+    ${dp.view==='days'?`<div class="dp-legend"><b></b>มีการจอง${esc(resName)}แล้ว<span class="dp-hk"></span>วันหยุดราชการ</div>${dpHolidayNote()}`:''}
     <div class="dp-foot">
       <button type="button" class="chip" data-dp="today">วันนี้</button>
       <button type="button" class="chip" data-dp="tomorrow">พรุ่งนี้</button>
@@ -1424,7 +1721,12 @@ function renderAvailability(){
   if(!validYmd(date)){el.classList.add('hidden');icons();return;}
   const pc=preCheck(kind,{id:state.editing?state.editing.id:'',[key]:state.sel[kind],driver:kind==='car'?$('#f-driver').value:'',date,timeStart:$('#f-start').value,timeEnd:$('#f-end').value});
   el.classList.remove('hidden');el.className='conflict '+(pc?'bad':'ok');
-  el.innerHTML=pc?`<i data-lucide="alert-triangle"></i><span><b>${pc.title}</b> — ${esc(pc.msg)}</span>`:`<i data-lucide="check-circle"></i><span>ช่วงเวลานี้ว่าง สามารถจองได้</span>`;
+  const hn=holidayName(date),we=isWeekendYmd(date);
+  const dayNote=hn?`วันที่เลือกเป็นวันหยุดราชการ (${esc(hn)})`:we?'วันที่เลือกเป็นวันเสาร์-อาทิตย์':'';
+  if(!pc&&dayNote)el.className='conflict warn';
+  el.innerHTML=pc?`<i data-lucide="alert-triangle"></i><span><b>${pc.title}</b> — ${esc(pc.msg)}${dayNote?`<span class="sub-note">${dayNote}</span>`:''}</span>`
+    :dayNote?`<i data-lucide="flag"></i><span><b>ช่วงเวลานี้ว่าง</b> — ${dayNote} กรุณาตรวจสอบความพร้อมของผู้ดูแลก่อนจอง</span>`
+    :`<i data-lucide="check-circle"></i><span>ช่วงเวลานี้ว่าง สามารถจองได้</span>`;
   icons();
 }
 
@@ -1555,8 +1857,7 @@ function closePreview(){$('#pv-ov').classList.remove('show');$('#pv-ov').setAttr
    PRINT BOOKING DOCUMENT
 ═══════════════════════════════════════════ */
 function printBookingDoc(kind,e){
-  const TH='๐๑๒๓๔๕๖๗๘๙';
-  const th=v=>String(v==null?'':v).replace(/\d/g,d=>TH[d]);
+  const th=v=>String(v==null?'':v); // ใช้เลขอารบิก
   const now=new Date();
   const dateLine=`<span style="white-space:nowrap">วันที่ <span class="f xs">${th(now.getDate())}</span> เดือน <span class="f s2">${MONTHS[now.getMonth()]}</span> พ.ศ. <span class="f xs">${th(now.getFullYear()+543)}</span></span>`;
   const f=(v,cls)=>`<span class="f ${cls||''}">${v?esc(th(v)):'&nbsp;'}</span>`;
@@ -1565,7 +1866,7 @@ function printBookingDoc(kind,e){
   const docNo=e.docNo?th(e.docNo):'';
   const approved=e.status==='approved',rejected=e.status==='rejected';
   const sign=(name,role,extra)=>`<div class="sign"><div>(ลงชื่อ) <span class="f sg">&nbsp;</span></div><div>(${name?esc(name):'<span class="f sg">&nbsp;</span>'})</div><div>${role}</div>${extra?`<div class="sm">${extra}</div>`:''}</div>`;
-  const box=(title,body,signRole)=>`<td><div class="bx-t">${title}</div>${body}<div class="bx-s">(ลงชื่อ) <span class="f m">&nbsp;</span><br>(<span class="f m">&nbsp;</span>)<br>${signRole}<br>วันที่ <span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span></div></td>`;
+  const box=(title,body,signRole)=>`<td><div class="bx-t">${title}</div>${body}<div class="bx-s">(ลงชื่อ) <span class="f m">&nbsp;</span><br>(<span class="f m">&nbsp;</span>)<br>${signRole} <span style="white-space:nowrap">&nbsp;วันที่ <span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span></span></div></td>`;
   let title,form,body,bottom;
 
   if(kind==='room'){
@@ -1582,7 +1883,7 @@ function printBookingDoc(kind,e){
       <p>อุปกรณ์ / สิ่งที่ต้องการเพิ่มเติม</p>
       <div class="cbs">
         <span>${cb(false,'โปรเจกเตอร์')}</span><span>${cb(false,'ไมโครโฟน/เครื่องเสียง')}</span><span>${cb(false,'ประชุมออนไลน์')}</span>
-        <span>${cb(false,'อาหารว่าง/เครื่องดื่ม')}</span>
+        <span>${cb(false,'อาหารว่าง')}</span>
         <span style="grid-column:span 2">${cb(!!e.note,'อื่น ๆ')} ${f(e.note,'l')}</span>
       </div>
       <p class="ind">จึงเรียนมาเพื่อโปรดพิจารณาอนุญาต</p>
@@ -1592,7 +1893,7 @@ function printBookingDoc(kind,e){
       ${box('คำสั่งผู้มีอำนาจ',`<p>${cb(approved,'อนุญาต')}</p><p>${cb(rejected,'ไม่อนุญาต')}</p>`,'ผู้มีอำนาจอนุมัติ')}
     </tr></table>`;
   }else{
-    form='แบบ ๓';title='ใบขออนุญาตใช้รถส่วนกลาง';
+    form='แบบ 3';title='ใบขออนุญาตใช้รถส่วนกลาง';
     const comp=(e.companions||[]).join(', ');
     body=`
       <p class="sub"><b>เรียน</b>&nbsp; ${esc(FORM_TO)}</p>
@@ -1604,8 +1905,8 @@ function printBookingDoc(kind,e){
       <p>ในวันที่ ${f(bookDate,'l')} เวลา ${f(e.timeStart,'s')} น. ถึง ${f(e.timeEnd,'s')} น.</p>
       <div class="signs">${sign(e.requester,'ผู้ขออนุญาต')}${sign('','หัวหน้ากลุ่มงาน / ผู้บังคับบัญชา',esc(e.dept||''))}</div>`;
     bottom=`<table class="bx"><tr>
-      ${box('ความเห็นผู้จัดรถ',`<p>ควรอนุญาตให้ใช้รถทะเบียน ${f(e.plate,'s2')}</p><p>โดยมี ${f(e.driver,'m')}</p><p>เป็นพนักงานขับรถ</p>`,'ผู้จัดรถ')}
-      ${box('คำสั่งผู้มีอำนาจ',`<p>${cb(approved,'อนุญาต')}</p><p>${cb(rejected,'ไม่อนุญาต')}</p><p>&nbsp;</p>`,'ผู้สั่งใช้รถ')}
+      ${box('ความเห็นผู้จัดรถ',`<p>ควรอนุญาตให้ใช้รถทะเบียน ${f(e.plate,'s')}</p><p>โดยมี ${f(e.driver,'m')} เป็นพนักงานขับรถ</p>`,'ผู้จัดรถ')}
+      ${box('คำสั่งผู้มีอำนาจ',`<p>${cb(approved,'อนุญาต')}</p><p>${cb(rejected,'ไม่อนุญาต')}</p>`,'ผู้สั่งใช้รถ')}
     </tr></table>
     <div class="log">
       <div class="bx-t">บันทึกการใช้รถ (พนักงานขับรถ)</div>
@@ -1619,8 +1920,8 @@ function printBookingDoc(kind,e){
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{background:#E5E7EB}
-body{font-family:'Sarabun','TH Sarabun New',sans-serif;font-size:14pt;line-height:1.42;color:#000}
-.page{width:210mm;height:297mm;overflow:hidden;margin:12mm auto;background:#fff;padding:12mm 18mm 14mm 28mm;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.15)}
+body{font-family:'Sarabun','TH Sarabun New',sans-serif;font-size:14pt;line-height:1.72;color:#000}
+.page{width:210mm;height:297mm;overflow:hidden;margin:12mm auto;background:#fff;padding:10mm 18mm 14mm 28mm;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.15)}
 @page{size:A4;margin:0}
 @media print{html{background:#fff}.page{margin:0;box-shadow:none}.tools{display:none!important}}
 .tools{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:10px;padding:12px;background:#111827}
@@ -1630,26 +1931,26 @@ body{font-family:'Sarabun','TH Sarabun New',sans-serif;font-size:14pt;line-heigh
 .logo{position:absolute;left:28mm;top:9mm}.logo img{height:16mm}
 h1{text-align:center;font-size:18pt;font-weight:700;line-height:1.25;margin-top:4mm}
 .org{text-align:center;font-size:13.5pt;margin-bottom:3mm}
-.meta{margin-left:46%;line-height:1.42;margin-bottom:1mm}
+.meta{margin-left:40%;line-height:1.6;margin-bottom:1.5mm}
 .docno{display:inline-block;border:1.2px solid #000;border-radius:4px;padding:0 10px;font-weight:700}
 p{margin:0}
-.sub{margin-top:2mm}
+.sub{margin-top:2.5mm}
 .ind{text-indent:25mm;margin-top:1mm}
-.f{display:inline-block;border-bottom:1.2px dotted #000;min-width:30mm;padding:0 6px;line-height:1.25;text-align:center;text-indent:0;vertical-align:baseline}
+.f{display:inline-block;border-bottom:1.2px dotted #000;min-width:30mm;padding:0 6px 1px;line-height:1.3;text-align:center;text-indent:0;vertical-align:baseline}
 .f.xs{min-width:9mm;padding:0 3px}.f.s{min-width:16mm}.f.s2{min-width:26mm}.f.m{min-width:40mm}.f.l{min-width:56mm}.f.sg{min-width:48mm}.f.xl{min-width:calc(100% - 14mm);text-align:left}
 .cbs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:0 7mm;margin:0 0 1mm 10mm}
 .cbs .w{grid-column:1/-1}
 .cbx{display:inline-block;width:4.2mm;height:4.2mm;border:1.3px solid #000;margin-right:2.5mm;vertical-align:-0.4mm;position:relative}
 .cbx.on::after{content:'';position:absolute;left:1.1mm;top:-.2mm;width:1.4mm;height:2.8mm;border:solid #000;border-width:0 .55mm .55mm 0;transform:rotate(45deg)}
-.signs{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:4mm}
-.sign{text-align:center;line-height:1.45}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:5mm}
+.sign{text-align:center;line-height:1.6}
 .sign .sm{font-size:13pt}
 .bx{width:100%;border-collapse:collapse;margin-top:4mm;table-layout:fixed}
-.bx td{border:1.2px solid #000;padding:2mm 4mm;vertical-align:top;font-size:13.5pt;line-height:1.42}
+.bx td{border:1.2px solid #000;padding:2mm 4mm;vertical-align:top;font-size:13.5pt;line-height:1.6}
 .bx-t{font-weight:700;text-decoration:underline;margin-bottom:1mm}
 .bx-s{text-align:center;margin-top:2mm}
 .bx-s .f.m{min-width:42mm}
-.log{border:1.2px solid #000;border-top:none;padding:2mm 4mm;font-size:13.5pt}
+.log{border:1.2px solid #000;border-top:none;padding:2mm 4mm;font-size:13.5pt;line-height:1.6}
 .foot{position:absolute;left:28mm;right:18mm;bottom:6mm;display:flex;justify-content:space-between;font-size:10pt;color:#6B7280;border-top:.5px solid #D1D5DB;padding-top:1.5mm}
 </style></head><body>
 <div class="tools"><button class="p" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button><button onclick="window.close()">✕ ปิด</button></div>
@@ -1784,12 +2085,39 @@ function applyUserToForm(){
   else if(u&&isAdmin&&r.value===''){try{const p=JSON.parse(localStorage.getItem('dlf_person')||'null');if(p&&p.requester)r.value=p.requester;}catch(e){}}
   $('#requester-note').classList.toggle('hidden',!lock);
 }
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const reducedMotion=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LS_BTN_HTML='<span class="bl">เข้าสู่ระบบ</span><i data-lucide="arrow-right"></i>';
+function resetLoginBtn(){const b=$('#ls-btn');b.disabled=false;b.classList.remove('loading','done');b.innerHTML=LS_BTN_HTML;icons();}
 function showLogin(msg){
   closePreview();closeDrawer();
+  const ls=$('#login-screen');
+  ls.classList.remove('leaving','ls-in');
   document.body.classList.add('locked');
+  void ls.offsetWidth;ls.classList.add('ls-in');            // เล่นแอนิเมชันเปิดหน้าใหม่ทุกครั้ง
+  resetLoginBtn();
   const err=$('#ls-err');err.style.display=msg?'block':'none';if(msg)err.textContent=msg;
   $('#ls-pass').value='';updateIdCounter();
-  setTimeout(()=>$('#ls-user').focus(),60);
+  setTimeout(()=>$('#ls-user').focus(),reducedMotion()?0:500);
+}
+/* เปลี่ยนจากหน้า login เข้าสู่ระบบ: ปุ่มเขียว → วงกลมขยายจากปุ่ม → เผยหน้าแรกพร้อมแอนิเมชัน */
+async function enterApp(btn,ses){
+  const p=$('#portal'),r=btn.getBoundingClientRect(),fast=reducedMotion();
+  p.style.setProperty('--x',(r.left+r.width/2)+'px');p.style.setProperty('--y',(r.top+r.height/2)+'px');
+  if(!fast){
+    await wait(380);
+    $('#login-screen').classList.add('leaving');
+    p.classList.remove('fade');p.classList.add('grow');
+    await wait(820);
+  }
+  clearLocalData();setSession(ses);
+  $('#ls-user').value='';$('#ls-pass').value='';
+  document.body.classList.add('app-enter');go('home');
+  loadData().then(ok=>{renderAll();});
+  if(!fast){await wait(250);p.classList.add('fade');await wait(520);}
+  p.classList.remove('grow','fade');$('#login-screen').classList.remove('leaving');
+  setTimeout(()=>document.body.classList.remove('app-enter'),1400);
+  toast('ยินดีต้อนรับ '+(ses.name||''));
 }
 function sessionExpired(){
   if(!state.user)return;
@@ -1802,21 +2130,20 @@ function updateIdCounter(){
   else{c.textContent='';c.classList.remove('ok');}
 }
 async function doLogin(){
-  const u=$('#ls-user').value.trim(),p=$('#ls-pass').value.trim(),err=$('#ls-err'),btn=$('#ls-btn');
-  const fail=m=>{err.textContent=m;err.style.display='block';err.classList.remove('shake');void err.offsetWidth;err.classList.add('shake');};
+  const u=$('#ls-user').value.trim(),p=$('#ls-pass').value.trim(),err=$('#ls-err'),btn=$('#ls-btn'),card=$('#ls-card');
+  if(btn.disabled)return;
+  const fail=m=>{err.textContent=m;err.style.display='block';card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');};
   if(!u||!p)return fail('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
   if(/^\d+$/.test(u)&&u.length!==13)return fail('เลขบัตรประชาชนต้องมี 13 หลัก');
-  btn.disabled=true;btn.textContent='กำลังตรวจสอบ…';err.style.display='none';
+  btn.disabled=true;btn.classList.add('loading');btn.innerHTML='<span class="spin-i"></span><span class="bl">กำลังตรวจสอบ…</span>';err.style.display='none';
   const j=await gasPost({action:'login',username:u,password:p});
-  btn.disabled=false;btn.textContent='เข้าสู่ระบบ';
   if(j&&j.ok&&j.token){
-    clearLocalData();
-    setSession({token:j.token,role:j.role||'admin',name:j.name||'ผู้ใช้งาน',dept:j.dept||'',position:j.position||'',exp:Date.now()+(j.expiresInHours||8)*3600e3});
-    $('#ls-user').value='';$('#ls-pass').value='';
-    go('home');toast('ยินดีต้อนรับ '+(j.name||''));
-    await loadData();renderAll();
+    btn.classList.remove('loading');btn.classList.add('done');
+    btn.innerHTML='<i data-lucide="check-circle"></i><span class="bl">เข้าสู่ระบบสำเร็จ</span>';icons();
+    await enterApp(btn,{token:j.token,role:j.role||'admin',name:j.name||'ผู้ใช้งาน',dept:j.dept||'',position:j.position||'',exp:Date.now()+(j.expiresInHours||8)*3600e3});
     return;
   }
+  resetLoginBtn();
   $('#ls-pass').value='';$('#ls-pass').focus();
   fail(j.opaque?'อ่านผลจากเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบการ Deploy (Who has access: Anyone)'
     :j.error==='locked'?'เข้าสู่ระบบผิดหลายครั้ง กรุณารอ 10 นาทีแล้วลองใหม่'
@@ -1883,8 +2210,10 @@ document.addEventListener('click',async ev=>{
     if(g.dataset.go==='book')onFormChange();
     return;
   }
+  const jp=ev.target.closest('[data-jump]');
+  if(jp){calJump(jp.dataset.jump);return;}
   const cc=ev.target.closest('.cc[data-date]');
-  if(cc){state.calSel=cc.dataset.date;renderCalendar();if(window.innerWidth<=1280)$('.agenda').scrollIntoView({behavior:'smooth',block:'start'});}
+  if(cc){calJump(cc.dataset.date);if(window.innerWidth<=1280)$('.agenda').scrollIntoView({behavior:'smooth',block:'start'});}
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
@@ -1943,6 +2272,7 @@ async function autoRefresh(){
   tick();setInterval(tick,1000);
   const ses=loadSession();
   if(ses){
+    document.body.classList.add('app-enter');setTimeout(()=>document.body.classList.remove('app-enter'),1400);
     setSession(ses,false);go('home');
     if(cacheLoad())renderAll();
     await loadData();renderAll();
