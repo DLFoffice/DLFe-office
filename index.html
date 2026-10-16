@@ -372,19 +372,115 @@ textarea.inp{min-height:84px;resize:vertical}
 .pop .btn-primary.t-warning{background:var(--warn);box-shadow:none}
 .pop .btn-primary.t-info{background:#2563EB;box-shadow:none}
 
-.login{width:min(400px,100%);padding:32px 30px 26px;position:relative}
-.login-logo{text-align:center;margin-bottom:14px}
-.login-logo img{width:60px}
-.login h2{text-align:center;font-size:1.25rem;font-weight:700}
-.login .sub{text-align:center;font-size:.84rem;color:var(--muted);margin-bottom:22px}
-.login-err{display:none;font-size:.82rem;color:var(--bad);background:var(--bad-s);border-radius:10px;padding:9px 12px;margin-bottom:12px}
-.login .btn{width:100%}
+/* ─── LOGIN SCREEN (แบบเดียวกับระบบ HR) ─── */
+#login-screen{display:none;position:fixed;inset:0;z-index:500;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);background:var(--bg)}
+body.locked #login-screen{display:grid}
+body.locked .app,body.locked .bottom-nav{display:none}
+.ls-art{position:relative;overflow:hidden;color:#fff;padding:44px 52px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(145deg,#312E81 0%,#4338CA 38%,#5B5CF6 68%,#0EA5A0 125%)}
+.ls-art::before,.ls-art::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.07)}
+.ls-art::before{width:520px;height:520px;right:-180px;top:-160px}
+.ls-art::after{width:340px;height:340px;left:-120px;bottom:-140px;background:rgba(14,165,160,.22)}
+.ls-art>*{position:relative;z-index:1}
+.ls-brand{display:flex;align-items:center;gap:14px}
+.ls-logo{width:54px;height:54px;border-radius:15px;background:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(15,23,42,.25)}
+.ls-logo img{width:40px}
+.ls-brand b{display:block;font-family:'Inter',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.02em}
+.ls-brand small{display:block;font-size:.8rem;opacity:.8}
+.ls-hero h2{font-size:2.3rem;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin-bottom:26px}
+.ls-hero h2 span{color:#99F6E4}
+.ls-feats{list-style:none;display:flex;flex-direction:column;gap:12px;max-width:420px}
+.ls-feats li{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px)}
+.ls-feats li>svg{width:38px;height:38px;padding:9px;border-radius:11px;background:#fff;color:#4338CA;box-sizing:border-box;flex-shrink:0}
+.ls-feats b{display:block;font-size:.95rem}
+.ls-feats small{display:block;font-size:.78rem;opacity:.8}
+.ls-foot{font-size:.78rem;opacity:.75}
+.ls-pane{display:flex;align-items:center;justify-content:center;padding:32px 22px;overflow-y:auto}
+.ls-card{width:min(410px,100%);animation:viewIn .35s var(--ease)}
+.ls-mbrand{display:none;align-items:center;gap:12px;margin-bottom:26px}
+.ls-mbrand img{width:46px}
+.ls-mbrand b{font-family:'Inter',sans-serif;font-size:1.15rem;font-weight:800}
+.ls-card h1{font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.ls-card .sub{font-size:.9rem;color:var(--muted);margin:4px 0 26px}
+.ls-card .inp{background:#fff;padding:12px 14px}
+.ls-count{font-size:.74rem;color:var(--muted);margin-top:5px;min-height:1em;font-family:'Inter','IBM Plex Sans Thai',sans-serif}
+.ls-count.ok{color:var(--ok)}
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:46px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.pw-eye:hover{background:var(--fill);color:var(--ink)}
+.ls-err{display:none;font-size:.84rem;color:var(--bad-d);background:var(--bad-s);border:1px solid #FECACA;border-radius:11px;padding:10px 13px;margin-bottom:14px}
+.ls-err.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.ls-hint{margin-top:20px;padding:13px 15px;border-radius:13px;background:#fff;border:1px solid var(--line);font-size:.8rem;color:var(--muted);line-height:1.7}
+.ls-hint b{color:var(--ink2)}
+@media(max-width:900px){#login-screen{grid-template-columns:1fr}.ls-art{display:none}.ls-mbrand{display:flex}}
+.acct-ava.ini{background:var(--room);color:#fff;border-color:transparent;font-weight:700;font-size:1rem}
+.acct-card>div{min-width:0}
+.acct-card b,.acct-card small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-note{font-size:.74rem;color:var(--muted);padding:2px 12px 6px;line-height:1.5}
+body:not(.is-admin) .admin-nav{display:none!important}
+.inp.locked{background:var(--line2);color:var(--ink2);cursor:not-allowed}
+.req-note{font-size:.72rem;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:5px}
+.req-note svg{width:13px;height:13px}
+.mine-card{margin-bottom:20px}
+.chip.on{background:var(--acc-s);border-color:var(--acc);color:var(--acc-d);font-weight:600}
 
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;border-radius:12px;padding:11px 18px;font-size:.86rem;font-weight:500;box-shadow:var(--sh3);opacity:0;pointer-events:none;z-index:400;transition:all .28s var(--spring);display:flex;align-items:center;gap:9px;max-width:calc(100vw - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast svg{width:17px;height:17px;color:#34D399}
 
 .bottom-nav{display:none}
+
+/* ─── THAI DATE PICKER (พ.ศ.) ─── */
+.dp-wrap{position:relative}
+.dp-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer}
+.dp-btn svg{color:var(--acc);width:18px;height:18px}
+.dp-btn .dp-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-btn .dp-txt small{color:var(--muted);font-size:.78rem;margin-left:4px}
+.dp-btn.open{border-color:var(--acc);background:#fff;box-shadow:0 0 0 4px rgba(var(--acc-rgb),.12)}
+.dp{position:absolute;top:calc(100% + 8px);left:0;z-index:80;width:330px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh3);overflow:hidden;opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top left;pointer-events:none;transition:opacity .16s,transform .2s var(--spring)}
+.dp.show{opacity:1;transform:none;pointer-events:auto}
+.dp-head{display:flex;align-items:center;gap:6px;padding:14px 14px 10px;background:linear-gradient(135deg,var(--acc),var(--acc-d));color:#fff}
+.dp-title{flex:1;display:flex;flex-direction:column;align-items:flex-start;padding:2px 8px;border-radius:10px;color:#fff;text-align:left}
+.dp-title:hover{background:rgba(255,255,255,.14)}
+.dp-title small{font-size:.72rem;opacity:.8;font-weight:500}
+.dp-title b{font-size:1.08rem;font-weight:700;display:flex;align-items:center;gap:4px}
+.dp-title b svg{width:16px;height:16px;opacity:.8}
+.dp-nav{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)}
+.dp-nav:hover{background:rgba(255,255,255,.26)}
+.dp-nav svg{width:17px;height:17px}
+.dp-body{padding:10px 12px 6px}
+.dp-dow,.dp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dp-dow span{text-align:center;font-size:.7rem;font-weight:600;color:var(--muted);padding:4px 0 6px}
+.dp-dow span:first-child,.dp-dow span:last-child{color:#E11D48}
+.dp-d{position:relative;height:38px;border-radius:11px;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:500;color:var(--ink);display:grid;place-items:center;transition:background .12s,color .12s}
+.dp-d:hover:not(:disabled){background:var(--acc-s);color:var(--acc-d)}
+.dp-d.out{color:#CBD5E1}
+.dp-d.wk{color:#E11D48}
+.dp-d.out.wk{color:#FBCFE8}
+.dp-d.today{box-shadow:inset 0 0 0 1.5px var(--acc);color:var(--acc-d);font-weight:700}
+.dp-d.sel{background:var(--acc);color:#fff!important;font-weight:700;box-shadow:0 6px 14px -4px rgba(var(--acc-rgb),.6)}
+.dp-d:disabled{color:#D7DCE5;cursor:not-allowed;text-decoration:line-through;text-decoration-color:#E5E8F0}
+.dp-d i{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);display:flex;gap:2px}
+.dp-d i b{width:4px;height:4px;border-radius:50%;background:var(--acc)}
+.dp-d.sel i b{background:#fff}
+.dp-months{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px 0 8px}
+.dp-m{padding:12px 4px;border-radius:12px;font-size:.86rem;font-weight:500;color:var(--ink2);border:1px solid var(--line2)}
+.dp-m:hover{background:var(--acc-s);color:var(--acc-d);border-color:transparent}
+.dp-m.sel{background:var(--acc);color:#fff;border-color:transparent;font-weight:600}
+.dp-m.now{border-color:var(--acc)}
+.dp-foot{display:flex;align-items:center;gap:6px;padding:8px 12px 12px;border-top:1px solid var(--line2)}
+.dp-foot .chip{padding:5px 11px}
+.dp-foot .spacer{flex:1}
+.dp-legend{font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:5px;padding:0 14px 8px}
+.dp-legend b{width:5px;height:5px;border-radius:50%;background:var(--acc);display:inline-block}
+
+/* van tile */
+.tile-ico{width:38px;height:38px;border-radius:11px;background:var(--cs);color:var(--c);display:grid;place-items:center;flex-shrink:0}
+.tile-ico svg{width:20px;height:20px}
+.tile.on .tile-ico{background:#fff}
+.tile-plate{font-family:'Inter','IBM Plex Sans Thai',sans-serif;font-size:1rem!important;letter-spacing:.02em}
+.drv-hint{font-size:.74rem;color:var(--muted);margin-top:6px}
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:1280px){
@@ -425,7 +521,7 @@ textarea.inp{min-height:84px;resize:vertical}
   .toast{bottom:90px}
   .ov{padding:0;align-items:flex-end}
   .sheet{border-radius:22px 22px 0 0;max-height:94vh;transform:translateY(40px)}
-  .pop,.login{border-radius:22px 22px 0 0}
+  .pop{border-radius:22px 22px 0 0}
 }
 @media(max-width:640px){
   .row2,.row3{grid-template-columns:1fr 1fr}
@@ -483,7 +579,7 @@ textarea.inp{min-height:84px;resize:vertical}
       <button class="nav-item" data-go="book"><i data-lucide="plus-circle"></i><span>จองใหม่</span></button>
       <button class="nav-item" data-go="calendar"><i data-lucide="calendar-days"></i><span>ปฏิทิน</span></button>
       <button class="nav-item" data-go="list"><i data-lucide="list-checks"></i><span>รายการจอง</span><em class="nav-badge hidden" data-badge="pending"></em></button>
-      <button class="nav-item" data-go="stats"><i data-lucide="bar-chart-3"></i><span>สถิติและรายงาน</span></button>
+      <button class="nav-item admin-nav" data-go="stats"><i data-lucide="bar-chart-3"></i><span>สถิติและรายงาน</span></button>
     </nav>
     <div class="side-foot" id="acct"></div>
   </aside>
@@ -530,6 +626,11 @@ textarea.inp{min-height:84px;resize:vertical}
           <div class="card-b scroll" style="max-height:420px" id="pending-list"></div>
         </div>
 
+        <div class="card mine-card hidden" id="mine-card">
+          <div class="card-h"><h3><i data-lucide="user-check"></i>คำขอของฉัน</h3><span class="count" id="mine-count">0</span></div>
+          <div class="card-b scroll" style="max-height:420px" id="mine-list"></div>
+        </div>
+
         <div class="grid-2">
           <div class="card">
             <div class="card-h"><h3><i data-lucide="calendar-check"></i>ตารางวันนี้</h3><span class="count" id="today-count">0</span></div>
@@ -562,16 +663,24 @@ textarea.inp{min-height:84px;resize:vertical}
             <div class="fsec">
               <div class="fsec-h"><span class="step">1</span><div><h4 id="res-h">เลือกห้องประชุม</h4><p id="res-p">แสดงจำนวนการจองของวันที่เลือก</p></div></div>
               <div class="tiles" id="res-tiles"></div>
-              <div class="field only-car" style="margin-top:14px">
-                <label for="f-driver">พนักงานขับรถ</label>
+              <div class="field only-car" data-f="driver" style="margin-top:16px;max-width:420px">
+                <label for="f-driver">พนักงานขับรถ<span class="req">*</span></label>
                 <select id="f-driver" class="inp"></select>
+                <div class="drv-hint" id="drv-hint">เลือกวันและเวลาก่อน ระบบจะแสดงว่าผู้ขับคนใดว่าง</div>
+                <div class="err">กรุณาเลือกพนักงานขับรถ</div>
               </div>
             </div>
 
             <div class="fsec">
               <div class="fsec-h"><span class="step">2</span><div><h4>วันและเวลา</h4><p>เลือกช่วงเวลาที่ต้องการใช้งาน</p></div></div>
               <div class="row3">
-                <div class="field" data-f="date"><label for="f-date">วันที่ใช้งาน<span class="req">*</span></label><input id="f-date" type="date" class="inp"><div class="err">กรุณาเลือกวันที่</div></div>
+                <div class="field" data-f="date"><label for="f-date-btn">วันที่ใช้งาน<span class="req">*</span></label>
+                  <div class="dp-wrap">
+                    <input id="f-date" type="hidden">
+                    <button type="button" id="f-date-btn" class="inp dp-btn" aria-haspopup="dialog"><i data-lucide="calendar-days"></i><span class="dp-txt" id="f-date-txt">เลือกวันที่</span></button>
+                    <div class="dp" id="dp" role="dialog" aria-label="เลือกวันที่"></div>
+                  </div>
+                  <div class="err">กรุณาเลือกวันที่</div></div>
                 <div class="field"><label for="f-start">ตั้งแต่เวลา</label><select id="f-start" class="inp"></select></div>
                 <div class="field"><label for="f-end">ถึงเวลา</label><select id="f-end" class="inp"></select></div>
               </div>
@@ -586,7 +695,7 @@ textarea.inp{min-height:84px;resize:vertical}
             <div class="fsec">
               <div class="fsec-h"><span class="step">3</span><div><h4>ข้อมูลผู้ขอใช้</h4><p>ระบบจะจำชื่อและกลุ่มงานไว้ให้ครั้งถัดไป</p></div></div>
               <div class="row2">
-                <div class="field" data-f="requester"><label for="f-requester">ชื่อ-นามสกุล<span class="req">*</span></label><input id="f-requester" class="inp" placeholder="ชื่อผู้ขออนุญาต" autocomplete="name"><div class="err">กรุณากรอกชื่อผู้ขอ</div></div>
+                <div class="field" data-f="requester"><label for="f-requester">ชื่อ-นามสกุล<span class="req">*</span></label><input id="f-requester" class="inp" placeholder="ชื่อผู้ขออนุญาต" autocomplete="name"><div class="req-note hidden" id="requester-note"><i data-lucide="lock"></i>จองในชื่อบัญชีที่เข้าสู่ระบบ</div><div class="err">กรุณากรอกชื่อผู้ขอ</div></div>
                 <div class="field"><label for="f-dept">กลุ่มงาน / ฝ่าย</label><select id="f-dept" class="inp"></select></div>
               </div>
               <div class="field only-room" style="max-width:220px;margin-top:14px"><label for="f-attendees">จำนวนผู้เข้าร่วม (คน)</label><input id="f-attendees" type="number" min="1" value="1" class="inp"></div>
@@ -665,12 +774,13 @@ textarea.inp{min-height:84px;resize:vertical}
       <section class="view" data-view="list">
         <div class="card">
           <div class="toolbar">
-            <div class="search"><i data-lucide="search"></i><input id="q" class="inp" placeholder="ค้นหาชื่อผู้จอง ห้อง ทะเบียนรถ วัตถุประสงค์…"></div>
+            <div class="search"><i data-lucide="search"></i><input id="q" class="inp" placeholder="ค้นหาเลขที่เอกสาร ชื่อผู้จอง ห้อง ทะเบียนรถ…"></div>
             <div class="seg" id="lf-kind">
               <button data-k="all" class="on">ทั้งหมด</button>
               <button data-k="room"><i data-lucide="building-2"></i>ห้อง</button>
               <button data-k="car"><i data-lucide="car"></i>รถ</button>
             </div>
+            <button type="button" class="chip" id="lf-mine"><i data-lucide="user"></i>เฉพาะของฉัน</button>
             <select id="lf-status" class="inp inp-sm">
               <option value="all">ทุกสถานะ</option>
               <option value="pending">รออนุมัติ</option>
@@ -708,7 +818,7 @@ textarea.inp{min-height:84px;resize:vertical}
           <div class="card-h"><h3><i data-lucide="table"></i>รายการจองทั้งหมด</h3><span class="count" id="tbl-count">0</span></div>
           <div class="tbl-wrap">
             <table class="tbl">
-              <thead><tr><th>ประเภท</th><th>วันที่</th><th>เวลา</th><th>ห้อง / รถ</th><th>ผู้จอง</th><th>กลุ่มงาน</th><th>วัตถุประสงค์</th><th>สถานะ</th></tr></thead>
+              <thead><tr><th>เลขที่</th><th>ประเภท</th><th>วันที่</th><th>เวลา</th><th>ห้อง / รถ</th><th>ผู้จอง</th><th>กลุ่มงาน</th><th>วัตถุประสงค์</th><th>สถานะ</th></tr></thead>
               <tbody id="tbl-body"></tbody>
             </table>
           </div>
@@ -725,7 +835,7 @@ textarea.inp{min-height:84px;resize:vertical}
   <button class="bn-item" data-go="calendar"><i data-lucide="calendar-days"></i>ปฏิทิน</button>
   <button class="bn-item bn-main" data-go="book"><i data-lucide="plus"></i>จองใหม่</button>
   <button class="bn-item" data-go="list"><i data-lucide="list-checks"></i>รายการ<em class="nav-badge hidden" data-badge="pending"></em></button>
-  <button class="bn-item" data-go="stats"><i data-lucide="bar-chart-3"></i>สถิติ</button>
+  <button class="bn-item admin-nav" data-go="stats"><i data-lucide="bar-chart-3"></i>สถิติ</button>
 </nav>
 
 <!-- ═════════ OVERLAYS ═════════ -->
@@ -743,18 +853,31 @@ textarea.inp{min-height:84px;resize:vertical}
   </div>
 </div>
 
-<div class="ov" id="login-ov" style="z-index:250">
-  <div class="sheet login" role="dialog" aria-modal="true">
-    <button class="icon-btn pv-x" data-act="login-close" aria-label="ปิด"><i data-lucide="x"></i></button>
-    <div class="login-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt="DLF"></div>
-    <h2>เข้าสู่ระบบผู้ดูแล</h2>
-    <p class="sub">สำหรับอนุมัติ แก้ไข และจัดการรายการจอง</p>
-    <div class="field"><label for="login-user">ชื่อผู้ใช้</label><input id="login-user" class="inp" autocomplete="username"></div>
-    <div class="field"><label for="login-pass">รหัสผ่าน</label><input id="login-pass" type="password" class="inp" autocomplete="current-password"></div>
-    <div class="login-err" id="login-err"></div>
-    <button class="btn btn-primary btn-lg" id="login-btn" style="margin-top:4px">เข้าสู่ระบบ</button>
-    <p style="text-align:center;font-size:.78rem;color:var(--muted);margin-top:14px">ผู้ใช้ทั่วไปไม่ต้องเข้าสู่ระบบ — จองและดูข้อมูลได้ทันที</p>
-  </div>
+<div id="login-screen">
+  <section class="ls-art" aria-hidden="true">
+    <div class="ls-brand"><span class="ls-logo"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""></span><div><b>DLFOffice</b><small>ระบบจองห้องประชุมและยานพาหนะส่วนกลาง</small></div></div>
+    <div class="ls-hero">
+      <h2>จองห้องประชุม<br>และรถตู้ส่วนกลาง<br><span>ได้ในไม่กี่คลิก</span></h2>
+      <ul class="ls-feats">
+        <li><i data-lucide="building-2"></i><div><b>ห้องประชุมทุกอาคาร</b><small>ดูตารางว่างแบบเรียลไทม์ก่อนจอง</small></div></li>
+        <li><i data-lucide="bus"></i><div><b>รถตู้ส่วนกลาง</b><small>เลือกทะเบียนรถและพนักงานขับรถ</small></div></li>
+        <li><i data-lucide="message-circle"></i><div><b>แจ้งผลผ่าน LINE</b><small>รู้ทันทีเมื่อคำขอได้รับการอนุมัติ</small></div></li>
+      </ul>
+    </div>
+    <div class="ls-foot" id="ls-org"></div>
+  </section>
+  <section class="ls-pane">
+    <div class="ls-card">
+      <div class="ls-mbrand"><img src="https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png" alt=""><b>DLFOffice</b></div>
+      <h1>เข้าสู่ระบบ</h1>
+      <p class="sub">ยินดีต้อนรับ กรอกข้อมูลเพื่อเริ่มใช้งานระบบจอง</p>
+      <div class="field"><label for="ls-user">ชื่อผู้ใช้</label><input id="ls-user" class="inp" autocomplete="username" placeholder="เลขบัตรประชาชน 13 หลัก หรือชื่อผู้ใช้ผู้ดูแล" spellcheck="false"><div class="ls-count" id="ls-count"></div></div>
+      <div class="field"><label for="ls-pass">รหัสผ่าน</label><div class="pw-wrap"><input id="ls-pass" type="password" class="inp" autocomplete="current-password" placeholder="รหัสผ่าน"><button type="button" class="pw-eye" id="ls-eye" aria-label="แสดงรหัสผ่าน"><i data-lucide="eye"></i></button></div></div>
+      <div class="ls-err" id="ls-err" role="alert"></div>
+      <button class="btn btn-primary btn-lg" id="ls-btn" style="width:100%">เข้าสู่ระบบ</button>
+      <div class="ls-hint"><b>พนักงาน</b> ใช้เลขบัตรประชาชน 13 หลักเป็นทั้งชื่อผู้ใช้และรหัสผ่าน (บัญชีเดียวกับระบบ HR)<br><b>ผู้ดูแลระบบ</b> ใช้บัญชีที่กำหนดไว้ในระบบ</div>
+    </div>
+  </section>
 </div>
 
 <div class="toast" id="toast"><i data-lucide="check-circle"></i><span id="toast-txt"></span></div>
@@ -766,7 +889,13 @@ textarea.inp{min-height:84px;resize:vertical}
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw7K3QGHWq-TrzzwOFQ_49fJISK66OGoMne4_GV6tHgF7GPSqJxWJq-WWvVtFeIErFI3Q/exec';
 const ROOMS = ["ห้องประชุม อาคาร A ชั้น 1","ห้องประชุม อาคาร A1 ชั้น 2 (ห้องสตูดิโอ)","ห้องประชุม อาคาร B ชั้น 1","ห้องประชุม อาคาร B ชั้น 2","ห้องประชุมศูนย์การเรียนรู้อาคาร D"];
 const DEPTS = ["กลุ่มนโยบายและแผน","กลุ่มประชาสัมพันธ์และสื่อสารองค์กร","กลุ่มงานสนับสนุน","กลุ่มวิชาการ","กลุ่มการเงินและบัญชี","กลุ่มบริหารทั่วไป","กลุ่มสารสนเทศ"];
-const VEHICLES = [{plate:"ฮอ 4133",driver:"นายอดิศร แสงไชย"},{plate:"ฮอ 2983",driver:"นายพิษณุพจน์ สิทธิธนาสกุล"}];
+/* รถตู้ส่วนกลาง (เลือกทะเบียนก่อน แล้วเลือกผู้ขับแยก) */
+const VEHICLES = [{plate:"ฮอ 4133",type:"รถตู้"},{plate:"ฮอ 2983",type:"รถตู้"}];
+const DRIVERS  = ["นายอดิศร แสงไชย","นายพิษณุพจน์ สิทธิธนาสกุล"];
+/* ข้อมูลหัวแบบฟอร์มราชการ */
+const FORM_ORG   = 'มูลนิธิการศึกษาทางไกลผ่านดาวเทียม ในพระบรมราชูปถัมภ์';
+const FORM_TO    = 'ผู้อำนวยการ';           // "เรียน ..." ในแบบฟอร์ม
+const FORM_PLACE = FORM_ORG;               // "เขียนที่ ..." (แก้ได้)
 const LOGO_URL = 'https://dltv.ac.th/upload/data/users/0/316/CMS/images/logo%20dlf%20%E0%B8%AA%E0%B8%A1%E0%B8%9A%E0%B8%B9%E0%B8%A3%E0%B8%93%E0%B9%8C.png';
 const AUTO_REFRESH_MS = 60000;
 
@@ -841,12 +970,14 @@ function icons(){if(window.lucide)lucide.createIcons();}
    STATE + DATA
 ═══════════════════════════════════════════ */
 let ROOM_BOOKINGS=[], CAR_BOOKINGS=[];
-let ADMIN_TOKEN='', isAdmin=false, busy=false;
+let AUTH_TOKEN='', isAdmin=false, busy=false;
+const myName=()=>state.user?state.user.name:'';
 const state={
   view:'home', bookKind:'room', editing:null, pv:null,
   sel:{room:ROOMS[0], car:VEHICLES[0].plate},
   calMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calSel:todayStr(), calFilter:'all',
-  lf:{q:'',kind:'all',status:'all',period:'upcoming'}
+  user:null,
+  lf:{q:'',kind:'all',status:'all',period:'upcoming',mine:false}
 };
 const listOf = k => k==='room'?ROOM_BOOKINGS:CAR_BOOKINGS;
 const allBookings = () => [...ROOM_BOOKINGS,...CAR_BOOKINGS];
@@ -866,8 +997,10 @@ function setConn(ok){
 
 async function loadData(){
   try{
-    const r=await fetch(GAS_URL+'?action=data&t='+Date.now(),{cache:'no-store'});
+    if(!AUTH_TOKEN)return false;
+    const r=await fetch(GAS_URL+'?action=data&token='+encodeURIComponent(AUTH_TOKEN)+'&t='+Date.now(),{cache:'no-store'});
     const j=await r.json();
+    if(j.error==='unauthorized'){sessionExpired();return false;}
     if(!j.ok)throw new Error(j.message||j.error||'load failed');
     ROOM_BOOKINGS=(j.rooms||[]).map(x=>normBooking({...x,kind:'room'}));
     CAR_BOOKINGS=(j.cars||[]).map(x=>normBooking({...x,kind:'car'}));
@@ -878,7 +1011,7 @@ async function loadData(){
 }
 
 async function gasPost(obj){
-  const body='payload='+encodeURIComponent(JSON.stringify({...obj,token:ADMIN_TOKEN}));
+  const body='payload='+encodeURIComponent(JSON.stringify({...obj,token:AUTH_TOKEN}));
   const opt={method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body};
   let j;
   try{const r=await fetch(GAS_URL,opt);j=await r.json();}
@@ -887,12 +1020,13 @@ async function gasPost(obj){
     try{await fetch(GAS_URL,{...opt,mode:'no-cors'});j={ok:true,opaque:true};}
     catch(e2){j={ok:false,error:'network',message:String(e2)};}
   }
-  if(j&&j.error==='unauthorized'&&isAdmin){setAdmin(false);toast('เซสชันผู้ดูแลหมดอายุ กรุณาเข้าสู่ระบบใหม่');openLogin();}
+  if(j&&j.error==='unauthorized'&&state.user&&obj.action!=='login'){sessionExpired();return {...j,handled:true};}
   return j||{ok:false,error:'network'};
 }
 
-const ERR_TITLE={conflict:'ช่วงเวลานี้ถูกจองแล้ว',invalid:'ข้อมูลไม่ถูกต้อง',unauthorized:'ต้องเข้าสู่ระบบผู้ดูแล',busy:'ระบบกำลังทำงานอีกรายการ',network:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้','not-found':'ไม่พบรายการ',server:'เซิร์ฟเวอร์ขัดข้อง'};
+const ERR_TITLE={forbidden:'ไม่มีสิทธิ์ดำเนินการ',conflict:'ช่วงเวลานี้ถูกจองแล้ว',invalid:'ข้อมูลไม่ถูกต้อง',unauthorized:'ต้องเข้าสู่ระบบผู้ดูแล',busy:'ระบบกำลังทำงานอีกรายการ',network:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้','not-found':'ไม่พบรายการ',server:'เซิร์ฟเวอร์ขัดข้อง'};
 async function failAndReload(j){
+  if(j.handled)return;
   await showPopup({type:j.error==='conflict'?'warning':'error',title:ERR_TITLE[j.error]||'เกิดข้อผิดพลาด',msg:(j.message||'ไม่สามารถดำเนินการได้ กรุณาลองใหม่อีกครั้ง')+'\nระบบจะโหลดข้อมูลล่าสุดให้'});
   await loadData();renderAll();
 }
@@ -906,6 +1040,10 @@ function preCheck(kind,c){
   const key=keyOf(kind),s1=toMin(c.timeStart,0),e1=toMin(c.timeEnd,1440);
   const hit=listOf(kind).find(o=>o.id!==c.id&&o.status!=='rejected'&&o.date===c.date&&o[key]===c[key]&&s1<toMin(o.timeEnd,1440)&&toMin(o.timeStart,0)<e1);
   if(hit)return {title:'ช่วงเวลานี้ถูกจองแล้ว',msg:`${kind==='room'?'ห้อง':'รถ'}นี้มีการจองช่วง ${fmtRange(hit.timeStart,hit.timeEnd)} โดย ${hit.requester||'-'}${hit.status==='pending'?' (รออนุมัติ)':''}`};
+  if(kind==='car'&&c.driver){
+    const dh=driverBusy(c.driver,c.date,c.timeStart,c.timeEnd,c.id);
+    if(dh)return {title:'พนักงานขับรถไม่ว่าง',msg:`${c.driver} ติดภารกิจช่วง ${fmtRange(dh.timeStart,dh.timeEnd)} (รถ ${dh.plate||'-'})`};
+  }
   return null;
 }
 async function saveBooking(kind,item){
@@ -939,6 +1077,7 @@ async function removeBooking(kind,id){
    NAVIGATION
 ═══════════════════════════════════════════ */
 function go(view){
+  if(view==='stats'&&!isAdmin)view='home';
   state.view=view;
   $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));
   $$('[data-go]').forEach(b=>{if(b.classList.contains('nav-item')||b.classList.contains('bn-item'))b.classList.toggle('active',b.dataset.go===view);});
@@ -1017,6 +1156,10 @@ function renderHome(){
     {tone:'t-ok',icon:'calendar-check',v:active.filter(b=>(b.date||'').startsWith(month)).length,l:'การจองเดือนนี้'}
   ].map(kpiHtml).join('');
 
+  const mine=state.user&&!isAdmin?all.filter(b=>b.requester===myName()&&b.date>=t).sort(byTime):[];
+  $('#mine-card').classList.toggle('hidden',!state.user||isAdmin);
+  $('#mine-count').textContent=mine.length;
+  $('#mine-list').innerHTML=mine.length?mine.map(b=>itemHtml(b,{showDate:true})).join(''):emptyHtml('calendar-plus','ยังไม่มีคำขอที่กำลังจะถึง','กด "จองใหม่" เพื่อส่งคำขอ — ติดตามสถานะการอนุมัติได้ที่นี่');
   $('#pending-card').classList.toggle('hidden',!isAdmin||!pending.length);
   $('#pending-count').textContent=pending.length;
   $('#pending-list').innerHTML=pending.map(b=>itemHtml(b,{showDate:true,actions:true})).join('');
@@ -1033,8 +1176,8 @@ function renderHome(){
 /* ─── LIST ─── */
 function renderList(){
   const {q,kind,status,period}=state.lf,t=todayStr(),qq=q.trim().toLowerCase();
-  let arr=allBookings().filter(b=>(kind==='all'||b.kind===kind)&&(status==='all'||b.status===status)&&(period==='all'||(period==='upcoming'?b.date>=t:b.date<t)));
-  if(qq)arr=arr.filter(b=>[b.requester,b.dept,b.purpose,b.room,b.plate,b.driver,b.destination,b.note,(b.companions||[]).join(' ')].join(' ').toLowerCase().includes(qq));
+  let arr=allBookings().filter(b=>(!state.lf.mine||b.requester===myName())&&(kind==='all'||b.kind===kind)&&(status==='all'||b.status===status)&&(period==='all'||(period==='upcoming'?b.date>=t:b.date<t)));
+  if(qq)arr=arr.filter(b=>[b.docNo,b.requester,b.dept,b.purpose,b.room,b.plate,b.driver,b.destination,b.note,(b.companions||[]).join(' ')].join(' ').toLowerCase().includes(qq));
   arr.sort(period==='upcoming'?byTime:(a,b)=>byTime(b,a));
   $('#list-meta').textContent='พบ '+arr.length+' รายการ'+(period==='upcoming'?' (เรียงจากใกล้ที่สุด)':' (เรียงจากล่าสุด)');
   $('#list-body').innerHTML=arr.length?groupHtml(arr,{actions:true}):emptyHtml('inbox','ไม่พบรายการ','ลองเปลี่ยนคำค้นหาหรือตัวกรอง');
@@ -1083,7 +1226,7 @@ const TIME_OPTS=(()=>{const a=[];for(let m=360;m<=1320;m+=30)a.push(hm(m));retur
 function resourcesOf(kind){
   return kind==='room'
     ?ROOMS.map((r,i)=>({key:r,label:shortRoom(r),sub:'',c:ROOM_PALETTE[i%5]}))
-    :VEHICLES.map(v=>({key:v.plate,label:v.plate,sub:'ผู้ขับประจำ: '+v.driver,c:CAR_COLOR}));
+    :VEHICLES.map(v=>({key:v.plate,label:v.plate,sub:v.type||'รถตู้',c:CAR_COLOR,van:true}));
 }
 const isEditingItem=b=>state.editing&&b.id===state.editing.id;
 function ensureOpt(sel,val){if(!val)return;const el=$(sel);if(![...el.options].some(o=>o.value===val))el.insertAdjacentHTML('beforeend',`<option value="${esc(val)}">${esc(val)}</option>`);el.value=val;}
@@ -1094,9 +1237,10 @@ function initForm(){
   const tOpts=TIME_OPTS.map(t=>`<option value="${t}">${t} น.</option>`).join('');
   $('#f-start').innerHTML=tOpts;$('#f-end').innerHTML=tOpts;
   $('#f-start').value='09:00';$('#f-end').value='12:00';
-  $('#f-driver').innerHTML=[...new Set(VEHICLES.map(v=>v.driver))].map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
-  $('#f-driver').value=VEHICLES[0].driver;
-  $('#f-date').value=todayStr();
+  renderDriverOptions();
+  initDatePicker();
+  setFormDate(todayStr(),true);
+  $('#f-driver').addEventListener('change',()=>{$('#f-driver').closest('.field').classList.remove('invalid');renderAvailability();});
   try{const p=JSON.parse(localStorage.getItem('dlf_person')||'null');if(p){$('#f-requester').value=p.requester||'';if(p.dept)ensureOpt('#f-dept',p.dept);}}catch(e){}
 
   ['#f-date','#f-end'].forEach(s=>$(s).addEventListener('change',onFormChange));
@@ -1116,15 +1260,119 @@ function initForm(){
   $('#f-reset').addEventListener('click',()=>{if(state.editing)exitEdit();else resetForm(false);});
   $('#edit-cancel').addEventListener('click',exitEdit);
   $('#book-form').addEventListener('submit',onSubmit);
-  ['#f-requester','#f-purpose','#f-date'].forEach(s=>$(s).addEventListener('input',()=>$(s).closest('.field').classList.remove('invalid')));
+  ['#f-requester','#f-purpose'].forEach(s=>$(s).addEventListener('input',()=>$(s).closest('.field').classList.remove('invalid')));
   applyDateMin();
 }
-function applyDateMin(){$('#f-date').min=(isAdmin||state.editing)?'':todayStr();}
-function onFormChange(){renderResTiles();renderAvailability();}
+function applyDateMin(){$('#f-date').dataset.min=(isAdmin||state.editing)?'':todayStr();}
+function onFormChange(){renderResTiles();renderDriverOptions();renderAvailability();}
 function pickRes(key){
   state.sel[state.bookKind]=key;
-  if(state.bookKind==='car'){const v=VEHICLES.find(x=>x.plate===key);if(v)ensureOpt('#f-driver',v.driver);}
   renderResTiles();renderAvailability();
+  if(state.bookKind==='car'&&!$('#f-driver').value)setTimeout(()=>$('#f-driver').focus(),60);
+}
+
+/* ─── พนักงานขับรถ: แสดงว่าใครว่าง/ติดภารกิจในช่วงเวลาที่เลือก ─── */
+function driverBusy(driver,date,s,e,exceptId){
+  const s1=toMin(s,0),e1=toMin(e,1440);
+  return CAR_BOOKINGS.find(o=>o.id!==exceptId&&o.status!=='rejected'&&o.date===date&&o.driver===driver&&s1<toMin(o.timeEnd,1440)&&toMin(o.timeStart,0)<e1);
+}
+function renderDriverOptions(){
+  const sel=$('#f-driver');if(!sel)return;
+  const cur=sel.value,date=$('#f-date').value,s=$('#f-start').value,e=$('#f-end').value,ex=state.editing?state.editing.id:'';
+  const list=[...DRIVERS];if(cur&&!list.includes(cur))list.push(cur);
+  let free=0;
+  sel.innerHTML='<option value="">— เลือกพนักงานขับรถ —</option>'+list.map(d=>{
+    const b=validYmd(date)&&driverBusy(d,date,s,e,ex);if(!b)free++;
+    return `<option value="${esc(d)}"${b?' disabled':''}>${esc(d)}${b?` — ติดภารกิจ ${b.timeStart||''}–${b.timeEnd||''} น.`:' — ว่าง'}</option>`;
+  }).join('');
+  const busyCur=cur&&validYmd(date)&&driverBusy(cur,date,s,e,ex);
+  sel.value=busyCur?'':cur;
+  $('#drv-hint').textContent=validYmd(date)?`ว่าง ${free} จาก ${list.length} คน ในช่วง ${fmtRange(s,e)}${busyCur?' · ผู้ขับที่เลือกไว้ไม่ว่างแล้ว กรุณาเลือกใหม่':''}`:'เลือกวันและเวลาก่อน ระบบจะแสดงว่าผู้ขับคนใดว่าง';
+}
+
+/* ═══════════════════════════════════════════
+   THAI DATE PICKER (พุทธศักราช)
+═══════════════════════════════════════════ */
+const dp={open:false,view:'days',y:0,m:0};
+function thaiDateLong(s){if(!validYmd(s))return '';const d=parseYmd(s);return 'วัน'+DOW[d.getDay()]+'ที่ '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+(d.getFullYear()+543);}
+function setFormDate(v,silent){
+  $('#f-date').value=v||'';
+  const t=$('#f-date-txt'),dh=validYmd(v)?fmtDayHead(v):null;
+  t.innerHTML=validYmd(v)?esc(thaiDateLong(v))+(dh.tag?`<small>(${dh.tag})</small>`:''):'<span style="color:var(--faint)">เลือกวันที่</span>';
+  $('#f-date').closest('.field').classList.remove('invalid');
+  if(!silent)onFormChange();
+}
+function initDatePicker(){
+  const btn=$('#f-date-btn'),box=$('#dp');
+  btn.addEventListener('click',e=>{e.stopPropagation();dp.open?closeDP():openDP();});
+  box.addEventListener('click',e=>{
+    e.stopPropagation();
+    const t=e.target.closest('[data-dp]');if(!t||t.disabled)return;
+    const a=t.dataset.dp;
+    if(a==='prev'||a==='next'){
+      const s=a==='prev'?-1:1;
+      if(dp.view==='days'){dp.m+=s;if(dp.m<0){dp.m=11;dp.y--;}if(dp.m>11){dp.m=0;dp.y++;}}else dp.y+=s;
+      renderDP();
+    }else if(a==='title'){dp.view=dp.view==='days'?'months':'days';renderDP();}
+    else if(a==='month'){dp.m=+t.dataset.m;dp.view='days';renderDP();}
+    else if(a==='day'){setFormDate(t.dataset.d);closeDP();}
+    else if(a==='today'){setFormDate(todayStr());closeDP();}
+    else if(a==='tomorrow'){setFormDate(addDays(todayStr(),1));closeDP();}
+    else if(a==='close')closeDP();
+  });
+  document.addEventListener('click',()=>{if(dp.open)closeDP();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dp.open){e.stopImmediatePropagation();closeDP();btn.focus();}},true);
+}
+function openDP(){
+  const v=$('#f-date').value,d=validYmd(v)?parseYmd(v):new Date();
+  dp.y=d.getFullYear();dp.m=d.getMonth();dp.view='days';dp.open=true;
+  renderDP();$('#dp').classList.add('show');$('#f-date-btn').classList.add('open');
+}
+function closeDP(){dp.open=false;$('#dp').classList.remove('show');$('#f-date-btn').classList.remove('open');}
+function renderDP(){
+  const box=$('#dp'),sel=$('#f-date').value,t=todayStr(),min=$('#f-date').dataset.min||'';
+  const be=dp.y+543;
+  let body='';
+  if(dp.view==='days'){
+    const key=keyOf(state.bookKind);
+    const count={};listOf(state.bookKind).forEach(b=>{if(b.status!=='rejected'&&b[key]===state.sel[state.bookKind])count[b.date]=(count[b.date]||0)+1;});
+    const first=new Date(dp.y,dp.m,1),start=new Date(dp.y,dp.m,1-first.getDay());
+    body='<div class="dp-dow">'+['อา','จ','อ','พ','พฤ','ศ','ส'].map(x=>`<span>${x}</span>`).join('')+'</div><div class="dp-days">';
+    for(let i=0;i<42;i++){
+      const d=new Date(start);d.setDate(start.getDate()+i);
+      const ds=ymd(d),dow=d.getDay(),n=count[ds]||0;
+      let cls='dp-d';
+      if(d.getMonth()!==dp.m)cls+=' out';if(dow===0||dow===6)cls+=' wk';if(ds===t)cls+=' today';if(ds===sel)cls+=' sel';
+      const dots=n?`<i>${'<b></b>'.repeat(Math.min(n,3))}</i>`:'';
+      body+=`<button type="button" class="${cls}" data-dp="day" data-d="${ds}"${min&&ds<min?' disabled':''} title="${esc(thaiDateLong(ds))}${n?' · มีจอง '+n+' รายการ':''}">${d.getDate()}${dots}</button>`;
+    }
+    body+='</div>';
+  }else{
+    const nowY=new Date().getFullYear(),nowM=new Date().getMonth(),sd=validYmd(sel)?parseYmd(sel):null;
+    body='<div class="dp-months">'+MONTHS.map((mn,i)=>{
+      let cls='dp-m';if(sd&&sd.getFullYear()===dp.y&&sd.getMonth()===i)cls+=' sel';if(nowY===dp.y&&nowM===i)cls+=' now';
+      return `<button type="button" class="${cls}" data-dp="month" data-m="${i}">${MONTHS_S[i]}</button>`;
+    }).join('')+'</div>';
+  }
+  const resName=state.bookKind==='room'?shortRoom(state.sel.room):state.sel.car;
+  box.innerHTML=`
+    <div class="dp-head">
+      <button type="button" class="dp-nav" data-dp="prev" aria-label="ก่อนหน้า"><i data-lucide="chevron-left"></i></button>
+      <button type="button" class="dp-title" data-dp="title">
+        <small>${dp.view==='days'?'พุทธศักราช '+be:'เลือกเดือน'}</small>
+        <b>${dp.view==='days'?MONTHS[dp.m]+' '+be:'พ.ศ. '+be}<i data-lucide="chevron-down"></i></b>
+      </button>
+      <button type="button" class="dp-nav" data-dp="next" aria-label="ถัดไป"><i data-lucide="chevron-right"></i></button>
+    </div>
+    <div class="dp-body">${body}</div>
+    ${dp.view==='days'?`<div class="dp-legend"><b></b>วันที่มีการจอง${esc(resName)}แล้ว</div>`:''}
+    <div class="dp-foot">
+      <button type="button" class="chip" data-dp="today">วันนี้</button>
+      <button type="button" class="chip" data-dp="tomorrow">พรุ่งนี้</button>
+      <span class="spacer"></span>
+      <button type="button" class="chip" data-dp="close">ปิด</button>
+    </div>`;
+  icons();
 }
 function setBookKind(kind){
   if(state.editing&&state.editing.kind!==kind)return;
@@ -1145,7 +1393,7 @@ function renderResTiles(){
   $('#res-tiles').innerHTML=resourcesOf(kind).map(r=>{
     const n=day.filter(b=>b[key]===r.key).length,on=state.sel[kind]===r.key;
     return `<button type="button" class="tile${on?' on':''}" data-res="${esc(r.key)}" style="--c:${r.c.m};--cs:${r.c.s}">
-      <span class="tile-dot"></span><span class="tile-txt"><b>${esc(r.label)}</b>${r.sub?`<small>${esc(r.sub)}</small>`:''}</span>
+      ${r.van?'<span class="tile-ico"><i data-lucide="bus"></i></span>':'<span class="tile-dot"></span>'}<span class="tile-txt"><b${r.van?' class="tile-plate"':''}>${esc(r.label)}</b>${r.sub?`<small>${esc(r.sub)}</small>`:''}</span>
       <span class="tile-cnt${n?' busy':''}">${n?'จองแล้ว '+n:'ว่าง'}</span><i class="tile-check" data-lucide="check"></i></button>`;
   }).join('');
   icons();
@@ -1174,7 +1422,7 @@ function renderAvailability(){
   // conflict hint
   const el=$('#f-conflict');
   if(!validYmd(date)){el.classList.add('hidden');icons();return;}
-  const pc=preCheck(kind,{id:state.editing?state.editing.id:'',[key]:state.sel[kind],date,timeStart:$('#f-start').value,timeEnd:$('#f-end').value});
+  const pc=preCheck(kind,{id:state.editing?state.editing.id:'',[key]:state.sel[kind],driver:kind==='car'?$('#f-driver').value:'',date,timeStart:$('#f-start').value,timeEnd:$('#f-end').value});
   el.classList.remove('hidden');el.className='conflict '+(pc?'bad':'ok');
   el.innerHTML=pc?`<i data-lucide="alert-triangle"></i><span><b>${pc.title}</b> — ${esc(pc.msg)}</span>`:`<i data-lucide="check-circle"></i><span>ช่วงเวลานี้ว่าง สามารถจองได้</span>`;
   icons();
@@ -1196,6 +1444,8 @@ function validateForm(){
   chk('#f-date',validYmd(normDate($('#f-date').value)));
   chk('#f-requester',!!$('#f-requester').value.trim());
   chk('#f-purpose',!!$('#f-purpose').value.trim());
+  if(state.bookKind==='car')chk('#f-driver',!!$('#f-driver').value);
+  if(first&&first.id==='f-date')first=$('#f-date-btn');
   const err=$('#f-error');
   if(first){err.textContent='กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน';err.classList.remove('hidden');first.focus();first.scrollIntoView({behavior:'smooth',block:'center'});return false;}
   if(!state.sel[state.bookKind]){err.textContent=state.bookKind==='room'?'กรุณาเลือกห้องประชุม':'กรุณาเลือกรถ';err.classList.remove('hidden');return false;}
@@ -1221,7 +1471,8 @@ async function onSubmit(ev){
   busy=false;btn.disabled=false;updateSubmitLabel();
   if(!j)return;
   try{localStorage.setItem('dlf_person',JSON.stringify({requester:item.requester,dept:item.dept}));}catch(e){}
-  const title=kind==='room'?item.room:item.plate+' ('+item.driver+')';
+  const title=(kind==='room'?item.room:item.plate+' ('+item.driver+')')+(j.docNo?'\nเลขที่เอกสาร '+j.docNo:'');
+  if(j.docNo){const it=findB(kind,item.id);if(it)it.docNo=j.docNo;}
   if(isEdit){
     exitEdit();renderAll();
     await showPopup({type:'success',title:'บันทึกการแก้ไขแล้ว',msg:title+'\n'+fmtThaiDate(item.date)+' · '+fmtRange(item.timeStart,item.timeEnd)});
@@ -1233,7 +1484,8 @@ async function onSubmit(ev){
 }
 function resetForm(keepPerson){
   $('#f-purpose').value='';$('#f-note').value='';$('#f-destination').value='';$('#f-attendees').value=1;resetComp([]);
-  if(!keepPerson){$('#f-requester').value='';$('#f-date').value=todayStr();ensureOpt('#f-start','09:00');ensureOpt('#f-end','12:00');}
+  $('#f-driver').value='';
+  if(!keepPerson){if(!state.user||isAdmin)$('#f-requester').value='';setFormDate(todayStr(),true);ensureOpt('#f-start','09:00');ensureOpt('#f-end','12:00');}
   $$('#book-form .field.invalid').forEach(f=>f.classList.remove('invalid'));$('#f-error').classList.add('hidden');
   onFormChange();
 }
@@ -1241,13 +1493,13 @@ function openEdit(kind,id){
   const e=findB(kind,id);if(!e||!isAdmin)return;
   closePreview();
   state.editing=null;setBookKind(kind);state.editing={kind,id};
-  $('#f-date').value=e.date||todayStr();
+  setFormDate(e.date||todayStr(),true);
   ensureOpt('#f-start',e.timeStart||'09:00');ensureOpt('#f-end',e.timeEnd||'12:00');
   $('#f-requester').value=e.requester||'';if(e.dept)ensureOpt('#f-dept',e.dept);
   $('#f-purpose').value=e.purpose||'';
   if(kind==='room'){state.sel.room=e.room;$('#f-attendees').value=e.attendees||1;$('#f-note').value=e.note||'';}
-  else{state.sel.car=e.plate;if(e.driver)ensureOpt('#f-driver',e.driver);$('#f-destination').value=e.destination||'';resetComp(e.companions||[]);}
-  $('#edit-ref').textContent=titleOf(e)+' · '+fmtThaiDate(e.date)+' · โดย '+(e.requester||'-');
+  else{state.sel.car=e.plate;if(e.driver)ensureOpt('#f-driver',e.driver);renderDriverOptions();$('#f-destination').value=e.destination||'';resetComp(e.companions||[]);}
+  $('#edit-ref').textContent=(e.docNo?'เลขที่ '+e.docNo+' · ':'')+titleOf(e)+' · '+fmtThaiDate(e.date)+' · โดย '+(e.requester||'-');
   $('#edit-banner').classList.remove('hidden');
   const del=$('#f-delete');del.classList.remove('hidden');del.dataset.kind=kind;del.dataset.id=id;
   $$('#kind-seg [data-kind]').forEach(b=>b.disabled=b.dataset.kind!==kind);
@@ -1281,7 +1533,7 @@ function openPreview(kind,id){
     <div class="pv-body">
       <div class="pv-status"><span>สถานะการอนุมัติ</span>${statusPill(e.status)}</div>
       <dl class="pv-dl">${rows.map(r=>`<dt><i data-lucide="${r[0]}"></i>${r[1]}</dt><dd>${esc(r[2]||'–')}</dd>`).join('')}</dl>
-      <div class="pv-id">รหัสการจอง <code>${esc(e.id)}</code></div>
+      <div class="pv-id">เลขที่เอกสาร <code>${esc(e.docNo||'รอออกเลข')}</code> · รหัสการจอง <code>${esc(e.id)}</code></div>
     </div>
     <div class="pv-foot">
       ${isAdmin&&e.status!=='approved'||isAdmin&&e.status!=='rejected'?`<div class="pv-approve">
@@ -1303,45 +1555,120 @@ function closePreview(){$('#pv-ov').classList.remove('show');$('#pv-ov').setAttr
    PRINT BOOKING DOCUMENT
 ═══════════════════════════════════════════ */
 function printBookingDoc(kind,e){
-  const printDate=new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const row=(l,v)=>`<tr><td class="lbl">${l}</td><td class="val">${v||'–'}</td></tr>`;
-  const sig=(title,name,sub)=>`<div class="sig-box"><div class="sig-line"></div><div class="sig-name">(${esc(name)||'……………………………………'})</div><div class="sig-title">${title}</div>${sub?`<div class="sig-sub">${esc(sub)}</div>`:''}<div class="sig-date">วันที่ ………/………/………</div></div>`;
-  let docTitle,rows,sigs;
+  const TH='๐๑๒๓๔๕๖๗๘๙';
+  const th=v=>String(v==null?'':v).replace(/\d/g,d=>TH[d]);
+  const now=new Date();
+  const dateLine=`<span style="white-space:nowrap">วันที่ <span class="f xs">${th(now.getDate())}</span> เดือน <span class="f s2">${MONTHS[now.getMonth()]}</span> พ.ศ. <span class="f xs">${th(now.getFullYear()+543)}</span></span>`;
+  const f=(v,cls)=>`<span class="f ${cls||''}">${v?esc(th(v)):'&nbsp;'}</span>`;
+  const cb=(on,label)=>`<span class="cbx${on?' on':''}"></span>${label}`;
+  const bookDate=validYmd(e.date)?(()=>{const d=parseYmd(e.date);return 'วัน'+DOW[d.getDay()]+'ที่ '+th(d.getDate())+' '+MONTHS[d.getMonth()]+' พ.ศ. '+th(d.getFullYear()+543);})():'';
+  const docNo=e.docNo?th(e.docNo):'';
+  const approved=e.status==='approved',rejected=e.status==='rejected';
+  const sign=(name,role,extra)=>`<div class="sign"><div>(ลงชื่อ) <span class="f sg">&nbsp;</span></div><div>(${name?esc(name):'<span class="f sg">&nbsp;</span>'})</div><div>${role}</div>${extra?`<div class="sm">${extra}</div>`:''}</div>`;
+  const box=(title,body,signRole)=>`<td><div class="bx-t">${title}</div>${body}<div class="bx-s">(ลงชื่อ) <span class="f m">&nbsp;</span><br>(<span class="f m">&nbsp;</span>)<br>${signRole}<br>วันที่ <span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span>/<span class="f xs">&nbsp;</span></div></td>`;
+  let title,form,body,bottom;
+
   if(kind==='room'){
-    docTitle='แบบฟอร์มขอใช้ห้องประชุม';
-    rows=row('ห้องประชุม','<b>'+esc(e.room)+'</b>')+row('วันที่ใช้งาน',fmtThaiDate(e.date))+row('เวลา',fmtRange(e.timeStart,e.timeEnd))+row('กลุ่มงาน / หน่วยงาน',esc(e.dept))+row('ผู้แจ้งขอใช้',esc(e.requester))+row('จำนวนผู้เข้าร่วม',(e.attendees||1)+' คน')+row('วัตถุประสงค์',esc(e.purpose))+(e.note?row('หมายเหตุ',esc(e.note)):'')+row('สถานะ',STATUS[e.status]);
-    sigs=sig('ผู้ขอใช้ห้องประชุม',e.requester,e.dept)+sig('เจ้าหน้าที่รับจอง','','งานบริหารทั่วไป')+sig('ผู้มีอำนาจอนุมัติ','','');
+    form='';title='แบบขออนุญาตใช้ห้องประชุม';
+    body=`
+      <p class="sub"><b>เรื่อง</b>&nbsp; ขออนุญาตใช้ห้องประชุม</p>
+      <p class="sub"><b>เรียน</b>&nbsp; ${esc(FORM_TO)}</p>
+      <p class="ind">ข้าพเจ้า ${f(e.requester,'l')} ตำแหน่ง ${f('','m')}</p>
+      <p>สังกัด ${f(e.dept,'l')} มีความประสงค์ขออนุญาตใช้</p>
+      <p>${f(e.room,'xl')}</p>
+      <p>เพื่อ ${f(e.purpose,'xl')}</p>
+      <p>จำนวนผู้เข้าร่วมประชุม ${f(e.attendees||1,'s')} คน</p>
+      <p>ในวันที่ ${f(bookDate,'l')} เวลา ${f(e.timeStart,'s')} น. ถึง ${f(e.timeEnd,'s')} น.</p>
+      <p>อุปกรณ์ / สิ่งที่ต้องการเพิ่มเติม</p>
+      <div class="cbs">
+        <span>${cb(false,'โปรเจกเตอร์')}</span><span>${cb(false,'ไมโครโฟน/เครื่องเสียง')}</span><span>${cb(false,'ประชุมออนไลน์')}</span>
+        <span>${cb(false,'อาหารว่าง/เครื่องดื่ม')}</span>
+        <span style="grid-column:span 2">${cb(!!e.note,'อื่น ๆ')} ${f(e.note,'l')}</span>
+      </div>
+      <p class="ind">จึงเรียนมาเพื่อโปรดพิจารณาอนุญาต</p>
+      <div class="signs">${sign(e.requester,'ผู้ขออนุญาต')}${sign('','หัวหน้ากลุ่มงาน',esc(e.dept||''))}</div>`;
+    bottom=`<table class="bx"><tr>
+      ${box('ความเห็นเจ้าหน้าที่ผู้ดูแลห้อง',`<p>${cb(false,'ห้องว่าง สามารถใช้งานได้')}</p><p>${cb(false,'ห้องไม่ว่าง')}</p>`,'เจ้าหน้าที่ผู้ดูแล')}
+      ${box('คำสั่งผู้มีอำนาจ',`<p>${cb(approved,'อนุญาต')}</p><p>${cb(rejected,'ไม่อนุญาต')}</p>`,'ผู้มีอำนาจอนุมัติ')}
+    </tr></table>`;
   }else{
-    docTitle='แบบฟอร์มขออนุญาตใช้รถยนต์ส่วนกลาง';
-    rows=row('ผู้ขออนุญาต',esc(e.requester))+row('กลุ่มงาน / หน่วยงาน',esc(e.dept))+row('วันที่ใช้งาน',fmtThaiDate(e.date))+row('เวลา',fmtRange(e.timeStart,e.timeEnd))+row('ทะเบียนรถยนต์','<b>'+esc(e.plate)+'</b>')+row('พนักงานขับรถ',esc(e.driver))+row('จำนวนผู้เดินทาง',(e.numPeople||1)+' คน')+row('ผู้ร่วมเดินทาง',(e.companions||[]).map(esc).join(', ')||'–')+row('สถานที่ปลายทาง',esc(e.destination))+row('วัตถุประสงค์',esc(e.purpose))+row('สถานะ',STATUS[e.status]);
-    sigs=sig('ผู้ขออนุญาตใช้รถ',e.requester,e.dept)+sig('พนักงานขับรถ',e.driver,e.plate)+sig('ผู้มีอำนาจอนุมัติ','','');
+    form='แบบ ๓';title='ใบขออนุญาตใช้รถส่วนกลาง';
+    const comp=(e.companions||[]).join(', ');
+    body=`
+      <p class="sub"><b>เรียน</b>&nbsp; ${esc(FORM_TO)}</p>
+      <p class="ind">ข้าพเจ้า ${f(e.requester,'l')} ตำแหน่ง ${f('','m')}</p>
+      <p>สังกัด ${f(e.dept,'l')} ขออนุญาตใช้รถตู้ทะเบียน ${f(e.plate,'s2')}</p>
+      <p>ไปที่ ${f(e.destination,'xl')}</p>
+      <p>เพื่อ ${f(e.purpose,'xl')}</p>
+      <p>มีผู้เดินทางรวม ${f(e.numPeople||1,'s')} คน ${comp?`ได้แก่ ${f(comp,'l')}`:''}</p>
+      <p>ในวันที่ ${f(bookDate,'l')} เวลา ${f(e.timeStart,'s')} น. ถึง ${f(e.timeEnd,'s')} น.</p>
+      <div class="signs">${sign(e.requester,'ผู้ขออนุญาต')}${sign('','หัวหน้ากลุ่มงาน / ผู้บังคับบัญชา',esc(e.dept||''))}</div>`;
+    bottom=`<table class="bx"><tr>
+      ${box('ความเห็นผู้จัดรถ',`<p>ควรอนุญาตให้ใช้รถทะเบียน ${f(e.plate,'s2')}</p><p>โดยมี ${f(e.driver,'m')}</p><p>เป็นพนักงานขับรถ</p>`,'ผู้จัดรถ')}
+      ${box('คำสั่งผู้มีอำนาจ',`<p>${cb(approved,'อนุญาต')}</p><p>${cb(rejected,'ไม่อนุญาต')}</p><p>&nbsp;</p>`,'ผู้สั่งใช้รถ')}
+    </tr></table>
+    <div class="log">
+      <div class="bx-t">บันทึกการใช้รถ (พนักงานขับรถ)</div>
+      <p>ออกเวลา ${f('','s')} น. เลขไมล์ ${f('','s')} &nbsp; กลับเวลา ${f('','s')} น. เลขไมล์ ${f('','s')} &nbsp; รวม ${f('','s')} กม.</p>
+      <p style="text-align:right">(ลงชื่อ) <span class="f m">&nbsp;</span> พนักงานขับรถ &nbsp;(${esc(e.driver||'………………')})</p>
+    </div>`;
   }
-  const html=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>${docTitle}</title>
+
+  const html=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>${title}${docNo?' '+docNo:''}</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Sarabun',sans-serif;font-size:14pt;color:#111;padding:18mm 18mm 16mm 22mm;max-width:210mm;margin:0 auto}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#E5E7EB}
+body{font-family:'Sarabun','TH Sarabun New',sans-serif;font-size:14pt;line-height:1.42;color:#000}
+.page{width:210mm;height:297mm;overflow:hidden;margin:12mm auto;background:#fff;padding:12mm 18mm 14mm 28mm;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.15)}
 @page{size:A4;margin:0}
-.hd{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:3px double #1e3a5f;margin-bottom:16px}.hd img{width:60px}
-.org{flex:1}.org b{font-size:15pt;color:#1e3a5f}.org div{font-size:10pt;color:#555}.meta{text-align:right;font-size:10pt;color:#555;line-height:1.8}
-h1{text-align:center;font-size:18pt;color:#1e3a5f;margin:14px 0 4px}.idr{text-align:center;font-size:10pt;color:#666;margin-bottom:16px}
-table{width:100%;border-collapse:collapse;margin-bottom:18px}td{padding:7px 12px;border:1px solid #d0d5dd;vertical-align:top;font-size:12pt}
-.lbl{background:#F0F4FA;color:#1e3a5f;font-weight:700;width:36%}
-.nl{font-size:10pt;font-weight:700;color:#1e3a5f;margin-bottom:6px}.nb{border:1px solid #d0d5dd;border-radius:8px;min-height:50px;margin-bottom:18px}
-.sigs{display:flex;gap:14px;margin-top:26px;padding-top:14px;border-top:1.5px solid #d0d5dd}.sig-box{flex:1;text-align:center}
-.sig-line{border-bottom:1.5px solid #333;margin:0 10px 8px;height:50px}.sig-name,.sig-title{font-size:11pt}.sig-title{font-weight:700;color:#1e3a5f}.sig-sub{font-size:9.5pt;color:#666}.sig-date{font-size:10pt;color:#555;margin-top:6px}
-.ft{margin-top:24px;padding-top:8px;border-top:1px solid #e0e4ed;display:flex;justify-content:space-between;font-size:9pt;color:#888}
-.act{text-align:center;margin-bottom:18px}.act button{font-family:'Sarabun';font-size:13pt;font-weight:700;border-radius:10px;padding:9px 26px;margin:0 5px;cursor:pointer;border:1px solid #d1d5db;background:#f3f4f6}.act .p{background:#1e3a5f;color:#fff;border:none}
-@media print{.act{display:none}}
+@media print{html{background:#fff}.page{margin:0;box-shadow:none}.tools{display:none!important}}
+.tools{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:10px;padding:12px;background:#111827}
+.tools button{font-family:'Sarabun';font-size:12.5pt;font-weight:700;border-radius:10px;padding:7px 22px;cursor:pointer;border:none;background:#374151;color:#fff}
+.tools .p{background:#2563EB}
+.form-no{position:absolute;right:18mm;top:10mm;font-size:13pt;font-weight:700}
+.logo{position:absolute;left:28mm;top:9mm}.logo img{height:16mm}
+h1{text-align:center;font-size:18pt;font-weight:700;line-height:1.25;margin-top:4mm}
+.org{text-align:center;font-size:13.5pt;margin-bottom:3mm}
+.meta{margin-left:46%;line-height:1.42;margin-bottom:1mm}
+.docno{display:inline-block;border:1.2px solid #000;border-radius:4px;padding:0 10px;font-weight:700}
+p{margin:0}
+.sub{margin-top:2mm}
+.ind{text-indent:25mm;margin-top:1mm}
+.f{display:inline-block;border-bottom:1.2px dotted #000;min-width:30mm;padding:0 6px;line-height:1.25;text-align:center;text-indent:0;vertical-align:baseline}
+.f.xs{min-width:9mm;padding:0 3px}.f.s{min-width:16mm}.f.s2{min-width:26mm}.f.m{min-width:40mm}.f.l{min-width:56mm}.f.sg{min-width:48mm}.f.xl{min-width:calc(100% - 14mm);text-align:left}
+.cbs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:0 7mm;margin:0 0 1mm 10mm}
+.cbs .w{grid-column:1/-1}
+.cbx{display:inline-block;width:4.2mm;height:4.2mm;border:1.3px solid #000;margin-right:2.5mm;vertical-align:-0.4mm;position:relative}
+.cbx.on::after{content:'';position:absolute;left:1.1mm;top:-.2mm;width:1.4mm;height:2.8mm;border:solid #000;border-width:0 .55mm .55mm 0;transform:rotate(45deg)}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:4mm}
+.sign{text-align:center;line-height:1.45}
+.sign .sm{font-size:13pt}
+.bx{width:100%;border-collapse:collapse;margin-top:4mm;table-layout:fixed}
+.bx td{border:1.2px solid #000;padding:2mm 4mm;vertical-align:top;font-size:13.5pt;line-height:1.42}
+.bx-t{font-weight:700;text-decoration:underline;margin-bottom:1mm}
+.bx-s{text-align:center;margin-top:2mm}
+.bx-s .f.m{min-width:42mm}
+.log{border:1.2px solid #000;border-top:none;padding:2mm 4mm;font-size:13.5pt}
+.foot{position:absolute;left:28mm;right:18mm;bottom:6mm;display:flex;justify-content:space-between;font-size:10pt;color:#6B7280;border-top:.5px solid #D1D5DB;padding-top:1.5mm}
 </style></head><body>
-<div class="act"><button class="p" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button><button onclick="window.close()">✕ ปิด</button></div>
-<div class="hd"><img src="${LOGO_URL}" alt=""><div class="org"><b>DLFOffice</b><div>ระบบบริหารการจองห้องประชุมและยานพาหนะส่วนกลาง</div></div><div class="meta">เลขที่เอกสาร …………………………<br>วันที่พิมพ์ <b>${printDate}</b></div></div>
-<h1>${docTitle}</h1><div class="idr">รหัสการจอง: ${esc(e.id)}</div>
-<table><tbody>${rows}</tbody></table>
-<div class="nl">หมายเหตุเพิ่มเติม / ความต้องการพิเศษ</div><div class="nb"></div>
-<div class="sigs">${sigs}</div>
-<div class="ft"><span>พิมพ์จาก DLFOffice</span><span>วันที่พิมพ์: ${printDate}</span></div>
+<div class="tools"><button class="p" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button><button onclick="window.close()">✕ ปิด</button></div>
+<div class="page">
+  ${form?`<div class="form-no">${form}</div>`:''}
+  <div class="logo"><img src="${LOGO_URL}" alt=""></div>
+  <h1>${title}</h1>
+  <div class="org">${esc(FORM_ORG)}</div>
+  <div class="meta">
+    <div>เลขที่ <span class="docno">${docNo||'<span class="f s2">&nbsp;</span>'}</span></div>
+    <div>เขียนที่ ${esc(FORM_PLACE)}</div>
+    <div>${dateLine}</div>
+  </div>
+  ${body}
+  ${bottom}
+  <div class="foot"><span>ออกโดยระบบ DLFOffice · รหัสอ้างอิง ${esc(e.id)}</span><span>สถานะในระบบ: ${STATUS[e.status]||'-'}</span></div>
+</div>
 </body></html>`;
-  const w=window.open('','_blank','width=900,height=720');
+  const w=window.open('','_blank','width=960,height=900');
   if(!w){showPopup({type:'warning',title:'เบราว์เซอร์บล็อกหน้าต่างใหม่',msg:'กรุณาอนุญาต Pop-up สำหรับเว็บไซต์นี้แล้วลองอีกครั้ง'});return;}
   w.document.open();w.document.write(html);w.document.close();
 }
@@ -1386,12 +1713,13 @@ function renderStats(){
   const rowsAll=all.slice().sort((a,b)=>byTime(b,a));
   $('#tbl-count').textContent=rowsAll.length+' รายการ';
   $('#tbl-body').innerHTML=rowsAll.length?rowsAll.map(b=>`<tr>
+    <td style="white-space:nowrap">${esc(b.docNo||'—')}</td>
     <td><span class="kb ${b.kind}">${b.kind==='room'?'ห้อง':'รถ'}</span></td>
     <td style="white-space:nowrap">${fmtThaiShort(b.date)}</td>
     <td style="white-space:nowrap" class="num">${fmtRange(b.timeStart,b.timeEnd)}</td>
     <td>${esc(b.kind==='room'?shortRoom(b.room):b.plate)}</td><td>${esc(b.requester||'—')}</td><td>${esc(b.dept||'—')}</td>
     <td class="clip" title="${esc(b.purpose)}">${esc(b.purpose||'—')}</td><td>${statusPill(b.status)}</td></tr>`).join('')
-    :`<tr><td colspan="8">${emptyHtml('inbox','ยังไม่มีข้อมูล','')}</td></tr>`;
+    :`<tr><td colspan="9">${emptyHtml('inbox','ยังไม่มีข้อมูล','')}</td></tr>`;
   icons();
 }
 
@@ -1417,40 +1745,90 @@ function toast(msg){$('#toast-txt').textContent=msg;$('#toast').classList.add('s
 /* ═══════════════════════════════════════════
    AUTH
 ═══════════════════════════════════════════ */
-const SESSION_KEY='dlf_admin_session';
+const SESSION_KEY='dlf_session_v2';
 function loadSession(){
   try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
-    if(s&&s.token&&Date.now()-s.ts<8*3600e3){ADMIN_TOKEN=s.token;return true;}
+    if(s&&s.token&&s.exp>Date.now())return s;
     localStorage.removeItem(SESSION_KEY);}catch(e){}
-  return false;
+  return null;
 }
-function setAdmin(admin,persist=true){
-  isAdmin=admin;if(!admin)ADMIN_TOKEN='';
-  if(persist){try{admin?localStorage.setItem(SESSION_KEY,JSON.stringify({token:ADMIN_TOKEN,ts:Date.now()})):localStorage.removeItem(SESSION_KEY);}catch(e){}}
-  document.body.classList.toggle('is-admin',admin);
-  $('#acct').innerHTML=admin?`
-    <div class="acct-card admin"><span class="acct-ava"><i data-lucide="shield-check"></i></span><div><b>ผู้ดูแลระบบ</b><small>อนุมัติ / แก้ไข / ลบได้</small></div></div>
-    <button class="side-btn" data-act="line-test"><i data-lucide="message-circle"></i>ทดสอบแจ้งเตือน LINE</button>
-    <button class="side-btn" data-act="sync-all"><i data-lucide="upload-cloud"></i>ซิงค์ทั้งหมดไป Sheet</button>
-    <button class="side-btn danger" data-act="logout"><i data-lucide="log-out"></i>ออกจากระบบ</button>`
-   :`<div class="acct-card"><span class="acct-ava"><i data-lucide="user"></i></span><div><b>ผู้ใช้ทั่วไป</b><small>จองและดูข้อมูลได้</small></div></div>
-    <button class="side-btn" data-act="login"><i data-lucide="log-in"></i>เข้าสู่ระบบผู้ดูแล</button>`;
-  applyDateMin();renderAll();
+function clearLocalData(){
+  ROOM_BOOKINGS=[];CAR_BOOKINGS=[];
+  try{localStorage.removeItem('dlf_cache');localStorage.removeItem('dlf_person');}catch(e){}
 }
-function openLogin(){$('#login-err').style.display='none';$('#login-pass').value='';$('#login-ov').classList.add('show');closeDrawer();setTimeout(()=>$('#login-user').focus(),80);}
-function closeLogin(){$('#login-ov').classList.remove('show');}
+function setSession(u,persist=true){
+  state.user=u||null;AUTH_TOKEN=u?u.token:'';isAdmin=!!(u&&u.role==='admin');
+  if(persist){try{u?localStorage.setItem(SESSION_KEY,JSON.stringify(u)):localStorage.removeItem(SESSION_KEY);}catch(e){}}
+  document.body.classList.toggle('is-admin',isAdmin);
+  document.body.classList.toggle('locked',!u);
+  renderAcct();applyUserToForm();applyDateMin();
+  if(!isAdmin&&state.view==='stats')go('home');
+  renderAll();
+}
+function initialOf(n){return String(n||'?').replace(/^(ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|นางสาว|นาย|นาง|ดร\.)\s*/,'').trim().slice(0,1)||'?';}
+function renderAcct(){
+  const u=state.user;if(!u){$('#acct').innerHTML='';return;}
+  const sub=isAdmin?'ผู้ดูแลระบบ':[u.position||'ผู้ใช้งาน',u.dept].filter(Boolean).join(' · ');
+  $('#acct').innerHTML=`
+    <div class="acct-card${isAdmin?' admin':''}"><span class="acct-ava${isAdmin?'':' ini'}">${isAdmin?'<i data-lucide="shield-check"></i>':esc(initialOf(u.name))}</span><div><b title="${esc(u.name)}">${esc(u.name)}</b><small title="${esc(sub)}">${esc(sub)}</small></div></div>
+    ${isAdmin?`<button class="side-btn" data-act="line-test"><i data-lucide="message-circle"></i>ทดสอบแจ้งเตือน LINE</button>
+    <button class="side-btn" data-act="sync-all"><i data-lucide="upload-cloud"></i>ซิงค์ทั้งหมดไป Sheet</button>`
+    :'<div class="acct-note">สิทธิ์ของคุณ: ดูรายการจอง และส่งคำขอจองในชื่อของตนเอง</div>'}
+    <button class="side-btn danger" data-act="logout"><i data-lucide="log-out"></i>ออกจากระบบ</button>`;
+  icons();
+}
+function applyUserToForm(){
+  const r=$('#f-requester'),u=state.user,lock=!!(u&&!isAdmin);
+  r.readOnly=lock;r.classList.toggle('locked',lock);
+  if(lock){r.value=u.name;r.closest('.field').classList.remove('invalid');if(u.dept&&DEPTS.includes(u.dept))ensureOpt('#f-dept',u.dept);}
+  else if(u&&isAdmin&&r.value===''){try{const p=JSON.parse(localStorage.getItem('dlf_person')||'null');if(p&&p.requester)r.value=p.requester;}catch(e){}}
+  $('#requester-note').classList.toggle('hidden',!lock);
+}
+function showLogin(msg){
+  closePreview();closeDrawer();
+  document.body.classList.add('locked');
+  const err=$('#ls-err');err.style.display=msg?'block':'none';if(msg)err.textContent=msg;
+  $('#ls-pass').value='';updateIdCounter();
+  setTimeout(()=>$('#ls-user').focus(),60);
+}
+function sessionExpired(){
+  if(!state.user)return;
+  setSession(null);clearLocalData();renderAll();
+  showLogin('เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง');
+}
+function updateIdCounter(){
+  const v=$('#ls-user').value.trim(),c=$('#ls-count');
+  if(/^\d+$/.test(v)){c.textContent=`เลขบัตรประชาชน ${v.length}/13 หลัก`;c.classList.toggle('ok',v.length===13);}
+  else{c.textContent='';c.classList.remove('ok');}
+}
 async function doLogin(){
-  const u=$('#login-user').value.trim(),p=$('#login-pass').value,err=$('#login-err'),btn=$('#login-btn');
-  if(!u||!p){err.textContent='กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';err.style.display='block';return;}
+  const u=$('#ls-user').value.trim(),p=$('#ls-pass').value.trim(),err=$('#ls-err'),btn=$('#ls-btn');
+  const fail=m=>{err.textContent=m;err.style.display='block';err.classList.remove('shake');void err.offsetWidth;err.classList.add('shake');};
+  if(!u||!p)return fail('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
+  if(/^\d+$/.test(u)&&u.length!==13)return fail('เลขบัตรประชาชนต้องมี 13 หลัก');
   btn.disabled=true;btn.textContent='กำลังตรวจสอบ…';err.style.display='none';
   const j=await gasPost({action:'login',username:u,password:p});
   btn.disabled=false;btn.textContent='เข้าสู่ระบบ';
-  if(j&&j.ok&&j.token){ADMIN_TOKEN=j.token;closeLogin();setAdmin(true);toast('เข้าสู่ระบบผู้ดูแลแล้ว');return;}
-  err.textContent=j.opaque?'อ่านผลจากเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบการ Deploy (Who has access: Anyone)'
-    :j.error==='locked'?'ล็อกอินผิดหลายครั้ง กรุณารอ 10 นาที'
+  if(j&&j.ok&&j.token){
+    clearLocalData();
+    setSession({token:j.token,role:j.role||'admin',name:j.name||'ผู้ใช้งาน',dept:j.dept||'',position:j.position||'',exp:Date.now()+(j.expiresInHours||8)*3600e3});
+    $('#ls-user').value='';$('#ls-pass').value='';
+    go('home');toast('ยินดีต้อนรับ '+(j.name||''));
+    await loadData();renderAll();
+    return;
+  }
+  $('#ls-pass').value='';$('#ls-pass').focus();
+  fail(j.opaque?'อ่านผลจากเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบการ Deploy (Who has access: Anyone)'
+    :j.error==='locked'?'เข้าสู่ระบบผิดหลายครั้ง กรุณารอ 10 นาทีแล้วลองใหม่'
+    :j.error==='hr-unavailable'?'ตรวจสอบกับระบบ HR ไม่สำเร็จ: '+(j.message||'')
     :j.error==='not-configured'?'ยังไม่ได้ตั้งค่า ADMIN_USER / ADMIN_PASS ใน Script Properties'
-    :j.error==='network'?'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้':'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-  err.style.display='block';$('#login-pass').value='';$('#login-pass').focus();
+    :j.error==='network'?'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่'
+    :'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง ตรวจสอบแล้วลองอีกครั้ง');
+}
+function doLogout(){
+  gasPost({action:'logout'});
+  if(state.editing)exitEdit();
+  setSession(null);clearLocalData();renderAll();showLogin();
 }
 
 /* ═══════════════════════════════════════════
@@ -1473,14 +1851,14 @@ document.addEventListener('click',async ev=>{
       case 'edit': openEdit(kind,id);break;
       case 'print': {const e=findB(kind,id);if(e)printBookingDoc(kind,e);break;}
       case 'pv-close': closePreview();break;
-      case 'login': openLogin();break;
-      case 'login-close': closeLogin();break;
-      case 'logout': gasPost({action:'logout'});setAdmin(false);toast('ออกจากระบบแล้ว');break;
+      case 'logout':
+        if(await showPopup({type:'info',title:'ออกจากระบบ?',msg:'ต้องการออกจากระบบใช่ไหม',okLabel:'ออกจากระบบ',cancelLabel:'ยกเลิก'}))doLogout();
+        break;
       case 'kpi-pending':
         state.lf={...state.lf,status:'pending',period:'upcoming'};$('#lf-status').value='pending';$('#lf-period').value='upcoming';go('list');renderList();icons();break;
       case 'book-on':
         if(state.editing)exitEdit();
-        $('#f-date').value=a.dataset.date||todayStr();go('book');onFormChange();break;
+        setFormDate(a.dataset.date||todayStr(),true);go('book');onFormChange();break;
       case 'line-test': {
         a.disabled=true;const j=await gasPost({action:'test'});a.disabled=false;
         if(j.ok&&!j.opaque)showPopup({type:'success',title:'ส่งข้อความทดสอบแล้ว',msg:'ตรวจสอบข้อความในกลุ่ม LINE ('+(j.sent||1)+' กลุ่ม)'});
@@ -1511,7 +1889,6 @@ document.addEventListener('click',async ev=>{
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if($('#pop-ov').classList.contains('show'))return closePopup(false);
-    if($('#login-ov').classList.contains('show'))return closeLogin();
     if($('#pv-ov').classList.contains('show'))return closePreview();
     closeDrawer();
   }
@@ -1521,10 +1898,13 @@ $('#pop-ok').addEventListener('click',()=>closePopup(true));
 $('#pop-cancel').addEventListener('click',()=>closePopup(false));
 $('#pop-ov').addEventListener('click',e=>{if(e.target.id==='pop-ov')closePopup(false);});
 $('#pv-ov').addEventListener('click',e=>{if(e.target.id==='pv-ov')closePreview();});
-$('#login-ov').addEventListener('click',e=>{if(e.target.id==='login-ov')closeLogin();});
-$('#login-btn').addEventListener('click',doLogin);
-$('#login-user').addEventListener('keydown',e=>{if(e.key==='Enter')$('#login-pass').focus();});
-$('#login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+$('#ls-btn').addEventListener('click',doLogin);
+$('#ls-user').addEventListener('input',updateIdCounter);
+$('#ls-user').addEventListener('keydown',e=>{if(e.key==='Enter')$('#ls-pass').focus();});
+$('#ls-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+$('#ls-eye').addEventListener('click',()=>{const p=$('#ls-pass'),show=p.type==='password';p.type=show?'text':'password';$('#ls-eye').innerHTML=`<i data-lucide="${show?'eye-off':'eye'}"></i>`;$('#ls-eye').setAttribute('aria-label',show?'ซ่อนรหัสผ่าน':'แสดงรหัสผ่าน');icons();});
+$('#lf-mine').addEventListener('click',()=>{state.lf.mine=!state.lf.mine;$('#lf-mine').classList.toggle('on',state.lf.mine);renderList();icons();});
+$('#ls-org').textContent=FORM_ORG;
 $('#menu-btn').addEventListener('click',openDrawer);
 $('#scrim').addEventListener('click',closeDrawer);
 $('#refresh-btn').addEventListener('click',async()=>{
@@ -1553,18 +1933,22 @@ function tick(){
   if(todayStr()!==_lastDay){_lastDay=todayStr();renderAll();}
 }
 async function autoRefresh(){
-  if(document.visibilityState!=='visible'||busy)return;
+  if(!state.user||document.visibilityState!=='visible'||busy)return;
   if($$('.ov.show').length)return;
   if(await loadData())renderAll();
 }
 (async function init(){
   initForm();
-  setAdmin(loadSession(),false);
   setBookKind('room');
-  go('home');
   tick();setInterval(tick,1000);
-  if(cacheLoad())renderAll();
-  await loadData();renderAll();
+  const ses=loadSession();
+  if(ses){
+    setSession(ses,false);go('home');
+    if(cacheLoad())renderAll();
+    await loadData();renderAll();
+  }else{
+    setSession(null,false);showLogin();
+  }
   setInterval(autoRefresh,AUTO_REFRESH_MS);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')autoRefresh();});
 })();
